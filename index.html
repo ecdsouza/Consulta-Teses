@@ -522,19 +522,45 @@ function erro(msg){
 function esc(v){return String(v||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 async function diagnosticar(){const q=document.getElementById('query').value||'educação';window.open('/api/debug?q='+encodeURIComponent(q),'_blank');}
 
-/* ── Exportação CSV ── */
-function xCSV(){
-  if(!dados.length){alert('Nenhum dado para exportar.');return;}
-  const h=LABELS.join(';');
-  const r=dados.map(d=>COLS.map(c=>'"'+String(d[c]||'').replace(/"/g,'""')+'"').join(';'));
-  dl('\uFEFF'+[h,...r].join('\r\n'),'repositorio-academico.csv','text/csv;charset=utf-8');
+/* ── Busca todos os registros para exportação ── */
+async function fetchTodos(){
+  const q=document.getElementById('query').value.trim();
+  const ativas=fontesAtivas();
+  const am=document.getElementById('am').value||'2016';
+  const ax=document.getElementById('ax').value||'';
+  if(!q||!ativas) return dados;
+  try{
+    const url='/api/search?q='+encodeURIComponent(q)+'&fontes='+ativas+'&anoMin='+am+(ax?'&anoMax='+ax:'')+'&exportar=1';
+    const r=await fetch(url);
+    if(!r.ok) return dados;
+    const j=await r.json();
+    let todos=j.resultados||[];
+    const tipos=tiposSelecionados();
+    if(tipos.length) todos=todos.filter(d=>{const t=normCmp(d.titulacao||d.classificacao||'');return tipos.some(tp=>t.includes(normCmp(tp)));});
+    return todos;
+  }catch(e){console.warn('fetchTodos falhou:',e);return dados;}
+}
+
+/* ── Exportação CSV — todos os registros ── */
+async function xCSV(){
+  if(!dados.length){alert('Faça uma busca primeiro.');return;}
+  const btn=document.querySelector('.be');
+  try{
+    const todos=await fetchTodos();
+    if(!todos.length){alert('Nenhum dado para exportar.');return;}
+    const h=LABELS.join(';');
+    const r=todos.map(d=>COLS.map(c=>'"'+String(d[c]||'').replace(/"/g,'""')+'"').join(';'));
+    dl('\uFEFF'+[h,...r].join('\r\n'),'repositorio_'+new Date().toISOString().slice(0,10)+'.csv','text/csv;charset=utf-8');
+  }catch(e){alert('Erro ao exportar: '+e.message);}
 }
 
 /* ── Exportação Excel profissional ── */
-function xExcel(){
-  if(!dados.length){alert('Nenhum dado para exportar.');return;}
+async function xExcel(){
+  if(!dados.length){alert('Faça uma busca primeiro.');return;}
   if(typeof XLSX==='undefined'){alert('Biblioteca XLSX não carregada.');return;}
-  const wsData=dados.map(d=>{const row={};COLS.forEach((c,i)=>{row[LABELS[i]]=d[c]||'';});return row;});
+  const todos=await fetchTodos();
+  if(!todos.length){alert('Nenhum dado para exportar.');return;}
+  const wsData=todos.map(d=>{const row={};COLS.forEach((c,i)=>{row[LABELS[i]]=d[c]||'';});return row;});
   const wb=XLSX.utils.book_new();
   const ws=XLSX.utils.json_to_sheet(wsData,{header:LABELS});
   ws['!cols']=[12,30,30,25,22,8,6,55,80,60,40,35,22,40,16].map(w=>({wch:w}));
@@ -566,10 +592,11 @@ function xExcel(){
 }
 
 /* ── Exportação PDF ── */
-function xPDF(){
-  if(!dados.length){alert('Nenhum dado para exportar.');return;}
+async function xPDF(){
+  if(!dados.length){alert('Faça uma busca primeiro.');return;}
   const q=document.getElementById('query').value||'busca';
-  const rows=dados.map(d=>
+  const todos=await fetchTodos();
+  const rows=todos.map(d=>
     '<tr><td>'+esc(d.repositorio)+'</td><td><em>'+esc(d.titulo_do_periodico)+'</em></td>'+
     '<td>'+esc(d.autor)+'</td><td>'+esc(d.ano_da_publicacao)+'</td>'+
     '<td>'+esc(d.titulacao)+'</td><td>'+esc(d.instituicao_programa)+'</td>'+
@@ -590,7 +617,7 @@ function xPDF(){
     'td:last-child{border-right:none}tr:nth-child(even) td{background:#fdf9f2}'+
     'a{color:#b8860b;text-decoration:none}em{font-style:italic}</style></head><body>'+
     '<div class="cover"><h1>Repositório Acadêmico Integrado</h1>'+
-    '<p>Busca: <strong>'+esc(q)+'</strong> · '+dados.length+' publicação(ões) · '+new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'})+'</p></div>'+
+    '<p>Busca: <strong>'+esc(q)+'</strong> · '+todos.length+' publicação(ões) · '+new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'})+'</p></div>'+
     '<table><thead><tr><th>Fonte</th><th>Título</th><th>Autor(es)</th><th>Ano</th>'+
     '<th>Titulação</th><th>Instituição</th><th>Região</th><th>Palavras-chave</th><th>Resumo</th><th>Link</th></tr></thead>'+
     '<tbody>'+rows+'</tbody></table></body></html>');
