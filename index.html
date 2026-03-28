@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Repositório Acadêmico v6</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --ink:#1a1714; --ink2:#4a4540; --ink3:#8a847e;
+  --bg:#f7f4ef;  --cream:#fdfbf8;
+  --brd:#ddd8d0; --brd2:#edeae4;
+  --gold:#b8860b; --gold2:#d4a017;
+  --capes:#1b4f72; --scielo:#145a32; --bdtd:#6e2f1a; --cross:#4a235a;
+  --r:4px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{font-family:'Source Serif 4',Georgia,serif;background:var(--bg);color:var(--ink);min-height:100vh;font-size:15px;line-height:1.65}
+
+/* HEADER */
+header{background:var(--ink);color:#fdfbf8;position:sticky;top:0;z-index:200;box-shadow:0 4px 20px rgba(0,0,0,.35)}
+.hdr{padding:13px 18px 11px;display:flex;align-items:center;gap:13px;flex-wrap:wrap}
+.logo-t{font-family:'Playfair Display',serif;font-size:clamp(.95rem,4vw,1.35rem);font-weight:700;line-height:1.2}
+.logo-s{font-size:.58rem;color:var(--gold2);letter-spacing:.18em;text-transform:uppercase;font-family:'JetBrains Mono',monospace;margin-top:2px}
+.vr{width:1px;height:32px;background:rgba(255,255,255,.15);flex-shrink:0}
+.badges{display:flex;gap:5px;flex-wrap:wrap}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-family:'JetBrains Mono',monospace;font-size:.58rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;border:1.5px solid transparent;transition:all .2s;user-select:none;min-height:30px}
+.badge .dot{width:5px;height:5px;border-radius:50%;background:currentColor}
+.bc{background:var(--capes);color:#fff}.bs{background:var(--scielo);color:#fff}
+.bb{background:var(--bdtd);color:#fff}.bx{background:var(--cross);color:#fff}
+.boff{background:transparent!important;color:rgba(255,255,255,.3)!important;border-color:rgba(255,255,255,.2)!important}
+
+/* BUSCA */
+.sp{background:var(--cream);border-bottom:1px solid var(--brd);padding:16px 18px}
+.sr{display:flex;gap:8px}
+.sf{position:relative;flex:1}
+.sf svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--ink3);pointer-events:none}
+#query{width:100%;padding:12px 14px 12px 40px;font-family:'Source Serif 4',serif;font-size:.95rem;border:1.5px solid var(--brd);border-radius:var(--r);background:#fff;color:var(--ink);outline:none;transition:border-color .2s,box-shadow .2s;-webkit-appearance:none;min-height:44px}
+#query:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(184,134,11,.1)}
+#query::placeholder{color:var(--ink3);font-style:italic}
+.btn-p{padding:0 20px;background:var(--ink);color:#fdfbf8;border:none;border-radius:var(--r);font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;font-weight:600;cursor:pointer;transition:background .2s;white-space:nowrap;min-height:44px}
+.btn-p:hover{background:#2c2825}.btn-p:disabled{opacity:.5;cursor:not-allowed}
+.filters{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;align-items:center}
+.fl{font-size:.63rem;color:var(--ink3);letter-spacing:.1em;text-transform:uppercase;font-family:'JetBrains Mono',monospace}
+.fg{display:flex;gap:6px;align-items:center}
+.fg label{font-size:.8rem;color:var(--ink2)}
+select,input[type=number]{font-family:'Source Serif 4',serif;font-size:.85rem;padding:7px 9px;border:1.5px solid var(--brd);border-radius:var(--r);background:#fff;color:var(--ink);outline:none;min-height:36px;-webkit-appearance:none}
+select:focus,input[type=number]:focus{border-color:var(--gold)}
+input[type=number]{width:80px}
+
+/* BARRA RESULTADOS */
+.content{padding:14px 18px}
+.rbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px}
+.rc{font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--ink3);letter-spacing:.06em}
+.rc strong{color:var(--ink);font-weight:700}
+.exg{display:flex;gap:6px;flex-wrap:wrap}
+.be{padding:7px 14px;border:1.5px solid var(--brd);border-radius:var(--r);background:#fff;color:var(--ink2);font-family:'JetBrains Mono',monospace;font-size:.63rem;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:all .2s;min-height:34px}
+.be:hover{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+/* ESTADO */
+.state{text-align:center;padding:56px 18px;color:var(--ink3)}
+.si{font-size:2.2rem;margin-bottom:12px;opacity:.45}
+.state h3{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--ink2);margin-bottom:7px;font-weight:600;font-style:italic}
+.state p{font-size:.83rem;max-width:360px;margin:0 auto}
+.spinner{width:30px;height:30px;border:3px solid var(--brd);border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 14px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ══ TAG ══ */
+.tag{display:inline-block;padding:2px 8px;border-radius:20px;font-family:'JetBrains Mono',monospace;font-size:.56rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#fff;white-space:nowrap}
+.tc{background:var(--capes)}.ts{background:var(--scielo)}.tb{background:var(--bdtd)}.tx{background:var(--cross)}
+
+/* ══ CHIPS ══ */
+.chips{display:flex;flex-wrap:wrap;gap:3px;margin-top:3px}
+.chip{background:rgba(184,134,11,.1);border:1px solid rgba(184,134,11,.25);border-radius:20px;padding:1px 7px;font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--gold)}
+
+/* ══════ CARDS — mobile (<768px) ══════ */
+.cards{display:flex;flex-direction:column;gap:12px}
+.card{background:#fff;border:1px solid var(--brd);border-radius:6px;padding:14px;box-shadow:0 1px 4px rgba(26,23,20,.07)}
+.card-hdr{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}
+.card-tit{font-family:'Source Serif 4',serif;font-size:.93rem;font-weight:500;font-style:italic;color:var(--ink);line-height:1.4;flex:1}
+.card-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;margin-bottom:8px}
+.cf label{display:block;font-family:'JetBrains Mono',monospace;font-size:.52rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:1px}
+.cf span{font-size:.8rem;color:var(--ink2);line-height:1.4;word-break:break-word}
+.cf.full{grid-column:1/-1}
+.card-resumo{font-size:.8rem;color:var(--ink2);line-height:1.55}
+.card-resumo.tr{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.card-vm{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--gold);cursor:pointer;margin-top:3px;display:inline-block}
+.card-links{display:flex;gap:10px;margin-top:10px;padding-top:8px;border-top:1px solid var(--brd2);flex-wrap:wrap}
+.card-links a{color:var(--gold);text-decoration:none;font-family:'JetBrains Mono',monospace;font-size:.63rem}
+.card-links a:active{text-decoration:underline}
+
+/* ══════ TABELA — desktop (≥768px) ══════ */
+.tw{width:100%;border:1px solid var(--brd);border-radius:var(--r);background:#fff;box-shadow:0 1px 4px rgba(26,23,20,.07);overflow:hidden}
+table{width:100%;border-collapse:collapse;table-layout:fixed}
+col.c1{width:6%}col.c2{width:5%}col.c3{width:5%}col.c4{width:7%}col.c5{width:6%}
+col.c6{width:4%}col.c7{width:3%}col.c8{width:14%}col.c9{width:10%}col.c10{width:8%}
+col.c11{width:7%}col.c12{width:9%}col.c13{width:6%}col.c14{width:9%}col.c15{width:5%}
+thead{background:var(--ink);color:#fdfbf8}
+thead th{padding:9px 7px;text-align:left;font-family:'JetBrains Mono',monospace;font-size:.53rem;letter-spacing:.1em;text-transform:uppercase;font-weight:500;border-right:1px solid rgba(255,255,255,.07);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;vertical-align:bottom}
+thead th:last-child{border-right:none}
+tbody tr{border-bottom:1px solid var(--brd2);transition:background .12s}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:#fdf9f2}
+tbody td{padding:8px 7px;vertical-align:top;border-right:1px solid var(--brd2);font-size:.76rem;color:var(--ink2);overflow:hidden;word-break:break-word}
+tbody td:last-child{border-right:none}
+.ct{color:var(--ink)!important;font-weight:500;font-style:italic;line-height:1.4}
+a.lk{color:var(--gold);text-decoration:none;font-family:'JetBrains Mono',monospace;font-size:.6rem;display:block;margin-bottom:1px}
+a.lk:hover{text-decoration:underline;color:var(--gold2)}
+.resum{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;font-size:.74rem;line-height:1.5;cursor:pointer}
+.resum.open{-webkit-line-clamp:unset;display:block}
+.rbtn{font-family:'JetBrains Mono',monospace;font-size:.56rem;color:var(--gold);cursor:pointer;margin-top:2px}
+.sel{font-family:'JetBrains Mono',monospace;font-size:.6rem;line-height:1.8}
+.sel span{display:inline-block;background:rgba(184,134,11,.1);border:1px solid rgba(184,134,11,.25);border-radius:20px;padding:1px 5px;margin:1px;color:var(--gold);font-size:.56rem}
+
+/* BREAKPOINTS */
+@media(max-width:767px){
+  .vr{display:none}
+  .tw{display:none!important}
+  .cards{display:flex}
+  .card-grid{grid-template-columns:1fr}
+}
+@media(min-width:768px){
+  .cards{display:none!important}
+  .tw{display:block}
+}
+
+footer{margin-top:36px;border-top:1px solid var(--brd);padding:12px 18px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--ink3);letter-spacing:.09em}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="hdr">
+    <div>
+      <div class="logo-t">Repositório Acadêmico</div>
+      <div class="logo-s">CAPES · SciELO · BDTD · Crossref · v6</div>
+    </div>
+    <div class="vr"></div>
+    <div class="badges">
+      <span class="badge bc" onclick="tog('capes',this)"><span class="dot"></span>CAPES</span>
+      <span class="badge bs" onclick="tog('scielo',this)"><span class="dot"></span>SciELO</span>
+      <span class="badge bb" onclick="tog('bdtd',this)"><span class="dot"></span>BDTD</span>
+      <span class="badge bx" onclick="tog('crossref',this)"><span class="dot"></span>Crossref</span>
+    </div>
+  </div>
+</header>
+
+<!-- BUSCA -->
+<div class="sp">
+  <div class="sr">
+    <div class="sf">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" id="query" placeholder="Tema, autor ou palavra-chave…" autocomplete="off" spellcheck="false"/>
+    </div>
+    <button class="btn-p" id="btnB" onclick="buscar()">Pesquisar</button>
+  </div>
+  <div class="filters">
+    <span class="fl">Filtros</span>
+    <div class="fg">
+      <label for="am">Ano</label>
+      <input type="number" id="am" placeholder="1900" min="1900" max="2099"/>
+      <label for="ax">–</label>
+      <input type="number" id="ax" placeholder="2025" min="1900" max="2099"/>
+    </div>
+    <div class="fg">
+      <label for="tp">Tipo</label>
+      <select id="tp">
+        <option value="">Todos</option>
+        <option value="tese">Tese</option>
+        <option value="dissertação">Dissertação</option>
+        <option value="artigo">Artigo</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<!-- CONTEÚDO -->
+<div class="content">
+  <div class="rbar" id="rbar" style="display:none">
+    <div class="rc"><strong id="tot">0</strong> publicações · <span id="ql" style="color:var(--ink3)"></span></div>
+    <div class="exg">
+      <button class="be" onclick="xCSV()">↓ CSV</button>
+      <button class="be" onclick="xExcel()">↓ Excel</button>
+      <button class="be" onclick="xPDF()">↓ PDF</button>
+    </div>
+  </div>
+
+  <div id="stArea">
+    <div class="state">
+      <div class="si">📚</div>
+      <h3>Pesquise publicações acadêmicas</h3>
+      <p>Busca simultânea em CAPES, SciELO, BDTD e Crossref. Digite acima para começar.</p>
+    </div>
+  </div>
+
+  <!-- Mobile: cards -->
+  <div class="cards" id="cards"></div>
+
+  <!-- Desktop: tabela -->
+  <div class="tw" id="tw" style="display:none">
+    <table>
+      <colgroup>
+        <col class="c1"/><col class="c2"/><col class="c3"/><col class="c4"/><col class="c5"/>
+        <col class="c6"/><col class="c7"/><col class="c8"/><col class="c9"/><col class="c10"/>
+        <col class="c11"/><col class="c12"/><col class="c13"/><col class="c14"/><col class="c15"/>
+      </colgroup>
+      <thead><tr>
+        <th>Repositório</th><th>Link CAPES</th><th>Link SciELO</th>
+        <th>Revista</th><th>Classificação</th><th>Ano</th><th>Vol.</th>
+        <th>Título do Periódico</th><th>Resumo</th><th>Palavras-chave</th>
+        <th>Seletor KW</th><th>Autor(es)</th><th>Titulação</th>
+        <th>Instituição / Programa</th><th>Região</th>
+      </tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<footer>Repositório Acadêmico v6 · CAPES · SciELO · BDTD · Crossref</footer>
+
+<script>
+'use strict';
+const COLS=['repositorio','link_capes','link_scielo','revista','classificacao','ano_da_publicacao','volume','titulo_do_periodico','resumo','palavras_chaves','seletor_palavras_chaves','autor','titulacao','instituicao_programa','regiao'];
+const LABELS=['REPOSITÓRIO','LINK/CAPES','LINK/SCIELO','REVISTA','CLASSIFICAÇÃO','ANO DA PUBLICAÇÃO','VOLUME','TÍTULO DO PERIÓDICO','RESUMO','PALAVRAS-CHAVES','SELETOR_PALAVRAS_CHAVES','AUTOR','TITULAÇÃO','INSTITUIÇÃO/PROGRAMA','REGIÃO'];
+
+let dados=[];
+const F={capes:true,scielo:true,bdtd:true,crossref:true};
+const BC={capes:'bc',scielo:'bs',bdtd:'bb',crossref:'bx'};
+
+function tog(f,el){F[f]=!F[f];if(F[f]){el.classList.remove('boff');el.classList.add(BC[f]);}else{el.classList.remove(BC[f]);el.classList.add('boff');}}
+
+async function buscar(){
+  const q=document.getElementById('query').value.trim();
+  if(!q){alert('Informe um termo de busca.');return;}
+  const ativas=Object.entries(F).filter(([,v])=>v).map(([k])=>k).join(',');
+  if(!ativas){alert('Selecione ao menos uma fonte.');return;}
+  loading(q);
+  document.getElementById('btnB').disabled=true;
+  try{
+    const r=await fetch(`/api/search?q=${encodeURIComponent(q)}&fontes=${ativas}`);
+    if(!r.ok) throw new Error(`HTTP ${r.status}`);
+    const j=await r.json();
+    dados=filtrar(j.resultados||[]);
+    render(dados,q);
+  }catch(e){erro(e.message);}
+  finally{document.getElementById('btnB').disabled=false;}
+}
+
+function filtrar(lst){
+  const am=parseInt(document.getElementById('am').value)||0;
+  const ax=parseInt(document.getElementById('ax').value)||9999;
+  const tp=document.getElementById('tp').value.toLowerCase();
+  return lst.filter(d=>{
+    const a=parseInt(d.ano_da_publicacao)||0;
+    const t=(d.titulacao||d.classificacao||'').toLowerCase();
+    if(am&&a&&a<am)return false;
+    if(ax<9999&&a&&a>ax)return false;
+    if(tp&&!t.includes(tp))return false;
+    return true;
+  });
+}
+
+function tagH(nome){const n=(nome||'').toLowerCase();const c=n.includes('scielo')?'ts':n.includes('bdtd')?'tb':n.includes('cross')?'tx':'tc';return`<span class="tag ${c}">${esc(nome)}</span>`;}
+
+function chipsH(kw){if(!kw)return'';return`<div class="chips">${kw.split(';').map(k=>k.trim()).filter(Boolean).map(k=>`<span class="chip">${esc(k)}</span>`).join('')}</div>`;}
+
+function selH(sel){if(!sel)return'<span style="opacity:.3">—</span>';return`<div class="sel">${sel.split(';').map(t=>`<span>${esc(t.trim())}</span>`).join('')}</div>`;}
+
+function render(lst,q){
+  const rbar=document.getElementById('rbar');
+  const st=document.getElementById('stArea');
+  const cards=document.getElementById('cards');
+  const tbody=document.getElementById('tbody');
+  const tw=document.getElementById('tw');
+
+  document.getElementById('tot').textContent=lst.length;
+  document.getElementById('ql').textContent=lst.length?`"${q}"` :'';
+
+  if(!lst.length){
+    st.style.display='';
+    st.innerHTML='<div class="state"><div class="si">🔍</div><h3>Nenhum resultado</h3><p>Tente outros termos ou ative mais fontes.</p></div>';
+    rbar.style.display='none';cards.innerHTML='';tbody.innerHTML='';tw.style.display='none';return;
+  }
+
+  st.style.display='none';
+  rbar.style.display='flex';
+  tw.style.display='block';
+
+  // CARDS (mobile)
+  cards.innerHTML=lst.map((d,i)=>{
+    const rid=`cr${i}`;
+    const lc=d.link_capes?`<a href="${esc(d.link_capes)}" target="_blank" rel="noopener">CAPES ↗</a>`:'';
+    const ls=d.link_scielo?`<a href="${esc(d.link_scielo)}" target="_blank" rel="noopener">Link/DOI ↗</a>`:'';
+    return`<div class="card">
+      <div class="card-hdr">
+        <div class="card-tit">${esc(d.titulo_do_periodico)||'<em>Sem título</em>'}</div>
+        ${tagH(d.repositorio)}
+      </div>
+      <div class="card-grid">
+        <div class="cf"><label>Autor(es)</label><span>${esc(d.autor)||'—'}</span></div>
+        <div class="cf"><label>Ano</label><span>${esc(d.ano_da_publicacao)||'—'}</span></div>
+        <div class="cf"><label>Titulação</label><span>${esc(d.titulacao)||'—'}</span></div>
+        <div class="cf"><label>Classificação</label><span>${esc(d.classificacao)||'—'}</span></div>
+        <div class="cf full"><label>Instituição / Programa</label><span>${esc(d.instituicao_programa)||'—'}</span></div>
+        ${d.revista?`<div class="cf full"><label>Revista</label><span>${esc(d.revista)}</span></div>`:''}
+        ${d.regiao?`<div class="cf"><label>Região</label><span>${esc(d.regiao)}</span></div>`:''}
+        ${d.volume?`<div class="cf"><label>Volume</label><span>${esc(d.volume)}</span></div>`:''}
+        ${d.palavras_chaves?`<div class="cf full"><label>Palavras-chave</label>${chipsH(d.palavras_chaves)}</div>`:''}
+        ${d.seletor_palavras_chaves?`<div class="cf full"><label>Seletor KW</label>${chipsH(d.seletor_palavras_chaves)}</div>`:''}
+      </div>
+      ${d.resumo?`<div class="cf full">
+        <label>Resumo</label>
+        <div class="card-resumo tr" id="${rid}">${esc(d.resumo)}</div>
+        <span class="card-vm" onclick="expC('${rid}',this)">↕ ver mais</span>
+      </div>`:''}
+      ${(lc||ls)?`<div class="card-links">${lc}${ls}</div>`:''}
+    </div>`;
+  }).join('');
+
+  // TABELA (desktop)
+  tbody.innerHTML=lst.map((d,i)=>{
+    const rid=`tr${i}`;
+    const lc=d.link_capes?`<a class="lk" href="${esc(d.link_capes)}" target="_blank" rel="noopener">Abrir↗</a>`:'—';
+    const ls=d.link_scielo?`<a class="lk" href="${esc(d.link_scielo)}" target="_blank" rel="noopener">Abrir↗</a>`:'—';
+    return`<tr>
+      <td>${tagH(d.repositorio)}</td>
+      <td>${lc}</td><td>${ls}</td>
+      <td title="${esc(d.revista)}">${esc(d.revista)||'—'}</td>
+      <td>${esc(d.classificacao)||'—'}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:.7rem;text-align:center">${esc(d.ano_da_publicacao)||'—'}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:.7rem;text-align:center">${esc(d.volume)||'—'}</td>
+      <td class="ct" title="${esc(d.titulo_do_periodico)}">${esc(d.titulo_do_periodico)||'—'}</td>
+      <td><div class="resum" id="${rid}">${d.resumo?esc(d.resumo):'<em style="opacity:.3">—</em>'}</div>${d.resumo?`<div class="rbtn" onclick="expT('${rid}')">↕ ver mais</div>`:''}</td>
+      <td style="font-size:.72rem;line-height:1.5" title="${esc(d.palavras_chaves)}">${esc(d.palavras_chaves)||'—'}</td>
+      <td>${selH(d.seletor_palavras_chaves)}</td>
+      <td title="${esc(d.autor)}">${esc(d.autor)||'—'}</td>
+      <td>${esc(d.titulacao)||'—'}</td>
+      <td title="${esc(d.instituicao_programa)}">${esc(d.instituicao_programa)||'—'}</td>
+      <td>${esc(d.regiao)||'—'}</td>
+    </tr>`;
+  }).join('');
+}
+
+function expC(id,btn){const el=document.getElementById(id);if(!el)return;el.classList.toggle('tr');btn.textContent=el.classList.contains('tr')?'↕ ver mais':'↕ ver menos';}
+function expT(id){document.getElementById(id)?.classList.toggle('open');}
+
+function loading(q){
+  document.getElementById('rbar').style.display='none';
+  document.getElementById('cards').innerHTML='';
+  document.getElementById('tbody').innerHTML='';
+  document.getElementById('tw').style.display='none';
+  const s=document.getElementById('stArea');
+  s.style.display='';
+  s.innerHTML=`<div class="state"><div class="spinner"></div><h3>Consultando bases de dados…</h3><p>Buscando <em>"${esc(q)}"</em> em CAPES, SciELO, BDTD e Crossref.</p></div>`;
+}
+
+function erro(msg){
+  const s=document.getElementById('stArea');
+  s.style.display='';
+  s.innerHTML=`<div class="state"><div class="si">⚠️</div><h3>Erro na busca</h3><p style="font-size:.78rem;font-family:monospace;color:var(--ink2)">${esc(msg)}</p></div>`;
+}
+
+function esc(v){return String(v||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+function xCSV(){if(!dados.length)return;const h=LABELS.join(';');const r=dados.map(d=>COLS.map(c=>`"${String(d[c]||'').replace(/"/g,'""')}"`).join(';'));dl('\uFEFF'+[h,...r].join('\r\n'),'repositorio-v6.csv','text/csv;charset=utf-8');}
+
+function xExcel(){if(!dados.length)return;const h=LABELS.join('\t');const r=dados.map(d=>COLS.map(c=>String(d[c]||'').replace(/[\t\r\n]/g,' ')).join('\t'));dl('\uFEFF'+[h,...r].join('\r\n'),'repositorio-v6.xlsx','application/vnd.ms-excel;charset=utf-8');}
+
+function xPDF(){
+  if(!dados.length)return;
+  const rows=dados.map(d=>`<tr><td>${d.repositorio}</td><td><em>${d.titulo_do_periodico}</em></td><td>${d.autor}</td><td>${d.ano_da_publicacao}</td><td>${d.titulacao}</td><td>${d.instituicao_programa}</td><td>${d.classificacao}</td><td>${String(d.palavras_chaves||'').slice(0,80)}</td><td>${String(d.resumo||'').slice(0,180)}${d.resumo&&d.resumo.length>180?'…':''}</td><td>${d.regiao}</td><td>${d.link_capes||d.link_scielo?`<a href="${d.link_capes||d.link_scielo}">Link</a>`:''}</td></tr>`).join('');
+  const w=window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Repositório v6</title>
+  <style>@page{size:A3 landscape;margin:11mm}body{font-family:Georgia,serif;font-size:8px;color:#1a1714}
+  h1{font-size:11px;margin-bottom:2px}p{color:#888;font-size:7.5px;margin-bottom:9px}
+  table{width:100%;border-collapse:collapse}th{background:#1a1714;color:#fff;padding:4px 5px;text-align:left;font-size:6.5px;letter-spacing:.08em;text-transform:uppercase}
+  td{padding:4px 5px;border-bottom:1px solid #eee;vertical-align:top}tr:nth-child(even)td{background:#fdf9f2}a{color:#b8860b}</style></head><body>
+  <h1>Repositório Acadêmico v6</h1><p>${dados.length} publicação(ões) · ${new Date().toLocaleDateString('pt-BR')}</p>
+  <table><thead><tr><th>Fonte</th><th>Título</th><th>Autor</th><th>Ano</th><th>Titulação</th><th>Instituição</th><th>Classificação</th><th>Palavras-chave</th><th>Resumo</th><th>Região</th><th>Link</th></tr></thead>
+  <tbody>${rows}</tbody></table></body></html>`);
+  w.document.close();setTimeout(()=>w.print(),700);
+}
+
+function dl(c,n,m){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([c],{type:m}));a.download=n;a.click();URL.revokeObjectURL(a.href);}
+
+document.getElementById('query').addEventListener('keydown',e=>{if(e.key==='Enter')buscar();});
+</script>
+</body>
+</html>
