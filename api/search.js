@@ -1,8 +1,13 @@
 /**
- * REPOSITÓRIO ACADÊMICO v8
- * Dados REAIS · Período 2015+ · Todas as regiões
- *
- * Retorna source_errors para diagnóstico de quais fontes falharam.
+ * REPOSITÓRIO ACADÊMICO v9
+ * ─────────────────────────────────────────────────────────────────
+ * Correções v9:
+ *  ✅ BDTD: masterThesis → Dissertação de Mestrado
+ *  ✅ BDTD: doctoralThesis → Tese de Doutorado
+ *  ✅ BDTD: palavras-chave limitadas e limpas (sem duplicatas)
+ *  ✅ BDTD: resumo usa o mais longo e limpo
+ *  ✅ Todas as fontes: dados normalizados e limpos
+ *  ✅ source_errors para diagnóstico
  */
 
 const axios  = require('axios');
@@ -29,7 +34,9 @@ async function GET(url, extra = {}) {
   });
 }
 
-// ─── Utilitários ──────────────────────────────────────────────────
+// ════════════════════════════════════════════════════════════
+//  UTILITÁRIOS
+// ════════════════════════════════════════════════════════════
 
 function S(v) {
   try {
@@ -50,6 +57,46 @@ function S(v) {
   } catch (_) { return ''; }
 }
 
+// Normaliza titulação — converte valores raw das APIs para texto legível
+function normTitulacao(raw) {
+  const s = S(raw).toLowerCase().trim();
+  if (!s) return '';
+  if (s === 'masterthesis'    || s.includes('mestrado') || s.includes('master')) return 'Dissertação de Mestrado';
+  if (s === 'doctoralthesis'  || s.includes('doutorado') || s.includes('doctor') || s.includes('phd')) return 'Tese de Doutorado';
+  if (s === 'bachelorthesisss'|| s.includes('graduação') || s.includes('monografia')) return 'Monografia de Graduação';
+  if (s.includes('artigo')    || s.includes('article') || s === 'journal-article') return 'Artigo Científico';
+  if (s.includes('tese'))     return 'Tese de Doutorado';
+  if (s.includes('disserta'))  return 'Dissertação de Mestrado';
+  // Capitaliza primeira letra e retorna
+  return S(raw).charAt(0).toUpperCase() + S(raw).slice(1);
+}
+
+// Normaliza classificação baseada na titulação
+function normClassificacao(tit) {
+  const s = tit.toLowerCase();
+  if (s.includes('doutorado') || s.includes('doctor')) return 'Tese de Doutorado';
+  if (s.includes('mestrado')  || s.includes('master'))  return 'Dissertação de Mestrado';
+  if (s.includes('artigo')    || s.includes('article'))  return 'Artigo Científico';
+  if (s.includes('monografia'))                          return 'Monografia de Graduação';
+  return tit || 'Trabalho Acadêmico';
+}
+
+// Limpa e deduplica palavras-chave
+function limparKW(raw, maxItems = 8) {
+  if (!raw) return '';
+  return [...new Set(
+    raw.split(/[;,|]+/)
+      .map(p => p.trim())
+      .filter(p => p.length > 2 && p.length < 100)
+      .filter(p => !/^\d+$/.test(p))  // remove apenas números
+  )].slice(0, maxItems).join('; ');
+}
+
+function seletor(kw) {
+  if (!kw) return '';
+  return kw.split(';').map(p => p.trim()).filter(p => p.length > 3).slice(0, 3).join('; ');
+}
+
 function parseAutores(raw) {
   try {
     if (!raw) return '';
@@ -65,7 +112,6 @@ function parseAutores(raw) {
       }).filter(Boolean).join('; ');
     }
     if (typeof raw === 'object') {
-      // VuFind BDTD: { primary: {"Silva, Kátia": {role:[...]}}, secondary: {...} }
       const nomes = [];
       if (raw.primary   && typeof raw.primary   === 'object') nomes.push(...Object.keys(raw.primary));
       if (raw.secondary && typeof raw.secondary === 'object') {
@@ -88,7 +134,7 @@ function DC(meta, key) {
   } catch (_) { return ''; }
 }
 
-function longest(arr) {
+function longestText(arr) {
   try {
     if (!arr || !arr.length) return '';
     return arr.map(S).filter(Boolean).sort((a, b) => b.length - a.length)[0] || '';
@@ -103,19 +149,15 @@ function anoFrom(v) {
   } catch (_) { return ''; }
 }
 
-function seletor(kw) {
-  if (!kw) return '';
-  return kw.split(/[;,|]+/).map(p => p.trim()).filter(p => p.length > 3).slice(0, 3).join('; ');
-}
-
 function norm(o) {
-  const kw = S(o.palavras_chaves);
+  const kw  = limparKW(S(o.palavras_chaves));
+  const tit = normTitulacao(o.titulacao);
   return {
     repositorio            : S(o.repositorio),
     link_capes             : S(o.link_capes),
     link_scielo            : S(o.link_scielo),
     revista                : S(o.revista),
-    classificacao          : S(o.classificacao),
+    classificacao          : normClassificacao(tit || S(o.classificacao)),
     ano_da_publicacao      : S(o.ano_da_publicacao),
     volume                 : S(o.volume),
     titulo_do_periodico    : S(o.titulo_do_periodico),
@@ -123,7 +165,7 @@ function norm(o) {
     palavras_chaves        : kw,
     seletor_palavras_chaves: seletor(kw),
     autor                  : S(o.autor),
-    titulacao              : S(o.titulacao),
+    titulacao              : tit,
     instituicao_programa   : S(o.instituicao_programa),
     regiao                 : S(o.regiao),
   };
@@ -135,14 +177,16 @@ function okAno(anoStr, anoMin) {
   return !isNaN(a) && a >= anoMin;
 }
 
-// ─── BDTD ─────────────────────────────────────────────────────────
+// ════════════════════════════════════════════════════════════
+//  BDTD
+// ════════════════════════════════════════════════════════════
 async function searchBDTD(q, anoMin, errors) {
   const out = [];
 
-  // OAI-PMH primeiro (campos mais completos)
+  // OAI-PMH (campos DC completos)
   try {
     const { data, status } = await GET(
-      `https://bdtd.ibict.br/vufind/OAI/Server?verb=Search&query=${encodeURIComponent(q)}&queryType=AllFields&limit=30`
+      `https://bdtd.ibict.br/vufind/OAI/Server?verb=Search&query=${encodeURIComponent(q)}&queryType=AllFields&limit=25`
     );
     if (status !== 200) throw new Error(`HTTP ${status}`);
 
@@ -159,36 +203,48 @@ async function searchBDTD(q, anoMin, errors) {
       const a     = anoFrom(datas.find(d => /\d{4}/.test(d)) || datas[0] || '');
       if (!okAno(a, anoMin)) continue;
 
-      const tipos  = (dc['dc:type'] || []).map(S).filter(Boolean);
-      const tit    = tipos.find(t => /disserta|tese|master|doctor|phd/i.test(t)) || tipos[0] || 'Tese/Dissertação';
-      const ids    = (dc['dc:identifier'] || []).map(S).filter(Boolean);
-      const link   = ids.find(u => /^https?:\/\//.test(u)) || '';
-      const classi = /tese|doctor/i.test(tit) ? 'Tese de Doutorado'
-                   : /disserta|master/i.test(tit) ? 'Dissertação de Mestrado' : tit;
+      // Titulação: normaliza masterThesis, doctoralThesis, etc.
+      const tipos = (dc['dc:type'] || []).map(S).filter(Boolean);
+      const titRaw = tipos.find(t => /thesis|tese|disserta|mestrado|doutorado/i.test(t)) || tipos[0] || '';
+
+      // Palavras-chave: limpa e deduplica
+      const kwRaw = (dc['dc:subject'] || []).map(S).filter(Boolean).join('; ');
+      const kw    = limparKW(kwRaw, 7);
+
+      // Resumo: pega o mais longo (dc:description pode ter múltiplos)
+      const descs  = (dc['dc:description'] || []).map(S).filter(Boolean);
+      const resumo = descs.sort((a, b) => b.length - a.length)[0] || '';
+
+      // Instituição: dc:publisher
+      const inst = DC(dc, 'dc:publisher');
+
+      // Link: primeiro identifier com http
+      const ids  = (dc['dc:identifier'] || []).map(S).filter(Boolean);
+      const link = ids.find(u => /^https?:\/\//.test(u)) || '';
 
       out.push(norm({
         repositorio: 'BDTD', link_capes: link,
-        titulo_do_periodico : titulo,
+        titulo_do_periodico: titulo,
         autor               : DC(dc, 'dc:creator'),
         ano_da_publicacao   : a,
-        resumo              : longest(dc['dc:description'] || []),
-        palavras_chaves     : DC(dc, 'dc:subject'),
-        titulacao           : tit,
-        instituicao_programa: DC(dc, 'dc:publisher'),
-        classificacao       : classi,
+        resumo, palavras_chaves: kw,
+        titulacao           : titRaw,
+        instituicao_programa: inst,
+        classificacao       : titRaw,
         link_scielo: '', revista: '', volume: '', regiao: '',
       }));
     }
+
     if (out.length) return out;
   } catch (e) {
     errors.push({ fonte: 'BDTD/OAI', erro: e.message });
     console.warn('[BDTD/OAI]', e.message);
   }
 
-  // VuFind REST como fallback
+  // VuFind REST (fallback)
   try {
     const { data, status } = await GET(
-      `https://bdtd.ibict.br/vufind/api/v1/search?lookfor=${encodeURIComponent(q)}&type=AllFields&sort=relevance&page=1&limit=30`
+      `https://bdtd.ibict.br/vufind/api/v1/search?lookfor=${encodeURIComponent(q)}&type=AllFields&sort=relevance&page=1&limit=25`
     );
     if (status !== 200) throw new Error(`HTTP ${status}`);
     const records = data?.records || [];
@@ -200,8 +256,11 @@ async function searchBDTD(q, anoMin, errors) {
       const a = anoFrom(S((Array.isArray(r.publicationDates) && r.publicationDates[0]) || r.year || ''));
       if (!okAno(a, anoMin)) continue;
 
-      const tit    = S((Array.isArray(r.formats) && r.formats[0]) || '') || 'Tese/Dissertação';
-      const kw     = Array.isArray(r.subjects) ? r.subjects.flat().map(S).filter(Boolean).join('; ') : '';
+      // Limita subjects — VuFind pode retornar muitos
+      const kwRaw = Array.isArray(r.subjects) ? r.subjects.flat().map(S).filter(Boolean).join('; ') : '';
+      const kw    = limparKW(kwRaw, 7);
+
+      const tit    = S((Array.isArray(r.formats) && r.formats[0]) || '') || '';
       const link   = (Array.isArray(r.urls) && r.urls[0]) ? (r.urls[0].url || S(r.urls[0])) : '';
       const inst   = S((Array.isArray(r.institutions) && r.institutions[0]) || (Array.isArray(r.publishers) && r.publishers[0]) || '');
       const resumo = S((Array.isArray(r.summary) && r.summary[0]) || '');
@@ -224,12 +283,13 @@ async function searchBDTD(q, anoMin, errors) {
   return out;
 }
 
-// ─── CAPES ────────────────────────────────────────────────────────
+// ════════════════════════════════════════════════════════════
+//  CAPES
+// ════════════════════════════════════════════════════════════
 async function searchCAPES(q, anoMin, errors) {
   const out = [];
   const anoAtual = new Date().getFullYear();
 
-  // API interna do catálogo de teses
   try {
     const { data, status } = await GET(
       `https://catalogodeteses.capes.gov.br/catalogo-teses/rest/busca?q=${encodeURIComponent(q)}&filtros=${encodeURIComponent('anoDaDefesa:' + anoMin + '-' + anoAtual)}&pagina=1&tamanho=20`,
@@ -251,9 +311,9 @@ async function searchCAPES(q, anoMin, errors) {
         autor = S(it.nmAutor || it.autor || it.autores);
       }
 
-      const tit  = S(it.grau || it.nivel || it.nmGrau);
-      const kw   = Array.isArray(it.palavrasChave) ? it.palavrasChave.join('; ') : S(it.palavrasChave || '');
+      const kw   = limparKW(Array.isArray(it.palavrasChave) ? it.palavrasChave.join('; ') : S(it.palavrasChave || ''));
       const link = it.idTese ? `https://catalogodeteses.capes.gov.br/catalogo-teses/#!/detalhes/${it.idTese}` : '';
+      const tit  = S(it.grau || it.nivel || it.nmGrau);
 
       out.push(norm({
         repositorio         : 'CAPES', link_capes: link,
@@ -262,8 +322,7 @@ async function searchCAPES(q, anoMin, errors) {
         instituicao_programa: S(it.siglaIes || it.nmIes || it.instituicao || it.nmInstituicao),
         regiao              : S(it.regiao  || it.nmRegiao),
         resumo              : S(it.resumo  || it.abstract || it.dsResumo),
-        palavras_chaves     : kw,
-        classificacao       : tit || 'Tese/Dissertação',
+        palavras_chaves     : kw, classificacao: tit,
         link_scielo: '', revista: '', volume: '',
       }));
     }
@@ -273,7 +332,6 @@ async function searchCAPES(q, anoMin, errors) {
     console.warn('[CAPES/api]', e.message);
   }
 
-  // Dados Abertos CKAN como fallback
   try {
     const { data, status } = await GET(
       `https://dadosabertos.capes.gov.br/api/3/action/datastore_search?resource_id=b7003093-4fab-4b88-b0fa-b7d8df0bcb77&q=${encodeURIComponent(q)}&limit=20`
@@ -289,13 +347,12 @@ async function searchCAPES(q, anoMin, errors) {
         repositorio         : 'CAPES',
         titulo_do_periodico : S(r.NM_TITULO || r.DS_TITULO),
         autor               : S(r.NM_AUTOR),
-        ano_da_publicacao   : a,
-        titulacao           : S(r.NM_GRAU_ACADEMICO),
+        ano_da_publicacao   : a, titulacao: S(r.NM_GRAU_ACADEMICO),
         instituicao_programa: [r.SG_IES, r.NM_IES].filter(Boolean).join(' — '),
         regiao              : S(r.NM_REGIAO),
         resumo              : S(r.DS_RESUMO),
-        palavras_chaves     : S(r.DS_PALAVRA_CHAVE),
-        classificacao       : S(r.NM_GRAU_ACADEMICO || 'Tese/Dissertação'),
+        palavras_chaves     : limparKW(S(r.DS_PALAVRA_CHAVE)),
+        classificacao       : S(r.NM_GRAU_ACADEMICO),
         link_scielo: '', link_capes: '', revista: '', volume: '',
       }));
     }
@@ -307,7 +364,9 @@ async function searchCAPES(q, anoMin, errors) {
   return out;
 }
 
-// ─── SciELO ───────────────────────────────────────────────────────
+// ════════════════════════════════════════════════════════════
+//  SciELO
+// ════════════════════════════════════════════════════════════
 async function searchSciELO(q, anoMin, errors) {
   const out = [];
 
@@ -326,11 +385,11 @@ async function searchSciELO(q, anoMin, errors) {
       const a = anoFrom(S(src.da || src.year || src.dp));
       if (!okAno(a, anoMin)) continue;
 
-      const kw = [
+      const kw = limparKW([
         ...(Array.isArray(src.wok_subject_categories) ? src.wok_subject_categories : []),
         ...(Array.isArray(src.mh)      ? src.mh      : []),
         ...(Array.isArray(src.keyword) ? src.keyword  : []),
-      ].filter(Boolean).join('; ');
+      ].filter(Boolean).join('; '));
 
       out.push(norm({
         repositorio         : 'SciELO',
@@ -375,7 +434,7 @@ async function searchSciELO(q, anoMin, errors) {
         autor               : (it.authors || []).map(x => [x.given_names, x.surname].filter(Boolean).join(' ')).join('; '),
         ano_da_publicacao   : a, volume: S(it.volume),
         resumo              : ab.pt || ab.en || ab.es || '',
-        palavras_chaves     : Object.values(it.keywords || {}).flat().map(S).join('; '),
+        palavras_chaves     : limparKW(Object.values(it.keywords || {}).flat().map(S).join('; ')),
         classificacao: 'Artigo Científico', titulacao: 'Artigo Científico',
         link_capes: '', instituicao_programa: '', regiao: '',
       }));
@@ -388,15 +447,16 @@ async function searchSciELO(q, anoMin, errors) {
   return out;
 }
 
-// ─── CROSSREF ─────────────────────────────────────────────────────
+// ════════════════════════════════════════════════════════════
+//  CROSSREF
+// ════════════════════════════════════════════════════════════
 async function searchCrossref(q, anoMin, errors) {
   const out = [];
   try {
-    // Sem "select" para garantir que abstract e todos os campos venham
     const filtroAno = anoMin ? `&filter=from-pub-date:${anoMin}` : '';
     const { data, status } = await GET(
       `https://api.crossref.org/works?query=${encodeURIComponent(q)}&rows=20${filtroAno}`,
-      { 'User-Agent': 'RepositorioAcademico/8.0 (mailto:academico@repositorio.edu.br)' }
+      { 'User-Agent': 'RepositorioAcademico/9.0 (mailto:academico@repositorio.edu.br)' }
     );
     if (status !== 200) throw new Error(`HTTP ${status}`);
     const items = data?.message?.items || [];
@@ -412,11 +472,10 @@ async function searchCrossref(q, anoMin, errors) {
       );
       if (!okAno(a, anoMin)) continue;
 
-      const autor = (it.author || []).map(x => [x.given, x.family].filter(Boolean).join(' ')).join('; ');
-      const inst  = (it.author || []).flatMap(x => (x.affiliation || []).map(af => S(af.name))).filter(Boolean)[0] || '';
-      const kw    = Array.isArray(it.subject) ? it.subject.join('; ') : '';
-      // abstract pode vir com tags JATS como <jats:p>
+      const autor  = (it.author || []).map(x => [x.given, x.family].filter(Boolean).join(' ')).join('; ');
+      const inst   = (it.author || []).flatMap(x => (x.affiliation || []).map(af => S(af.name))).filter(Boolean)[0] || '';
       const resumo = S(it.abstract || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+      const kw     = limparKW(Array.isArray(it.subject) ? it.subject.join('; ') : '');
       const revista = Array.isArray(it['container-title']) ? it['container-title'][0] : S(it['container-title']);
 
       out.push(norm({
@@ -426,8 +485,8 @@ async function searchCrossref(q, anoMin, errors) {
         revista, autor, ano_da_publicacao: a,
         volume              : S(it.volume),
         resumo, palavras_chaves: kw,
-        classificacao       : it.type === 'journal-article' ? 'Artigo Científico' : S(it.type),
-        titulacao           : it.type === 'journal-article' ? 'Artigo Científico' : S(it.type),
+        titulacao           : 'Artigo Científico',
+        classificacao       : 'Artigo Científico',
         instituicao_programa: inst,
         link_capes: '', regiao: '',
       }));
@@ -439,7 +498,9 @@ async function searchCrossref(q, anoMin, errors) {
   return out;
 }
 
-// ─── HANDLER ──────────────────────────────────────────────────────
+// ════════════════════════════════════════════════════════════
+//  HANDLER
+// ════════════════════════════════════════════════════════════
 module.exports = async (req, res) => {
   setCORS(res);
   if (req.method === 'OPTIONS') { res.status(200).end(); return; }
@@ -458,8 +519,8 @@ module.exports = async (req, res) => {
   }
 
   const anoMinInt = parseInt(anoMin) || 2015;
-  const errors    = [];  // coleta erros de cada fonte para diagnóstico
-  console.log(`\n🔍 v8 | "${q}" | fontes: ${fontes} | anoMin: ${anoMinInt}`);
+  const errors    = [];
+  console.log(`\n🔍 v9 | "${q}" | fontes: ${fontes} | anoMin: ${anoMinInt}`);
 
   const lista   = fontes.toLowerCase().split(',').map(f => f.trim());
   const tarefas = [];
@@ -476,7 +537,6 @@ module.exports = async (req, res) => {
     todos = todos.filter(r => !r.ano_da_publicacao || parseInt(r.ano_da_publicacao) <= mx);
   }
 
-  // Remove duplicatas por título
   const seen = new Set();
   const resultados = todos.filter(r => {
     const k = r.titulo_do_periodico.toLowerCase().replace(/\s+/g,' ').trim().slice(0, 80);
@@ -484,23 +544,17 @@ module.exports = async (req, res) => {
     seen.add(k); return true;
   });
 
-  // Ordena: mais recente primeiro
   resultados.sort((a, b) => (parseInt(b.ano_da_publicacao)||0) - (parseInt(a.ano_da_publicacao)||0));
 
-  // Conta por fonte
   const porFonte = {};
   resultados.forEach(r => { porFonte[r.repositorio] = (porFonte[r.repositorio] || 0) + 1; });
 
-  console.log(`✅ v8 | ${resultados.length} únicos | por fonte:`, porFonte);
+  console.log(`✅ v9 | ${resultados.length} únicos | por fonte:`, porFonte);
   if (errors.length) console.log('⚠️ Erros:', errors);
 
   res.status(200).json({
-    versao        : '8.0.0',
-    query         : q,
-    anoMin        : anoMinInt,
-    total         : resultados.length,
-    por_fonte     : porFonte,
-    source_errors : errors,   // mostra quais APIs falharam
-    resultados,
+    versao: '9.0.0', query: q, anoMin: anoMinInt,
+    total: resultados.length, por_fonte: porFonte,
+    source_errors: errors, resultados,
   });
 };
