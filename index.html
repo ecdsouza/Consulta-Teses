@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Repositório Acadêmico v10</title>
+<title>Repositório Acadêmico v11</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
@@ -11,7 +11,7 @@
   --ink:#1a1714;--ink2:#4a4540;--ink3:#8a847e;
   --bg:#f7f4ef;--cream:#fdfbf8;--brd:#ddd8d0;--brd2:#edeae4;
   --gold:#b8860b;--gold2:#d4a017;
-  --capes:#1b4f72;--scielo:#145a32;--bdtd:#6e2f1a;--cross:#4a235a;
+  --capes:#1b4f72;--scielo:#145a32;--bdtd:#6e2f1a;--cross:#4a235a;--openalex:#1a6a4a;
   --warn-bg:#fffbf0;--warn-brd:#f0c040;--warn-txt:#7a5800;
   --r:4px;
 }
@@ -34,7 +34,7 @@ header{background:var(--ink);color:#fdfbf8;position:sticky;top:0;z-index:200;box
 .ff.on{color:#fff;background:rgba(255,255,255,.15)}
 .ff.on .dot{opacity:1}
 .ff-capes.on{background:rgba(27,79,114,.75)}.ff-scielo.on{background:rgba(20,90,50,.75)}
-.ff-bdtd.on{background:rgba(110,47,26,.75)}.ff-cross.on{background:rgba(74,35,90,.75)}
+.ff-bdtd.on{background:rgba(110,47,26,.75)}.ff-cross.on{background:rgba(74,35,90,.75)}.ff-oa.on{background:rgba(26,106,74,.75)}
 
 /* BUSCA */
 .sp{background:var(--cream);border-bottom:1px solid var(--brd);padding:16px 20px}
@@ -72,7 +72,7 @@ input[type=number]{width:82px}
 .rc-count strong{color:var(--ink);font-weight:700;font-size:.82rem}
 .src-pills{display:flex;gap:4px;flex-wrap:wrap}
 .pill{display:inline-flex;align-items:center;gap:3px;padding:2px 9px;border-radius:20px;font-family:'JetBrains Mono',monospace;font-size:.58rem;font-weight:600;color:#fff}
-.pc{background:var(--capes)}.ps{background:var(--scielo)}.pb{background:var(--bdtd)}.px{background:var(--cross)}
+.pc{background:var(--capes)}.po{background:var(--openalex)}.ps{background:var(--scielo)}.pb{background:var(--bdtd)}.px{background:var(--cross)}
 .exg{display:flex;gap:6px;flex-wrap:wrap}
 .be{padding:7px 14px;border:1.5px solid var(--brd);border-radius:var(--r);background:#fff;color:var(--ink2);font-family:'JetBrains Mono',monospace;font-size:.63rem;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:all .2s;min-height:34px}
 .be:hover{background:var(--ink);color:#fff;border-color:var(--ink)}
@@ -98,7 +98,7 @@ input[type=number]{width:82px}
 
 /* TAGS */
 .tag{display:inline-block;padding:2px 8px;border-radius:20px;font-family:'JetBrains Mono',monospace;font-size:.56rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#fff;white-space:nowrap}
-.tc{background:var(--capes)}.ts{background:var(--scielo)}.tb{background:var(--bdtd)}.tx{background:var(--cross)}
+.tc{background:var(--capes)}.ts{background:var(--scielo)}.tb{background:var(--bdtd)}.tx{background:var(--cross)}.to{background:var(--openalex)}
 
 /* CHIPS */
 .chips{display:flex;flex-wrap:wrap;gap:3px;margin-top:4px}
@@ -156,7 +156,7 @@ footer{margin-top:40px;border-top:1px solid var(--brd);padding:12px 20px;display
   <div class="hdr">
     <div>
       <div class="logo-t">Repositório Acadêmico</div>
-      <div class="logo-s">Busca Integrada · v10</div>
+      <div class="logo-s">Busca Integrada · v11</div>
     </div>
     <div class="vr"></div>
     <div class="fonte-filters" id="fonteFilters">
@@ -247,7 +247,7 @@ footer{margin-top:40px;border-top:1px solid var(--brd);padding:12px 20px;display
 </div>
 
 <footer>
-  <span class="footer-txt">Repositório Acadêmico v10 · CAPES · SciELO · BDTD · Crossref</span>
+  <span class="footer-txt">Repositório Acadêmico v11 · CAPES · SciELO · BDTD · Crossref</span>
   <button class="btn-diag" onclick="diagnosticar()">
     <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
     Diagnosticar fontes
@@ -258,7 +258,7 @@ footer{margin-top:40px;border-top:1px solid var(--brd);padding:12px 20px;display
 'use strict';
 const COLS=['repositorio','link_capes','link_scielo','revista','classificacao','ano_da_publicacao','volume','titulo_do_periodico','resumo','palavras_chaves','seletor_palavras_chaves','autor','titulacao','instituicao_programa','regiao'];
 const LABELS=['REPOSITÓRIO','LINK/CAPES','LINK/SCIELO','REVISTA','CLASSIFICAÇÃO','ANO DA PUBLICAÇÃO','VOLUME','TÍTULO DO PERIÓDICO','RESUMO','PALAVRAS-CHAVES','SELETOR_PALAVRAS_CHAVES','AUTOR','TITULAÇÃO','INSTITUIÇÃO/PROGRAMA','REGIÃO'];
-const PILLCLS={CAPES:'pc',SciELO:'ps',BDTD:'pb',Crossref:'px'};
+const PILLCLS={CAPES:'pc',SciELO:'ps',BDTD:'pb',Crossref:'px',OpenAlex:'po'};
 
 let dados=[], ultimaQuery='', ultimoAnoMin='', ultimoAnoMax='', ultimasFontes='';
 
@@ -361,7 +361,7 @@ function mostrarAlertas(erros,porFonte){
 }
 
 // ── Render ─────────────────────────────────────────────────────────
-function tagH(n){const lc=(n||'').toLowerCase();const c=lc.includes('scielo')?'ts':lc.includes('bdtd')?'tb':lc.includes('cross')?'tx':'tc';return'<span class="tag '+c+'">'+esc(n)+'</span>';}
+function tagH(n){const lc=(n||'').toLowerCase();const c=lc.includes('scielo')?'ts':lc.includes('bdtd')?'tb':lc.includes('cross')?'tx':lc.includes('openalex')?'to':'tc';return'<span class="tag '+c+'">'+esc(n)+'</span>';}
 function chipsH(kw){if(!kw)return'<span style="opacity:.3;font-size:.78rem">—</span>';return'<div class="chips">'+kw.split(';').map(k=>k.trim()).filter(Boolean).map(k=>'<span class="chip">'+esc(k)+'</span>').join('')+'</div>';}
 function selH(s){if(!s)return'<span style="opacity:.3">—</span>';return'<span class="sel">'+s.split(';').map(t=>'<span>'+esc(t.trim())+'</span>').join('')+'</span>';}
 function v(x){return esc(x)||'—';}
@@ -468,7 +468,7 @@ function xPDF(){
   if(!dados.length)return;
   const rows=dados.map(d=>'<tr><td>'+d.repositorio+'</td><td><em>'+d.titulo_do_periodico+'</em></td><td>'+d.autor+'</td><td>'+d.ano_da_publicacao+'</td><td>'+d.titulacao+'</td><td>'+d.instituicao_programa+'</td><td>'+d.regiao+'</td><td>'+String(d.palavras_chaves||'').slice(0,80)+'</td><td>'+String(d.resumo||'').slice(0,180)+'</td><td>'+(d.link_capes||d.link_scielo?'<a href="'+(d.link_capes||d.link_scielo)+'">Link</a>':'')+'</td></tr>').join('');
   const w=window.open('','_blank');
-  w.document.write('<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Repositório v10</title><style>@page{size:A3 landscape;margin:11mm}body{font-family:Georgia,serif;font-size:8px;color:#1a1714}h1{font-size:11px;margin-bottom:2px}p{color:#888;font-size:7.5px;margin-bottom:9px}table{width:100%;border-collapse:collapse}th{background:#1a1714;color:#fff;padding:4px 5px;text-align:left;font-size:6.5px;letter-spacing:.08em;text-transform:uppercase}td{padding:4px 5px;border-bottom:1px solid #eee;vertical-align:top}tr:nth-child(even)td{background:#fdf9f2}a{color:#b8860b}</style></head><body><h1>Repositório Acadêmico v10</h1><p>'+dados.length+' publicação(ões) · '+new Date().toLocaleDateString('pt-BR')+'</p><table><thead><tr><th>Fonte</th><th>Título</th><th>Autor</th><th>Ano</th><th>Titulação</th><th>Instituição</th><th>Região</th><th>Palavras-chave</th><th>Resumo</th><th>Link</th></tr></thead><tbody>'+rows+'</tbody></table></body></html>');
+  w.document.write('<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Repositório v10</title><style>@page{size:A3 landscape;margin:11mm}body{font-family:Georgia,serif;font-size:8px;color:#1a1714}h1{font-size:11px;margin-bottom:2px}p{color:#888;font-size:7.5px;margin-bottom:9px}table{width:100%;border-collapse:collapse}th{background:#1a1714;color:#fff;padding:4px 5px;text-align:left;font-size:6.5px;letter-spacing:.08em;text-transform:uppercase}td{padding:4px 5px;border-bottom:1px solid #eee;vertical-align:top}tr:nth-child(even)td{background:#fdf9f2}a{color:#b8860b}</style></head><body><h1>Repositório Acadêmico v11</h1><p>'+dados.length+' publicação(ões) · '+new Date().toLocaleDateString('pt-BR')+'</p><table><thead><tr><th>Fonte</th><th>Título</th><th>Autor</th><th>Ano</th><th>Titulação</th><th>Instituição</th><th>Região</th><th>Palavras-chave</th><th>Resumo</th><th>Link</th></tr></thead><tbody>'+rows+'</tbody></table></body></html>');
   w.document.close();setTimeout(()=>w.print(),700);
 }
 function dl(c,n,m){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([c],{type:m}));a.download=n;a.click();URL.revokeObjectURL(a.href);}
