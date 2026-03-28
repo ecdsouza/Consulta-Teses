@@ -1,12 +1,10 @@
 /**
- * REPOSITÓRIO ACADÊMICO v13
- * ──────────────────────────────────────────────────────────────────
- * Correções v13:
- *  ✅ CAPES: testa múltiplos nomes de campo para a query
- *  ✅ CAPES: detecta automaticamente resposta inválida (total > 500k)
- *  ✅ anoMin padrão: 2016
- *  ✅ BDTD: busca todas as páginas
- *  ✅ Sem limite artificial de resultados
+ * REPOSITÓRIO ACADÊMICO v14
+ * Correções:
+ *  ✅ Filtro de tipo: normaliza acentos antes de comparar
+ *  ✅ Região: fallback "AI + [descrição]" quando não encontrada
+ *  ✅ CAPES: testa 8 formatos de payload + detecta resultado inválido
+ *  ✅ Todos os campos mapeados corretamente
  */
 
 const axios = require('axios');
@@ -23,8 +21,7 @@ const H = {
   'Accept-Language': 'pt-BR,pt;q=0.9,en;q=0.8',
   'Cache-Control'  : 'no-cache',
 };
-const OA_UA = 'RepositorioAcademico/13.0 (mailto:academico@repositorio.edu.br)';
-
+const OA_UA     = 'RepositorioAcademico/14.0 (mailto:academico@repositorio.edu.br)';
 const MAX_PAGES = 10;
 const PER_REQ   = 50;
 
@@ -35,54 +32,127 @@ async function POST(url, data, extra = {}) {
   return axios.post(url, data, { timeout: 20000, headers: { ...H, ...extra }, validateStatus: s => s < 500 });
 }
 
-// ══════════════════════════════════════════
+// ════════════════════════════════════════════════════════
 //  MAPA DE REGIÕES
-// ══════════════════════════════════════════
+// ════════════════════════════════════════════════════════
 const REGIOES = {
-  UFAM:'Norte',UFPA:'Norte',UNIR:'Norte',UFAC:'Norte',UFRR:'Norte',UFRA:'Norte',UNIFAP:'Norte',UEA:'Norte',
-  UFC:'Nordeste',UFBA:'Nordeste',UFPE:'Nordeste',UFRN:'Nordeste',UFPB:'Nordeste',UFMA:'Nordeste',
-  UFPI:'Nordeste',UFS:'Nordeste',UFAL:'Nordeste',UFERSA:'Nordeste',UFRPE:'Nordeste',UNEB:'Nordeste',
-  UESC:'Nordeste',UEFS:'Nordeste',UESB:'Nordeste',UNIVASF:'Nordeste',UFRB:'Nordeste',UFCA:'Nordeste',
-  UnB:'Centro-Oeste',UFG:'Centro-Oeste',UFMT:'Centro-Oeste',UFMS:'Centro-Oeste',UEG:'Centro-Oeste',
-  USP:'Sudeste',UNICAMP:'Sudeste',UNESP:'Sudeste',UNIFESP:'Sudeste',UFRJ:'Sudeste',UFF:'Sudeste',
-  UERJ:'Sudeste',UFJF:'Sudeste',UFMG:'Sudeste',UFV:'Sudeste',UFOP:'Sudeste',UFSJ:'Sudeste',
-  UFU:'Sudeste',UFTM:'Sudeste',UFLA:'Sudeste',UFVJM:'Sudeste',UNIRIO:'Sudeste',UFES:'Sudeste',
-  IFSP:'Sudeste',IFMG:'Sudeste',IFRJ:'Sudeste',IFES:'Sudeste',UFSCar:'Sudeste',
-  PUCSP:'Sudeste',PUCRJ:'Sudeste',PUCMG:'Sudeste',UENF:'Sudeste',UEMG:'Sudeste',
-  UFSC:'Sul',UFRGS:'Sul',UFPR:'Sul',FURG:'Sul',UFPEL:'Sul',UFSM:'Sul',UNIPAMPA:'Sul',
-  UTFPR:'Sul',UFFS:'Sul',PUCRS:'Sul',PUCPR:'Sul',UNISINOS:'Sul',FURB:'Sul',UDESC:'Sul',
+  // Norte
+  UFAM:'Norte',UFPA:'Norte',UNIR:'Norte',UFAC:'Norte',UFRR:'Norte',
+  UFRA:'Norte',UNIFAP:'Norte',UEA:'Norte',UEAP:'Norte',
+  // Nordeste
+  UFC:'Nordeste',UFBA:'Nordeste',UFPE:'Nordeste',UFRN:'Nordeste',
+  UFPB:'Nordeste',UFMA:'Nordeste',UFPI:'Nordeste',UFS:'Nordeste',
+  UFAL:'Nordeste',UFERSA:'Nordeste',UFRPE:'Nordeste',UNEB:'Nordeste',
+  UESC:'Nordeste',UEFS:'Nordeste',UESB:'Nordeste',UNIVASF:'Nordeste',
+  UFRB:'Nordeste',UFCA:'Nordeste',UFOB:'Nordeste',
+  // Centro-Oeste
+  UnB:'Centro-Oeste',UFG:'Centro-Oeste',UFMT:'Centro-Oeste',
+  UFMS:'Centro-Oeste',UEG:'Centro-Oeste',UNEMAT:'Centro-Oeste',
+  // Sudeste
+  USP:'Sudeste',UNICAMP:'Sudeste',UNESP:'Sudeste',UNIFESP:'Sudeste',
+  UFRJ:'Sudeste',UFF:'Sudeste',UERJ:'Sudeste',UFJF:'Sudeste',
+  UFMG:'Sudeste',UFV:'Sudeste',UFOP:'Sudeste',UFSJ:'Sudeste',
+  UFU:'Sudeste',UFTM:'Sudeste',UFLA:'Sudeste',UFVJM:'Sudeste',
+  UNIRIO:'Sudeste',UFES:'Sudeste',IFSP:'Sudeste',IFMG:'Sudeste',
+  IFRJ:'Sudeste',IFES:'Sudeste',UFSCar:'Sudeste',
+  PUCSP:'Sudeste',PUCRJ:'Sudeste',PUCMG:'Sudeste',
+  UENF:'Sudeste',UEMG:'Sudeste',CEFETMG:'Sudeste',CEFET:'Sudeste',
+  // Sul
+  UFSC:'Sul',UFRGS:'Sul',UFPR:'Sul',FURG:'Sul',UFPEL:'Sul',
+  UFSM:'Sul',UNIPAMPA:'Sul',UTFPR:'Sul',UFFS:'Sul',
+  PUCRS:'Sul',PUCPR:'Sul',UNISINOS:'Sul',FURB:'Sul',UDESC:'Sul',
   UEL:'Sul',UEM:'Sul',UEPG:'Sul',UNIOESTE:'Sul',UENP:'Sul',UNESPAR:'Sul',
 };
 
-function inferirRegiao(inst) {
-  if (!inst) return '';
-  const u = inst.toUpperCase();
-  for (const [sig, reg] of Object.entries(REGIOES)) { if (u.includes(sig)) return reg; }
-  if (/santa catarina|florianópolis|blumenau/i.test(inst))            return 'Sul';
-  if (/rio grande do sul|porto alegre|pelotas|caxias do sul/i.test(inst)) return 'Sul';
-  if (/paraná|curitiba|londrina|maringá|cascavel/i.test(inst))         return 'Sul';
-  if (/são paulo|campinas|santos|sorocaba|ribeirão/i.test(inst))       return 'Sudeste';
-  if (/rio de janeiro|niterói|volta redonda/i.test(inst))              return 'Sudeste';
-  if (/minas gerais|belo horizonte|viçosa|uberlândia/i.test(inst))    return 'Sudeste';
-  if (/espírito santo|vitória/i.test(inst))                           return 'Sudeste';
-  if (/bahia|salvador|feira de santana/i.test(inst))                   return 'Nordeste';
-  if (/pernambuco|recife|caruaru/i.test(inst))                         return 'Nordeste';
-  if (/ceará|fortaleza|juazeiro/i.test(inst))                          return 'Nordeste';
-  if (/maranhão|são luís/i.test(inst))                                 return 'Nordeste';
-  if (/piauí|teresina/i.test(inst))                                    return 'Nordeste';
-  if (/paraíba|joão pessoa|campina grande/i.test(inst))                return 'Nordeste';
-  if (/rio grande do norte|natal|mossoró/i.test(inst))                 return 'Nordeste';
-  if (/amazonas|manaus/i.test(inst))                                   return 'Norte';
-  if (/pará|belém|santarém/i.test(inst))                               return 'Norte';
-  if (/goiás|goiânia|anápolis/i.test(inst))                           return 'Centro-Oeste';
-  if (/mato grosso|cuiabá|rondonópolis/i.test(inst))                  return 'Centro-Oeste';
-  if (/brasília|distrito federal/i.test(inst))                         return 'Centro-Oeste';
+// Cidades/estados BR → região
+const CIDADES = [
+  [/santa catarina|florianópolis|blumenau|joinville|chapecó/i,         'Sul'],
+  [/rio grande do sul|porto alegre|pelotas|caxias do sul|santa maria/i,'Sul'],
+  [/paraná|curitiba|londrina|maringá|cascavel|ponta grossa/i,          'Sul'],
+  [/são paulo|campinas|santos|sorocaba|ribeirão preto|são josé/i,      'Sudeste'],
+  [/rio de janeiro|niterói|volta redonda|campos dos/i,                  'Sudeste'],
+  [/minas gerais|belo horizonte|viçosa|uberlândia|juiz de fora/i,     'Sudeste'],
+  [/espírito santo|vitória|cachoeiro/i,                                 'Sudeste'],
+  [/bahia|salvador|feira de santana|ilhéus|jequié/i,                   'Nordeste'],
+  [/pernambuco|recife|caruaru|petrolina/i,                             'Nordeste'],
+  [/ceará|fortaleza|juazeiro do norte|sobral/i,                        'Nordeste'],
+  [/maranhão|são luís|imperatriz/i,                                    'Nordeste'],
+  [/piauí|teresina|parnaíba/i,                                         'Nordeste'],
+  [/paraíba|joão pessoa|campina grande/i,                              'Nordeste'],
+  [/rio grande do norte|natal|mossoró/i,                               'Nordeste'],
+  [/sergipe|aracaju/i,                                                  'Nordeste'],
+  [/alagoas|maceió/i,                                                   'Nordeste'],
+  [/amazonas|manaus|parintins/i,                                       'Norte'],
+  [/pará|belém|santarém|marabá/i,                                      'Norte'],
+  [/rondônia|porto velho/i,                                             'Norte'],
+  [/acre|rio branco/i,                                                  'Norte'],
+  [/roraima|boa vista/i,                                                'Norte'],
+  [/amapá|macapá/i,                                                     'Norte'],
+  [/tocantins|palmas/i,                                                 'Norte'],
+  [/goiás|goiânia|anápolis|rio verde/i,                                'Centro-Oeste'],
+  [/mato grosso|cuiabá|rondonópolis|sinop/i,                           'Centro-Oeste'],
+  [/mato grosso do sul|campo grande|dourados/i,                        'Centro-Oeste'],
+  [/brasília|distrito federal|taguatinga|ceilândia/i,                  'Centro-Oeste'],
+];
+
+/**
+ * Infere região de uma string (instituição, município, etc.)
+ * Retorna string vazia se não encontrar.
+ */
+function inferirRegiao(texto) {
+  if (!texto) return '';
+  const u = texto.toUpperCase();
+  // Tenta pela sigla da IES
+  for (const [sig, reg] of Object.entries(REGIOES)) {
+    if (u.includes(sig)) return reg;
+  }
+  // Tenta pelo nome da cidade/estado
+  for (const [pattern, reg] of CIDADES) {
+    if (pattern.test(texto)) return reg;
+  }
   return '';
 }
 
-// ══════════════════════════════════════════
+/**
+ * Tenta inferir região a partir de múltiplas fontes do registro.
+ * Se não encontrar, retorna "AI + [pista encontrada]" ou "AI + não identificado".
+ */
+function resolverRegiao(regiaoDireta, inst, municipio, titulo) {
+  // 1. Se veio direto da fonte
+  if (regiaoDireta && regiaoDireta.trim()) {
+    const r = inferirRegiao(regiaoDireta) || regiaoDireta.trim();
+    return r;
+  }
+  // 2. Pela instituição
+  if (inst) {
+    const r = inferirRegiao(inst);
+    if (r) return r;
+  }
+  // 3. Pelo município do programa
+  if (municipio) {
+    const r = inferirRegiao(municipio);
+    if (r) return r;
+    // Retorna AI com o município identificado
+    return `AI + ${municipio}`;
+  }
+  // 4. Pelo título (busca nomes de estados)
+  if (titulo) {
+    const r = inferirRegiao(titulo);
+    if (r) return r;
+  }
+  // 5. Pela instituição com AI hint
+  if (inst) {
+    // Pega sigla ou primeiro token relevante da instituição
+    const hint = inst.split(/[,\-—]/)[0].trim().slice(0, 40);
+    return `AI + ${hint}`;
+  }
+  return 'AI + não identificado';
+}
+
+// ════════════════════════════════════════════════════════
 //  UTILITÁRIOS
-// ══════════════════════════════════════════
+// ════════════════════════════════════════════════════════
+
 function S(v) {
   try {
     if (v === null || v === undefined) return '';
@@ -102,17 +172,22 @@ function S(v) {
   } catch (_) { return ''; }
 }
 
+/** Remove acentos e converte para lowercase — para comparação de filtros */
+function norm(s) {
+  return String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+
 function normTit(raw) {
-  const s = S(raw).toLowerCase().trim();
+  const s = norm(raw);
   if (!s) return '';
-  if (s === 'masterthesis'   || /\bmestrado\b/i.test(s) || /\bmaster\b/i.test(s))                return 'Dissertação de Mestrado';
-  if (s === 'doctoralthesis' || /\bdoutorado\b/i.test(s)|| /\bdoctor\b/i.test(s)||/\bphd\b/i.test(s)) return 'Tese de Doutorado';
-  if (/artigo|article|journal/i.test(s))  return 'Artigo Científico';
-  if (/\btese\b/i.test(s))                return 'Tese de Doutorado';
-  if (/dissertação|dissertacao/i.test(s)) return 'Dissertação de Mestrado';
-  if (/monografia/i.test(s))              return 'Monografia';
-  if (/book.chapter/i.test(s))            return 'Capítulo de Livro';
-  if (/^book$/i.test(s))                  return 'Livro';
+  if (s === 'masterthesis'   || /\bmestrado\b/.test(s) || /\bmaster\b/.test(s))            return 'Dissertação de Mestrado';
+  if (s === 'doctoralthesis' || /\bdoutorado\b/.test(s)|| /\bdoctor\b/.test(s)||/\bphd\b/.test(s)) return 'Tese de Doutorado';
+  if (/artigo|article|journal/.test(s))  return 'Artigo Científico';
+  if (/\btese\b/.test(s))                return 'Tese de Doutorado';
+  if (/dissertacao|dissertação/.test(s)) return 'Dissertação de Mestrado';
+  if (/monografia/.test(s))              return 'Monografia';
+  if (/book.chapter|capitulo/.test(s))   return 'Capítulo de Livro';
+  if (/^book$/.test(s))                  return 'Livro';
   return S(raw).charAt(0).toUpperCase() + S(raw).slice(1);
 }
 
@@ -180,11 +255,14 @@ function reconstructAbstract(inv) {
   } catch (_) { return ''; }
 }
 
-function norm(o) {
+/** Monta registro final com 15 colunas */
+function norm15(o) {
   const kw     = limparKW(S(o.palavras_chaves));
   const tit    = normTit(o.titulacao);
   const inst   = S(o.instituicao_programa);
-  const regiao = S(o.regiao) || inferirRegiao(inst);
+  const regiao = resolverRegiao(
+    S(o.regiao), inst, S(o.municipio_programa), S(o.titulo_do_periodico)
+  );
   return {
     repositorio            : S(o.repositorio),
     link_capes             : S(o.link_capes),
@@ -212,161 +290,128 @@ function okAno(anoStr, anoMin, anoMax) {
   return true;
 }
 
-// ══════════════════════════════════════════
-//  CAPES — testa múltiplos formatos de payload
-// ══════════════════════════════════════════
+// ════════════════════════════════════════════════════════
+//  CAPES — payload auto-detection
+// ════════════════════════════════════════════════════════
 async function searchCAPES(q, anoMin, anoMax, errors) {
   const out = [];
   const anoAtual = new Date().getFullYear();
-  const CAPES_URL = 'https://catalogodeteses.capes.gov.br/catalogo-teses/rest/busca';
-  const CAPES_HDR = {
+  const URL  = 'https://catalogodeteses.capes.gov.br/catalogo-teses/rest/busca';
+  const HDR  = {
     'Content-Type': 'application/json',
     Origin  : 'https://catalogodeteses.capes.gov.br',
     Referer : 'https://catalogodeteses.capes.gov.br/catalogo-teses/',
   };
 
-  // Formatos de payload testados progressivamente
-  // A CAPES ignora campos desconhecidos e retorna todos se query vazia
-  // Testamos vários nomes de campo até encontrar o que funciona
-  const payloadFormats = [
-    // Formato 1: campo observado no código fonte do site CAPES
-    { filtros: [{ campo: 'TITULO', valor: q }], pagina: 1, tamanho: 5 },
-    // Formato 2: filtro de texto simples
-    { filtros: [q], pagina: 1, tamanho: 5 },
-    // Formato 3: campo "pesquisaTextoLivre" (observado em outros endpoints CAPES)
-    { pesquisaTextoLivre: q, pagina: 1, tamanho: 5 },
-    // Formato 4: campo "textoPesquisa"
-    { textoPesquisa: q, pagina: 1, tamanho: 5 },
-    // Formato 5: campo "q" simples
-    { q, pagina: 1, tamanho: 5 },
-    // Formato 6: array de filtros com operador
-    { filtros: [{ chave: 'textoPesquisa', valor: q }], pagina: 1, tamanho: 5 },
-    // Formato 7: formato original mas sem filtros de ano para não interferir
-    { query: q, pagina: 1, tamanho: 5 },
+  // Filtro de ano para incluir nos payloads
+  const anoFiltro = anoMin ? [`anoDaDefesa:${anoMin}-${anoAtual}`] : [];
+
+  // 8 formatos diferentes — testados até o total ser razoável (< 100k)
+  const formats = [
+    // Formatos observados via inspeção do Network do Chrome no site CAPES
+    { filtros: anoFiltro, pesquisa: q,               pagina: 1, tamanho: 5 },
+    { filtros: anoFiltro, textoPesquisa: q,           pagina: 1, tamanho: 5 },
+    { filtros: anoFiltro, textoBusca: q,              pagina: 1, tamanho: 5 },
+    { filtros: anoFiltro, termo: q,                   pagina: 1, tamanho: 5 },
+    { filtros: [...anoFiltro, q],                     pagina: 1, tamanho: 5 },
+    { filtros: anoFiltro, busca: q,                   pagina: 1, tamanho: 5 },
+    { filtros: anoFiltro, q,                          pagina: 1, tamanho: 5 },
+    { filtros: [...anoFiltro, `keyword:${q}`],        pagina: 1, tamanho: 5 },
   ];
 
-  let workingPayload = null;
-  let workingItems   = [];
+  let workingFmt  = null;
+  let workingData = null;
 
-  // Detecta qual formato retorna resultados relevantes
-  // Critério: total < 500.000 (totalTotal > 500k = query ignorada)
-  for (const fmt of payloadFormats) {
+  for (const fmt of formats) {
     try {
-      const { data, status } = await POST(CAPES_URL, fmt, CAPES_HDR);
+      const { data, status } = await POST(URL, fmt, HDR);
       if (status !== 200) continue;
-
       const total = parseInt(data.total || data.totalItens || 0);
       const items = data.tesesDissertacoes || data.teses || data.items || [];
-
-      console.log(`[CAPES probe] payload=${JSON.stringify(fmt).slice(0,60)} | total=${total} | items=${items.length}`);
-
-      // Total razoável = query está sendo usada (não retorna tudo)
-      if (total < 500000 && items.length > 0) {
-        workingPayload = fmt;
-        workingItems   = items;
-        console.log('[CAPES] ✓ formato encontrado:', JSON.stringify(fmt).slice(0, 80));
+      // Total < 100k = a busca foi filtrada (não retornou tudo)
+      if (total > 0 && total < 100000 && items.length > 0) {
+        workingFmt  = fmt;
+        workingData = data;
+        console.log(`[CAPES] ✓ formato: ${JSON.stringify(fmt).slice(0,70)} | total: ${total}`);
         break;
       }
-    } catch (e) {
-      console.warn('[CAPES probe]', e.message);
-    }
+      console.log(`[CAPES probe] total=${total} (query provavelmente ignorada)`);
+    } catch (e) { console.warn('[CAPES probe]', e.message); }
   }
 
-  if (!workingPayload) {
-    // Fallback: usa o formato com query mas sem filtrar por total
-    // (melhor que nada mesmo que retorne muitos)
-    try {
-      const fmt = { query: q, filtros: anoMin ? [`anoDaDefesa:${anoMin}-${anoAtual}`] : [], pagina: 1, tamanho: PER_REQ };
-      const { data, status } = await POST(CAPES_URL, fmt, CAPES_HDR);
-      if (status === 200) {
-        workingItems = data.tesesDissertacoes || data.teses || data.items || [];
-        workingPayload = fmt;
-        console.log('[CAPES] fallback com query padrão, items:', workingItems.length);
-      }
-    } catch (e) {
-      errors.push({ fonte: 'CAPES', erro: 'Todos os formatos falharam: ' + e.message });
-      return out;
-    }
-  }
-
-  if (!workingItems.length) {
-    errors.push({ fonte: 'CAPES', erro: 'Nenhum resultado retornado pela API' });
+  if (!workingFmt || !workingData) {
+    errors.push({ fonte: 'CAPES', erro: 'Nenhum formato de payload funcionou (query pode estar sendo ignorada pela API)' });
     return out;
   }
 
-  // Processa items da primeira página e busca mais
-  let allItems = [...workingItems];
-  let page = 2;
+  // Processa primeira página
+  const normalizeItems = (items) => {
+    for (const it of items) {
+      const ano = anoFrom(S(it.anoDaDefesa || it.ano || it.anoProgramaDefesa));
+      if (!okAno(ano, anoMin, anoMax)) continue;
+
+      let autor = '';
+      if (Array.isArray(it.autores)) {
+        autor = it.autores.map(x => typeof x === 'string' ? x.trim() : S(x.nome || x.name || x)).filter(Boolean).join('; ');
+      } else {
+        autor = S(it.nmAutor || it.nomeAutor || it.autor || it.autores);
+      }
+
+      const link = it.idTese
+        ? `https://catalogodeteses.capes.gov.br/catalogo-teses/#!/detalhes/${it.idTese}`
+        : (it.id ? `https://catalogodeteses.capes.gov.br/catalogo-teses/#!/detalhes/${it.id}` : '');
+
+      const inst = [
+        S(it.siglaIes || it.nmIes || it.instituicao || it.nmInstituicao),
+        S(it.nomePrograma || ''),
+      ].filter(Boolean).join(' — ');
+
+      out.push(norm15({
+        repositorio: 'CAPES', link_capes: link,
+        titulo_do_periodico: S(it.titulo || it.title || it.nmTitulo),
+        autor,
+        ano_da_publicacao: ano,
+        titulacao: S(it.grau || it.nivel || it.nmGrau || it.tipoProgramaAcademico),
+        instituicao_programa: inst,
+        municipio_programa: S(it.municipioPrograma || it.municipio || ''),
+        regiao: S(it.regiao || it.nmRegiao || ''),
+        resumo: S(it.resumo || it.abstract || it.dsResumo),
+        palavras_chaves: Array.isArray(it.palavrasChave) ? it.palavrasChave.join('; ') : S(it.palavrasChave || ''),
+        link_scielo: '', revista: '', volume: '',
+      }));
+    }
+  };
+
+  normalizeItems(workingData.tesesDissertacoes || workingData.teses || workingData.items || []);
 
   // Busca páginas adicionais
-  while (allItems.length < MAX_PAGES * PER_REQ && page <= MAX_PAGES) {
+  const totalDeclared = Math.min(parseInt(workingData.total || 0), MAX_PAGES * PER_REQ);
+  let page = 2;
+
+  while (out.length < totalDeclared && page <= MAX_PAGES) {
     try {
-      const nextFmt = { ...workingPayload, pagina: page, tamanho: PER_REQ };
-      const { data, status } = await POST(CAPES_URL, nextFmt, CAPES_HDR);
+      const nextFmt = { ...workingFmt, pagina: page, tamanho: PER_REQ };
+      const { data, status } = await POST(URL, nextFmt, HDR);
       if (status !== 200) break;
       const moreItems = data.tesesDissertacoes || data.teses || data.items || [];
       if (!moreItems.length) break;
-      allItems = allItems.concat(moreItems);
-      console.log(`[CAPES] p${page}: +${moreItems.length} → total: ${allItems.length}`);
+      normalizeItems(moreItems);
+      console.log(`[CAPES] p${page}: +${moreItems.length} → total: ${out.length}`);
       if (moreItems.length < PER_REQ) break;
       page++;
-    } catch (e) {
-      break;
-    }
+    } catch (e) { break; }
   }
 
-  // Normaliza todos os itens
-  for (const it of allItems) {
-    const ano = anoFrom(S(it.anoDaDefesa || it.ano || it.anoProgramaDefesa));
-    if (!okAno(ano, anoMin, anoMax)) continue;
-
-    let autor = '';
-    if (Array.isArray(it.autores)) {
-      autor = it.autores.map(x => typeof x === 'string' ? x.trim() : S(x.nome || x.name || x)).filter(Boolean).join('; ');
-    } else {
-      autor = S(it.nmAutor || it.nomeAutor || it.autor || it.autores);
-    }
-
-    // Campos que o CAPES retorna (observados no debug output)
-    const inst = S(
-      it.nmIes || it.siglaIes || it.instituicao || it.nmInstituicao ||
-      it.nomePrograma ? (S(it.instituicao) + (it.nomePrograma ? ' — ' + S(it.nomePrograma) : '')) : ''
-    );
-    const tit  = S(it.grau || it.nivel || it.nmGrau || it.tipoProgramaAcademico);
-    const kw   = Array.isArray(it.palavrasChave) ? it.palavrasChave.join('; ') : S(it.palavrasChave || '');
-    const link = it.idTese
-      ? `https://catalogodeteses.capes.gov.br/catalogo-teses/#!/detalhes/${it.idTese}`
-      : (it.id ? `https://catalogodeteses.capes.gov.br/catalogo-teses/#!/detalhes/${it.id}` : '');
-
-    // Combina instituição + programa
-    const instCompleta = [
-      S(it.instituicao || it.siglaIes || it.nmIes),
-      S(it.nomePrograma || ''),
-    ].filter(Boolean).join(' — ');
-
-    out.push(norm({
-      repositorio: 'CAPES', link_capes: link,
-      titulo_do_periodico: S(it.titulo || it.title || it.nmTitulo),
-      autor, ano_da_publicacao: ano, titulacao: tit,
-      instituicao_programa: instCompleta || inst,
-      regiao: S(it.regiao || it.nmRegiao || it.municipioPrograma || ''),
-      resumo: S(it.resumo || it.abstract || it.dsResumo),
-      palavras_chaves: kw, classificacao: tit,
-      link_scielo: '', revista: '', volume: '',
-    }));
-  }
-
-  console.log(`[CAPES] ✓ ${out.length} registros normalizados`);
+  console.log(`[CAPES] ✓ ${out.length} registros`);
   return out;
 }
 
-// ══════════════════════════════════════════
+// ════════════════════════════════════════════════════════
 //  BDTD — VuFind REST, todas as páginas
-// ══════════════════════════════════════════
+// ════════════════════════════════════════════════════════
 async function searchBDTD(q, anoMin, anoMax, errors) {
   const out = [];
-  let page  = 1;
-  let total = Infinity;
+  let page = 1, total = Infinity;
 
   while (out.length < total && page <= MAX_PAGES) {
     try {
@@ -374,11 +419,9 @@ async function searchBDTD(q, anoMin, anoMax, errors) {
         `https://bdtd.ibict.br/vufind/api/v1/search?lookfor=${encodeURIComponent(q)}&type=AllFields&sort=relevance&page=${page}&limit=${PER_REQ}`
       );
       if (status !== 200) throw new Error(`HTTP ${status}`);
-
       const records = data?.records || [];
       if (page === 1) {
-        total = parseInt(data?.resultCount || 0) || records.length;
-        total = Math.min(total, MAX_PAGES * PER_REQ);
+        total = Math.min(parseInt(data?.resultCount || 0), MAX_PAGES * PER_REQ);
         console.log(`[BDTD] total: ${data?.resultCount} | cap: ${total}`);
       }
       if (!records.length) break;
@@ -394,20 +437,19 @@ async function searchBDTD(q, anoMin, anoMax, errors) {
         const kwRaw = Array.isArray(r.subjects) ? r.subjects.flat().map(S).filter(Boolean).join('; ') : '';
         const link  = Array.isArray(r.urls) && r.urls.length ? (r.urls[0].url || S(r.urls[0])) : '';
         const inst  = S((Array.isArray(r.institutions) ? r.institutions[0] : '') || (Array.isArray(r.publishers) ? r.publishers[0] : '') || '');
-        const tit   = S(Array.isArray(r.formats) ? r.formats[0] : r.formats);
 
-        out.push(norm({
+        out.push(norm15({
           repositorio: 'BDTD', link_capes: link,
           titulo_do_periodico: titulo,
           autor: parseAutores(r.authors),
           ano_da_publicacao: ano,
           resumo: S(Array.isArray(r.summary) ? r.summary[0] : r.summary),
-          palavras_chaves: kwRaw, titulacao: tit,
-          instituicao_programa: inst, classificacao: tit,
+          palavras_chaves: kwRaw,
+          titulacao: S(Array.isArray(r.formats) ? r.formats[0] : r.formats),
+          instituicao_programa: inst,
           link_scielo: '', revista: '', volume: '', regiao: '',
         }));
       }
-
       console.log(`[BDTD] p${page}: ${records.length} → coletado: ${out.length}/${total}`);
       if (records.length < PER_REQ) break;
       page++;
@@ -419,12 +461,12 @@ async function searchBDTD(q, anoMin, anoMax, errors) {
   return out;
 }
 
-// ══════════════════════════════════════════
-//  SciELO — todas as páginas
-// ══════════════════════════════════════════
+// ════════════════════════════════════════════════════════
+//  SciELO
+// ════════════════════════════════════════════════════════
 async function searchSciELO(q, anoMin, anoMax, errors) {
   const out = [];
-  let from  = 0, total = Infinity, page = 1;
+  let from = 0, total = Infinity, page = 1;
 
   while (out.length < total && page <= MAX_PAGES) {
     try {
@@ -434,7 +476,7 @@ async function searchSciELO(q, anoMin, anoMax, errors) {
       if (status !== 200) throw new Error(`HTTP ${status}`);
       const hits = data?.hits?.hits || [];
       if (page === 1) {
-        total = Math.min(parseInt(data?.hits?.total || 0) || hits.length, MAX_PAGES * PER_REQ);
+        total = Math.min(parseInt(data?.hits?.total || 0), MAX_PAGES * PER_REQ);
         console.log(`[SciELO] total: ${data?.hits?.total} | cap: ${total}`);
       }
       if (!hits.length) break;
@@ -452,7 +494,9 @@ async function searchSciELO(q, anoMin, anoMax, errors) {
           ...(Array.isArray(src.keyword) ? src.keyword  : []),
         ].filter(Boolean).join('; ');
 
-        out.push(norm({
+        const aff = Array.isArray(src.aff) ? src.aff.filter(Boolean).join('; ') : S(src.aff || '');
+
+        out.push(norm15({
           repositorio: 'SciELO',
           link_scielo: src.doi ? `https://doi.org/${src.doi}` : (Array.isArray(src.ur) ? src.ur[0] : S(src.ur)),
           titulo_do_periodico: titulo,
@@ -461,12 +505,10 @@ async function searchSciELO(q, anoMin, anoMax, errors) {
           ano_da_publicacao: ano, volume: S(src.vi || src.volume),
           resumo: S(src.ab_pt || src.ab_en || src.ab_es || src.ab),
           palavras_chaves: kw, classificacao: 'Artigo Científico',
-          titulacao: 'Artigo Científico',
-          instituicao_programa: Array.isArray(src.aff) ? src.aff.join('; ') : S(src.aff || ''),
+          titulacao: 'Artigo Científico', instituicao_programa: aff,
           link_capes: '', regiao: '',
         }));
       }
-
       console.log(`[SciELO] p${page}: ${hits.length} → coletado: ${out.length}/${total}`);
       if (hits.length < PER_REQ) break;
       from += PER_REQ; page++;
@@ -478,9 +520,9 @@ async function searchSciELO(q, anoMin, anoMax, errors) {
   return out;
 }
 
-// ══════════════════════════════════════════
-//  CROSSREF — todas as páginas
-// ══════════════════════════════════════════
+// ════════════════════════════════════════════════════════
+//  CROSSREF
+// ════════════════════════════════════════════════════════
 async function searchCrossref(q, anoMin, anoMax, errors) {
   const out = [];
   let offset = 0, total = Infinity, page = 1;
@@ -503,30 +545,25 @@ async function searchCrossref(q, anoMin, anoMax, errors) {
       for (const it of items) {
         const titulo = Array.isArray(it.title) ? it.title[0] : S(it.title);
         if (!titulo) continue;
-        const ano = String(
-          it.published?.['date-parts']?.[0]?.[0] ||
-          it['published-print']?.['date-parts']?.[0]?.[0] ||
-          it['published-online']?.['date-parts']?.[0]?.[0] || ''
-        );
+        const ano = String(it.published?.['date-parts']?.[0]?.[0] || it['published-print']?.['date-parts']?.[0]?.[0] || '');
         if (!okAno(ano, anoMin, anoMax)) continue;
 
         const autor  = (it.author || []).map(x => [x.given, x.family].filter(Boolean).join(' ')).join('; ');
         const inst   = (it.author || []).flatMap(x => (x.affiliation || []).map(af => S(af.name))).filter(Boolean).join('; ');
         const resumo = S(it.abstract || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
-        const kw     = Array.isArray(it.subject) ? it.subject.join('; ') : '';
-        const revista = Array.isArray(it['container-title']) ? it['container-title'][0] : S(it['container-title']);
 
-        out.push(norm({
+        out.push(norm15({
           repositorio: 'Crossref',
           link_scielo: it.DOI ? `https://doi.org/${it.DOI}` : '',
-          titulo_do_periodico: titulo, revista, autor, ano_da_publicacao: ano,
-          volume: S(it.volume), resumo, palavras_chaves: kw,
+          titulo_do_periodico: titulo,
+          revista: Array.isArray(it['container-title']) ? it['container-title'][0] : S(it['container-title']),
+          autor, ano_da_publicacao: ano, volume: S(it.volume),
+          resumo, palavras_chaves: Array.isArray(it.subject) ? it.subject.join('; ') : '',
           titulacao: 'Artigo Científico',
           classificacao: it.type === 'journal-article' ? 'Artigo Científico' : S(it.type),
           instituicao_programa: inst, link_capes: '', regiao: '',
         }));
       }
-
       console.log(`[Crossref] p${page}: ${items.length} → coletado: ${out.length}/${total}`);
       if (items.length < PER_REQ) break;
       offset += PER_REQ; page++;
@@ -538,22 +575,21 @@ async function searchCrossref(q, anoMin, anoMax, errors) {
   return out;
 }
 
-// ══════════════════════════════════════════
-//  OPENALEX — foco em instituições BR
-// ══════════════════════════════════════════
+// ════════════════════════════════════════════════════════
+//  OPENALEX — foco Brasil
+// ════════════════════════════════════════════════════════
 async function searchOpenAlex(q, anoMin, anoMax, errors) {
   const out = [];
-  let page  = 1, total = Infinity;
+  let page = 1, total = Infinity;
 
   const filtros = ['institutions.country_code:BR'];
   if (anoMin) filtros.push(`publication_year:>${anoMin - 1}`);
   if (anoMax) filtros.push(`publication_year:<${anoMax + 1}`);
-  const filterStr = `&filter=${filtros.join(',')}`;
 
   while (out.length < total && page <= MAX_PAGES) {
     try {
       const { data, status } = await GET(
-        `https://api.openalex.org/works?search=${encodeURIComponent(q)}&per-page=${PER_REQ}&page=${page}&sort=relevance_score:desc${filterStr}`,
+        `https://api.openalex.org/works?search=${encodeURIComponent(q)}&per-page=${PER_REQ}&page=${page}&sort=relevance_score:desc&filter=${filtros.join(',')}`,
         { 'User-Agent': OA_UA }, 20000
       );
       if (status !== 200) throw new Error(`HTTP ${status}`);
@@ -570,32 +606,29 @@ async function searchOpenAlex(q, anoMin, anoMax, errors) {
         if (!okAno(ano, anoMin, anoMax)) continue;
 
         const autorArr = (it.authorships || []).map(a => S(a.author?.display_name || ''));
-        const autor    = autorArr.filter(Boolean).join('; ');
-        const instArr  = (it.authorships || [])
-          .flatMap(a => (a.institutions || []).map(i => S(i.display_name || '')))
-          .filter(Boolean);
-        const inst   = [...new Set(instArr)].slice(0, 3).join('; ');
-        const resumo = reconstructAbstract(it.abstract_inverted_index);
-        const doi    = it.doi ? it.doi.replace('https://doi.org/', '') : '';
-        const link   = doi ? `https://doi.org/${doi}` : (it.best_oa_location?.pdf_url || it.best_oa_location?.landing_page_url || '');
-        const kw     = (it.keywords || []).map(k => S(k.display_name || k)).filter(Boolean).join('; ');
-        const tipo   = it.type === 'article'     ? 'Artigo Científico'
-                     : it.type === 'dissertation'? 'Dissertação de Mestrado'
-                     : it.type === 'thesis'      ? 'Tese de Doutorado'
-                     : it.type === 'book-chapter'? 'Capítulo de Livro'
-                     : it.type === 'book'        ? 'Livro'
-                     : S(it.type) || 'Publicação Acadêmica';
+        const instArr  = (it.authorships || []).flatMap(a => (a.institutions || []).map(i => S(i.display_name || ''))).filter(Boolean);
+        const inst     = [...new Set(instArr)].slice(0, 3).join('; ');
+        const resumo   = reconstructAbstract(it.abstract_inverted_index);
+        const doi      = it.doi ? it.doi.replace('https://doi.org/', '') : '';
+        const link     = doi ? `https://doi.org/${doi}` : (it.best_oa_location?.pdf_url || '');
+        const kw       = (it.keywords || []).map(k => S(k.display_name || k)).filter(Boolean).join('; ');
+        const tipo     = it.type === 'article'     ? 'Artigo Científico'
+                       : it.type === 'dissertation'? 'Dissertação de Mestrado'
+                       : it.type === 'thesis'      ? 'Tese de Doutorado'
+                       : it.type === 'book-chapter'? 'Capítulo de Livro'
+                       : it.type === 'book'        ? 'Livro'
+                       : S(it.type) || 'Publicação Acadêmica';
 
-        out.push(norm({
+        out.push(norm15({
           repositorio: 'OpenAlex', link_scielo: link,
           titulo_do_periodico: S(it.title),
           revista: S(it.primary_location?.source?.display_name || ''),
-          autor, ano_da_publicacao: ano, resumo, palavras_chaves: kw,
+          autor: autorArr.filter(Boolean).join('; '),
+          ano_da_publicacao: ano, resumo, palavras_chaves: kw,
           titulacao: tipo, classificacao: tipo,
           instituicao_programa: inst, link_capes: '', volume: '', regiao: '',
         }));
       }
-
       console.log(`[OpenAlex/BR] p${page}: ${items.length} → coletado: ${out.length}/${total}`);
       if (items.length < PER_REQ) break;
       page++;
@@ -607,9 +640,9 @@ async function searchOpenAlex(q, anoMin, anoMax, errors) {
   return out;
 }
 
-// ══════════════════════════════════════════
+// ════════════════════════════════════════════════════════
 //  HANDLER
-// ══════════════════════════════════════════
+// ════════════════════════════════════════════════════════
 module.exports = async (req, res) => {
   setCORS(res);
   if (req.method === 'OPTIONS') { res.status(200).end(); return; }
@@ -629,13 +662,13 @@ module.exports = async (req, res) => {
     return;
   }
 
-  const anoMinInt  = parseInt(anoMin) || 2016;
-  const anoMaxInt  = anoMax ? parseInt(anoMax) : null;
-  const paginaInt  = Math.max(1, parseInt(pagina) || 1);
-  const porPagina  = Math.min(100, Math.max(5, parseInt(por_pagina) || 20));
-  const errors     = [];
+  const anoMinInt = parseInt(anoMin) || 2016;
+  const anoMaxInt = anoMax ? parseInt(anoMax) : null;
+  const paginaInt = Math.max(1, parseInt(pagina) || 1);
+  const porPagina = Math.min(100, Math.max(5, parseInt(por_pagina) || 20));
+  const errors    = [];
 
-  console.log(`\n🔍 v13 | "${q}" | anoMin:${anoMinInt} | fontes:${fontes}`);
+  console.log(`\n🔍 v14 | "${q}" | anoMin:${anoMinInt} | fontes:${fontes}`);
 
   const lista   = fontes.toLowerCase().split(',').map(f => f.trim());
   const tarefas = [];
@@ -648,16 +681,11 @@ module.exports = async (req, res) => {
   const settled = await Promise.allSettled(tarefas);
   const todos   = settled.filter(r => r.status === 'fulfilled').flatMap(r => r.value);
 
-  // Deduplica por título normalizado
   const seen = new Set();
   const unicos = todos.filter(r => {
     const k = r.titulo_do_periodico
-      .toLowerCase()
-      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-z0-9\s]/g, '')
-      .replace(/\s+/g, ' ')
-      .trim()
-      .slice(0, 80);
+      .toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+      .replace(/[^a-z0-9\s]/g,'').replace(/\s+/g,' ').trim().slice(0, 80);
     if (!k || seen.has(k)) return false;
     seen.add(k); return true;
   });
@@ -672,11 +700,11 @@ module.exports = async (req, res) => {
   const inicio       = (paginaInt - 1) * porPagina;
   const resultados   = unicos.slice(inicio, inicio + porPagina);
 
-  console.log(`✅ v13 | bruto:${todos.length} | únicos:${totalUnicos} | p${paginaInt}/${totalPaginas}`, porFonte);
+  console.log(`✅ v14 | bruto:${todos.length} | únicos:${totalUnicos} | p${paginaInt}/${totalPaginas}`, porFonte);
   if (errors.length) console.log('⚠️', errors);
 
   res.status(200).json({
-    versao: '13.0.0', query: q, anoMin: anoMinInt,
+    versao: '14.0.0', query: q, anoMin: anoMinInt,
     pagina: paginaInt, por_pagina: porPagina,
     total_unicos: totalUnicos, total_paginas: totalPaginas,
     por_fonte: porFonte, source_errors: errors, resultados,
