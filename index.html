@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Repositório Acadêmico v7</title>
+<title>Repositório Acadêmico v8</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
@@ -12,13 +12,12 @@
   --bg:#f7f4ef;--cream:#fdfbf8;--brd:#ddd8d0;--brd2:#edeae4;
   --gold:#b8860b;--gold2:#d4a017;
   --capes:#1b4f72;--scielo:#145a32;--bdtd:#6e2f1a;--cross:#4a235a;
-  --r:4px;
+  --err:#c0392b; --r:4px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
 body{font-family:'Source Serif 4',Georgia,serif;background:var(--bg);color:var(--ink);min-height:100vh;font-size:15px;line-height:1.65}
 
-/* ── HEADER ── */
 header{background:var(--ink);color:#fdfbf8;position:sticky;top:0;z-index:200;box-shadow:0 4px 20px rgba(0,0,0,.35)}
 .hdr{padding:13px 18px 11px;display:flex;align-items:center;gap:13px;flex-wrap:wrap}
 .logo-t{font-family:'Playfair Display',serif;font-size:clamp(.95rem,4vw,1.35rem);font-weight:700;line-height:1.2}
@@ -31,7 +30,6 @@ header{background:var(--ink);color:#fdfbf8;position:sticky;top:0;z-index:200;box
 .bb{background:var(--bdtd);color:#fff}.bx{background:var(--cross);color:#fff}
 .boff{background:transparent!important;color:rgba(255,255,255,.3)!important;border-color:rgba(255,255,255,.2)!important}
 
-/* ── BUSCA ── */
 .sp{background:var(--cream);border-bottom:1px solid var(--brd);padding:16px 18px}
 .sr{display:flex;gap:8px}
 .sf{position:relative;flex:1}
@@ -41,6 +39,7 @@ header{background:var(--ink);color:#fdfbf8;position:sticky;top:0;z-index:200;box
 #query::placeholder{color:var(--ink3);font-style:italic}
 .btn-p{padding:0 20px;background:var(--ink);color:#fdfbf8;border:none;border-radius:var(--r);font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;cursor:pointer;transition:background .2s;white-space:nowrap;min-height:44px}
 .btn-p:hover{background:#2c2825}.btn-p:disabled{opacity:.5;cursor:not-allowed}
+
 .filters{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;align-items:center}
 .fl{font-size:.63rem;color:var(--ink3);letter-spacing:.1em;text-transform:uppercase;font-family:'JetBrains Mono',monospace}
 .fg{display:flex;gap:6px;align-items:center}
@@ -49,39 +48,44 @@ select,input[type=number]{font-family:'Source Serif 4',serif;font-size:.85rem;pa
 select:focus,input[type=number]:focus{border-color:var(--gold)}
 input[type=number]{width:80px}
 
-/* ── RESULTADOS BAR ── */
 .content{padding:14px 18px}
-.rbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px}
+.rbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px}
 .rc{font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--ink3);letter-spacing:.06em}
 .rc strong{color:var(--ink);font-weight:700}
 .exg{display:flex;gap:6px;flex-wrap:wrap}
 .be{padding:7px 14px;border:1.5px solid var(--brd);border-radius:var(--r);background:#fff;color:var(--ink2);font-family:'JetBrains Mono',monospace;font-size:.63rem;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:all .2s;min-height:34px}
 .be:hover{background:var(--ink);color:#fff;border-color:var(--ink)}
 
-/* ── ESTADO ── */
+/* Aviso de fonte com erro */
+.src-errors{background:#fff8f8;border:1px solid #f5c6c6;border-radius:var(--r);padding:10px 14px;margin-bottom:12px;font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--err)}
+.src-errors strong{display:block;margin-bottom:4px}
+
+/* Contadores por fonte */
+.src-counts{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.sc{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-family:'JetBrains Mono',monospace;font-size:.6rem;font-weight:600;color:#fff}
+.sc-c{background:var(--capes)}.sc-s{background:var(--scielo)}.sc-b{background:var(--bdtd)}.sc-x{background:var(--cross)}
+
 .state{text-align:center;padding:56px 18px;color:var(--ink3)}
 .si{font-size:2.2rem;margin-bottom:12px;opacity:.45}
 .state h3{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--ink2);margin-bottom:7px;font-weight:600;font-style:italic}
-.state p{font-size:.83rem;max-width:360px;margin:0 auto}
+.state p{font-size:.83rem;max-width:380px;margin:0 auto;line-height:1.6}
+.state code{font-family:'JetBrains Mono',monospace;font-size:.75rem;background:var(--parchment);padding:1px 5px}
 .spinner{width:30px;height:30px;border:3px solid var(--brd);border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 14px}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* ── TAGS ── */
 .tag{display:inline-block;padding:2px 8px;border-radius:20px;font-family:'JetBrains Mono',monospace;font-size:.56rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#fff;white-space:nowrap}
 .tc{background:var(--capes)}.ts{background:var(--scielo)}.tb{background:var(--bdtd)}.tx{background:var(--cross)}
-
-/* ── CHIPS ── */
 .chips{display:flex;flex-wrap:wrap;gap:3px;margin-top:4px}
 .chip{background:rgba(184,134,11,.1);border:1px solid rgba(184,134,11,.25);border-radius:20px;padding:1px 7px;font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--gold)}
 
-/* ══════ CARDS mobile (<768px) ══════ */
+/* CARDS — mobile */
 .cards{display:flex;flex-direction:column;gap:12px}
 .card{background:#fff;border:1px solid var(--brd);border-radius:6px;padding:14px;box-shadow:0 1px 4px rgba(26,23,20,.07)}
 .card-hdr{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}
 .card-tit{font-family:'Source Serif 4',serif;font-size:.93rem;font-weight:500;font-style:italic;color:var(--ink);line-height:1.4;flex:1}
 .cgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;margin-bottom:8px}
 .cf label{display:block;font-family:'JetBrains Mono',monospace;font-size:.52rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:1px}
-.cf span{font-size:.8rem;color:var(--ink2);line-height:1.4;word-break:break-word}
+.cf span,.cf div{font-size:.8rem;color:var(--ink2);line-height:1.4;word-break:break-word}
 .cf.full{grid-column:1/-1}
 .cresum{font-size:.8rem;color:var(--ink2);line-height:1.55}
 .cresum.tr{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
@@ -89,10 +93,9 @@ input[type=number]{width:80px}
 .clinks{display:flex;gap:10px;margin-top:10px;padding-top:8px;border-top:1px solid var(--brd2);flex-wrap:wrap}
 .clinks a{color:var(--gold);text-decoration:none;font-family:'JetBrains Mono',monospace;font-size:.63rem}
 
-/* ══════ TABELA desktop (≥768px) ══════ */
+/* TABELA — desktop */
 .tw{width:100%;border:1px solid var(--brd);border-radius:var(--r);background:#fff;box-shadow:0 1px 4px rgba(26,23,20,.07);overflow:hidden}
 table{width:100%;border-collapse:collapse;table-layout:fixed}
-/* 15 colunas somando 100% */
 col.c1{width:6%}col.c2{width:5%}col.c3{width:5%}col.c4{width:7%}col.c5{width:6%}
 col.c6{width:4%}col.c7{width:3%}col.c8{width:14%}col.c9{width:10%}col.c10{width:8%}
 col.c11{width:7%}col.c12{width:9%}col.c13{width:6%}col.c14{width:9%}col.c15{width:5%}
@@ -112,11 +115,13 @@ a.lk:hover{text-decoration:underline;color:var(--gold2)}
 .rbtn{font-family:'JetBrains Mono',monospace;font-size:.56rem;color:var(--gold);cursor:pointer;margin-top:2px}
 .sel span{display:inline-block;background:rgba(184,134,11,.1);border:1px solid rgba(184,134,11,.25);border-radius:20px;padding:1px 5px;margin:1px;color:var(--gold);font-family:'JetBrains Mono',monospace;font-size:.56rem}
 
-/* ── BREAKPOINTS ── */
 @media(max-width:767px){.vr{display:none}.tw{display:none!important}.cards{display:flex}.cgrid{grid-template-columns:1fr}}
 @media(min-width:768px){.cards{display:none!important}.tw{display:block}}
 
-footer{margin-top:36px;border-top:1px solid var(--brd);padding:12px 18px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--ink3);letter-spacing:.09em}
+footer{margin-top:36px;border-top:1px solid var(--brd);padding:12px 18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.footer-txt{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--ink3);letter-spacing:.09em}
+.btn-diag{padding:5px 12px;border:1px solid var(--brd);border-radius:var(--r);background:transparent;color:var(--ink3);font-family:'JetBrains Mono',monospace;font-size:.58rem;cursor:pointer;transition:all .2s}
+.btn-diag:hover{background:var(--ink);color:#fff;border-color:var(--ink)}
 </style>
 </head>
 <body>
@@ -125,7 +130,7 @@ footer{margin-top:36px;border-top:1px solid var(--brd);padding:12px 18px;text-al
   <div class="hdr">
     <div>
       <div class="logo-t">Repositório Acadêmico</div>
-      <div class="logo-s">CAPES · SciELO · BDTD · Crossref · v7</div>
+      <div class="logo-s">CAPES · SciELO · BDTD · Crossref · v8</div>
     </div>
     <div class="vr"></div>
     <div class="badges">
@@ -147,18 +152,42 @@ footer{margin-top:36px;border-top:1px solid var(--brd);padding:12px 18px;text-al
   </div>
   <div class="filters">
     <span class="fl">Filtros</span>
-    <div class="fg"><label for="am">Ano</label><input type="number" id="am" placeholder="1900" min="1900" max="2099"/><label>–</label><input type="number" id="ax" placeholder="2025" min="1900" max="2099"/></div>
-    <div class="fg"><label for="tp">Tipo</label><select id="tp"><option value="">Todos</option><option value="tese">Tese</option><option value="dissertação">Dissertação</option><option value="artigo">Artigo</option></select></div>
+    <div class="fg">
+      <label>Ano</label>
+      <input type="number" id="am" value="2015" min="1900" max="2099"/>
+      <label>–</label>
+      <input type="number" id="ax" placeholder="atual" min="1900" max="2099"/>
+    </div>
+    <div class="fg">
+      <label for="tp">Tipo</label>
+      <select id="tp"><option value="">Todos</option><option value="tese">Tese</option><option value="dissertação">Dissertação</option><option value="artigo">Artigo</option></select>
+    </div>
   </div>
 </div>
 
 <div class="content">
+
   <div class="rbar" id="rbar" style="display:none">
-    <div class="rc"><strong id="tot">0</strong> publicações · <span id="ql" style="color:var(--ink3)"></span></div>
-    <div class="exg"><button class="be" onclick="xCSV()">↓ CSV</button><button class="be" onclick="xExcel()">↓ Excel</button><button class="be" onclick="xPDF()">↓ PDF</button></div>
+    <div>
+      <div class="rc"><strong id="tot">0</strong> publicações · <span id="ql" style="color:var(--ink3)"></span></div>
+      <div class="src-counts" id="srcCounts"></div>
+    </div>
+    <div class="exg">
+      <button class="be" onclick="xCSV()">↓ CSV</button>
+      <button class="be" onclick="xExcel()">↓ Excel</button>
+      <button class="be" onclick="xPDF()">↓ PDF</button>
+    </div>
   </div>
 
-  <div id="stArea"><div class="state"><div class="si">📚</div><h3>Pesquise publicações acadêmicas</h3><p>Busca em CAPES, SciELO, BDTD e Crossref. Digite acima para começar.</p></div></div>
+  <div id="srcErrors"></div>
+
+  <div id="stArea">
+    <div class="state">
+      <div class="si">📚</div>
+      <h3>Pesquise publicações acadêmicas</h3>
+      <p>Busca em CAPES, SciELO, BDTD e Crossref. Período padrão: 2015 até hoje.</p>
+    </div>
+  </div>
 
   <div class="cards" id="cards"></div>
 
@@ -175,12 +204,16 @@ footer{margin-top:36px;border-top:1px solid var(--brd);padding:12px 18px;text-al
   </div>
 </div>
 
-<footer>Repositório Acadêmico v7 · CAPES · SciELO · BDTD · Crossref</footer>
+<footer>
+  <span class="footer-txt">Repositório Acadêmico v8 · CAPES · SciELO · BDTD · Crossref</span>
+  <button class="btn-diag" onclick="diagnosticar()">🔍 Diagnosticar fontes</button>
+</footer>
 
 <script>
 'use strict';
 const COLS=['repositorio','link_capes','link_scielo','revista','classificacao','ano_da_publicacao','volume','titulo_do_periodico','resumo','palavras_chaves','seletor_palavras_chaves','autor','titulacao','instituicao_programa','regiao'];
 const LABELS=['REPOSITÓRIO','LINK/CAPES','LINK/SCIELO','REVISTA','CLASSIFICAÇÃO','ANO DA PUBLICAÇÃO','VOLUME','TÍTULO DO PERIÓDICO','RESUMO','PALAVRAS-CHAVES','SELETOR_PALAVRAS_CHAVES','AUTOR','TITULAÇÃO','INSTITUIÇÃO/PROGRAMA','REGIÃO'];
+const COR={CAPES:'sc-c',SciELO:'sc-s',BDTD:'sc-b',Crossref:'sc-x'};
 let dados=[];
 const F={capes:true,scielo:true,bdtd:true,crossref:true};
 const BC={capes:'bc',scielo:'bs',bdtd:'bb',crossref:'bx'};
@@ -192,29 +225,37 @@ async function buscar(){
   if(!q){alert('Informe um termo de busca.');return;}
   const ativas=Object.entries(F).filter(([,v])=>v).map(([k])=>k).join(',');
   if(!ativas){alert('Selecione ao menos uma fonte.');return;}
+  const am=document.getElementById('am').value||'2015';
+  const ax=document.getElementById('ax').value||'';
   loading(q);
   document.getElementById('btnB').disabled=true;
   try{
-    const r=await fetch('/api/search?q='+encodeURIComponent(q)+'&fontes='+ativas);
+    const url='/api/search?q='+encodeURIComponent(q)+'&fontes='+ativas+'&anoMin='+am+(ax?'&anoMax='+ax:'');
+    const r=await fetch(url);
     const ct=r.headers.get('content-type')||'';
-    if(!ct.includes('json')) throw new Error('Servidor retornou HTML em vez de JSON. Verifique o deploy no Vercel.');
+    if(!ct.includes('json')){
+      const txt=await r.text();
+      throw new Error('API retornou HTML. Verifique o deploy. Preview: '+txt.slice(0,80));
+    }
     if(!r.ok) throw new Error('HTTP '+r.status);
     const j=await r.json();
     dados=filtrar(j.resultados||[]);
-    render(dados,q);
+    mostrarErrosFontes(j.source_errors||[]);
+    render(dados, q, j.por_fonte||{});
   }catch(e){erro(e.message);}
   finally{document.getElementById('btnB').disabled=false;}
 }
 
+async function diagnosticar(){
+  const q=document.getElementById('query').value||'educação';
+  const win=window.open('/api/debug?q='+encodeURIComponent(q),'_blank');
+  if(!win) alert('Abra /api/debug?q=educação no navegador para diagnosticar quais APIs estão acessíveis.');
+}
+
 function filtrar(lst){
-  const am=parseInt(document.getElementById('am').value)||0;
-  const ax=parseInt(document.getElementById('ax').value)||9999;
   const tp=document.getElementById('tp').value.toLowerCase();
   return lst.filter(d=>{
-    const a=parseInt(d.ano_da_publicacao)||0;
     const t=(d.titulacao||d.classificacao||'').toLowerCase();
-    if(am&&a&&a<am)return false;
-    if(ax<9999&&a&&a>ax)return false;
     if(tp&&!t.includes(tp))return false;
     return true;
   });
@@ -222,15 +263,30 @@ function filtrar(lst){
 
 function tagH(n){const lc=(n||'').toLowerCase();const c=lc.includes('scielo')?'ts':lc.includes('bdtd')?'tb':lc.includes('cross')?'tx':'tc';return'<span class="tag '+c+'">'+esc(n)+'</span>';}
 function chipsH(kw){if(!kw)return'';return'<div class="chips">'+kw.split(';').map(k=>k.trim()).filter(Boolean).map(k=>'<span class="chip">'+esc(k)+'</span>').join('')+'</div>';}
-function selH(s){if(!s)return'<span style="opacity:.3">—</span>';return'<span>'+s.split(';').map(t=>'<span>'+esc(t.trim())+'</span>').join('')+'</span>';}
+function selH(s){if(!s)return'<span style="opacity:.3">—</span>';return'<span class="sel">'+s.split(';').map(t=>'<span>'+esc(t.trim())+'</span>').join('')+'</span>';}
 
-function render(lst,q){
+function mostrarErrosFontes(erros){
+  const el=document.getElementById('srcErrors');
+  if(!erros||!erros.length){el.innerHTML='';return;}
+  el.innerHTML='<div class="src-errors"><strong>⚠️ Algumas fontes não responderam (dados parciais):</strong>'+
+    erros.map(e=>`${e.fonte}: ${e.erro}`).join(' · ')+'<br><small>Use o botão "Diagnosticar fontes" no rodapé para mais detalhes.</small></div>';
+}
+
+function render(lst,q,porFonte){
   const rbar=document.getElementById('rbar'),st=document.getElementById('stArea');
   const cards=document.getElementById('cards'),tbody=document.getElementById('tbody'),tw=document.getElementById('tw');
+  const counts=document.getElementById('srcCounts');
+
   document.getElementById('tot').textContent=lst.length;
   document.getElementById('ql').textContent=lst.length?'"'+q+'"':'';
+
+  // Contadores por fonte
+  counts.innerHTML=Object.entries(porFonte)
+    .map(([f,n])=>`<span class="sc ${COR[f]||'sc-x'}">${f}: ${n}</span>`).join('');
+
   if(!lst.length){
-    st.style.display='';st.innerHTML='<div class="state"><div class="si">🔍</div><h3>Nenhum resultado</h3><p>Tente outros termos ou ative mais fontes.</p></div>';
+    st.style.display='';
+    st.innerHTML='<div class="state"><div class="si">🔍</div><h3>Nenhum resultado encontrado</h3><p>Tente outros termos, ajuste os filtros ou verifique se as fontes estão respondendo usando o botão "Diagnosticar fontes" no rodapé.</p></div>';
     rbar.style.display='none';cards.innerHTML='';tbody.innerHTML='';tw.style.display='none';return;
   }
   st.style.display='none';rbar.style.display='flex';tw.style.display='block';
@@ -284,21 +340,26 @@ function expC(id,btn){const el=document.getElementById(id);if(!el)return;el.clas
 function expT(id){document.getElementById(id)?.classList.toggle('open');}
 
 function loading(q){
-  document.getElementById('rbar').style.display='none';
+  document.getElementById('rbar').style.display='none';document.getElementById('srcErrors').innerHTML='';
   document.getElementById('cards').innerHTML='';document.getElementById('tbody').innerHTML='';document.getElementById('tw').style.display='none';
   const s=document.getElementById('stArea');s.style.display='';
   s.innerHTML='<div class="state"><div class="spinner"></div><h3>Consultando bases de dados…</h3><p>Buscando <em>"'+esc(q)+'"</em> em CAPES, SciELO, BDTD e Crossref.</p></div>';
 }
-function erro(msg){const s=document.getElementById('stArea');s.style.display='';s.innerHTML='<div class="state"><div class="si">⚠️</div><h3>Erro na busca</h3><p style="font-size:.78rem;font-family:monospace;color:var(--ink2);margin-top:8px">'+esc(msg)+'</p></div>';}
+
+function erro(msg){
+  const s=document.getElementById('stArea');s.style.display='';
+  s.innerHTML='<div class="state"><div class="si">⚠️</div><h3>Erro na busca</h3><p style="font-size:.78rem;font-family:monospace;color:var(--ink2);margin-top:8px;word-break:break-all">'+esc(msg)+'</p><p style="margin-top:12px;font-size:.78rem">Use o botão <strong>"Diagnosticar fontes"</strong> no rodapé para identificar o problema.</p></div>';
+}
+
 function esc(v){return String(v||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
-function xCSV(){if(!dados.length)return;const h=LABELS.join(';');const r=dados.map(d=>COLS.map(c=>'"'+String(d[c]||'').replace(/"/g,'""')+'"').join(';'));dl('\uFEFF'+[h,...r].join('\r\n'),'repositorio-v7.csv','text/csv;charset=utf-8');}
-function xExcel(){if(!dados.length)return;const h=LABELS.join('\t');const r=dados.map(d=>COLS.map(c=>String(d[c]||'').replace(/[\t\r\n]/g,' ')).join('\t'));dl('\uFEFF'+[h,...r].join('\r\n'),'repositorio-v7.xlsx','application/vnd.ms-excel;charset=utf-8');}
+function xCSV(){if(!dados.length)return;const h=LABELS.join(';');const r=dados.map(d=>COLS.map(c=>'"'+String(d[c]||'').replace(/"/g,'""')+'"').join(';'));dl('\uFEFF'+[h,...r].join('\r\n'),'repositorio-v8.csv','text/csv;charset=utf-8');}
+function xExcel(){if(!dados.length)return;const h=LABELS.join('\t');const r=dados.map(d=>COLS.map(c=>String(d[c]||'').replace(/[\t\r\n]/g,' ')).join('\t'));dl('\uFEFF'+[h,...r].join('\r\n'),'repositorio-v8.xlsx','application/vnd.ms-excel;charset=utf-8');}
 function xPDF(){
   if(!dados.length)return;
   const rows=dados.map(d=>'<tr><td>'+d.repositorio+'</td><td><em>'+d.titulo_do_periodico+'</em></td><td>'+d.autor+'</td><td>'+d.ano_da_publicacao+'</td><td>'+d.titulacao+'</td><td>'+d.instituicao_programa+'</td><td>'+d.classificacao+'</td><td>'+String(d.palavras_chaves||'').slice(0,80)+'</td><td>'+String(d.resumo||'').slice(0,180)+'</td><td>'+d.regiao+'</td><td>'+(d.link_capes||d.link_scielo?'<a href="'+(d.link_capes||d.link_scielo)+'">Link</a>':'')+'</td></tr>').join('');
   const w=window.open('','_blank');
-  w.document.write('<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Repositório v7</title><style>@page{size:A3 landscape;margin:11mm}body{font-family:Georgia,serif;font-size:8px;color:#1a1714}h1{font-size:11px;margin-bottom:2px}p{color:#888;font-size:7.5px;margin-bottom:9px}table{width:100%;border-collapse:collapse}th{background:#1a1714;color:#fff;padding:4px 5px;text-align:left;font-size:6.5px;letter-spacing:.08em;text-transform:uppercase}td{padding:4px 5px;border-bottom:1px solid #eee;vertical-align:top}tr:nth-child(even)td{background:#fdf9f2}a{color:#b8860b}</style></head><body><h1>Repositório Acadêmico v7</h1><p>'+dados.length+' publicação(ões) · '+new Date().toLocaleDateString('pt-BR')+'</p><table><thead><tr><th>Fonte</th><th>Título</th><th>Autor</th><th>Ano</th><th>Titulação</th><th>Instituição</th><th>Classificação</th><th>Palavras-chave</th><th>Resumo</th><th>Região</th><th>Link</th></tr></thead><tbody>'+rows+'</tbody></table></body></html>');
+  w.document.write('<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Repositório v8</title><style>@page{size:A3 landscape;margin:11mm}body{font-family:Georgia,serif;font-size:8px;color:#1a1714}h1{font-size:11px;margin-bottom:2px}p{color:#888;font-size:7.5px;margin-bottom:9px}table{width:100%;border-collapse:collapse}th{background:#1a1714;color:#fff;padding:4px 5px;text-align:left;font-size:6.5px;letter-spacing:.08em;text-transform:uppercase}td{padding:4px 5px;border-bottom:1px solid #eee;vertical-align:top}tr:nth-child(even)td{background:#fdf9f2}a{color:#b8860b}</style></head><body><h1>Repositório Acadêmico v8</h1><p>'+dados.length+' publicação(ões) · '+new Date().toLocaleDateString('pt-BR')+'</p><table><thead><tr><th>Fonte</th><th>Título</th><th>Autor</th><th>Ano</th><th>Titulação</th><th>Instituição</th><th>Classificação</th><th>Palavras-chave</th><th>Resumo</th><th>Região</th><th>Link</th></tr></thead><tbody>'+rows+'</tbody></table></body></html>');
   w.document.close();setTimeout(()=>w.print(),700);
 }
 function dl(c,n,m){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([c],{type:m}));a.download=n;a.click();URL.revokeObjectURL(a.href);}
