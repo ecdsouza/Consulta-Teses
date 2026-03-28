@@ -3,238 +3,323 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Repositório Acadêmico v11</title>
+<title>Repositório Acadêmico — Busca Integrada</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<!-- SheetJS para exportação Excel profissional -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
+/* ══════════════ VARIÁVEIS ══════════════ */
 :root{
-  --ink:#1a1714;--ink2:#4a4540;--ink3:#8a847e;
-  --bg:#f7f4ef;--cream:#fdfbf8;--brd:#ddd8d0;--brd2:#edeae4;
-  --gold:#b8860b;--gold2:#d4a017;
-  --capes:#1b4f72;--scielo:#145a32;--bdtd:#6e2f1a;--cross:#4a235a;--openalex:#1a6a4a;
-  --warn-bg:#fffbf0;--warn-brd:#f0c040;--warn-txt:#7a5800;
-  --r:4px;
+  --ink:#1a1714; --ink2:#4a4540; --ink3:#8a847e;
+  --bg:#f4f1ec;  --cream:#fdfbf8; --white:#ffffff;
+  --brd:#d8d3ca; --brd2:#e8e4dd;
+  --gold:#b8860b; --gold2:#d4a017; --gold-lt:#fdf6e3;
+  --capes:#1b4f72; --scielo:#145a32; --bdtd:#6e2f1a; --cross:#4a235a; --oa:#0d5c4a;
+  --warn-bg:#fffbf0; --warn-brd:#e9c06e; --warn-txt:#7a5800;
+  --shadow-sm:0 1px 3px rgba(26,23,20,.08);
+  --shadow-md:0 4px 12px rgba(26,23,20,.12);
+  --shadow-lg:0 8px 32px rgba(26,23,20,.18);
+  --r:5px; --r-lg:8px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
-body{font-family:'Source Serif 4',Georgia,serif;background:var(--bg);color:var(--ink);min-height:100vh;font-size:15px;line-height:1.65}
+body{font-family:'Source Serif 4',Georgia,serif;background:var(--bg);color:var(--ink);min-height:100vh;font-size:14.5px;line-height:1.65}
 
-/* HEADER */
-header{background:var(--ink);color:#fdfbf8;position:sticky;top:0;z-index:200;box-shadow:0 4px 24px rgba(0,0,0,.4)}
-.hdr{padding:13px 20px 11px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
-.logo-t{font-family:'Playfair Display',serif;font-size:clamp(.95rem,4vw,1.4rem);font-weight:700;line-height:1.2}
+/* ══════════════ HEADER ══════════════ */
+header{background:var(--ink);color:#fdfbf8;position:sticky;top:0;z-index:300;box-shadow:var(--shadow-lg)}
+.hdr{padding:14px 24px 12px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.brand{}
+.logo-t{font-family:'Playfair Display',serif;font-size:clamp(1rem,4vw,1.4rem);font-weight:700;line-height:1.2;letter-spacing:-.01em}
 .logo-s{font-size:.58rem;color:var(--gold2);letter-spacing:.2em;text-transform:uppercase;font-family:'JetBrains Mono',monospace;margin-top:2px}
-.vr{width:1px;height:36px;background:rgba(255,255,255,.15);flex-shrink:0}
+.vr{width:1px;height:38px;background:rgba(255,255,255,.12);flex-shrink:0}
 
-/* FONTE TOGGLES */
-.fonte-filters{display:flex;gap:0;border:1px solid rgba(255,255,255,.18);border-radius:6px;overflow:hidden}
-.ff{display:inline-flex;align-items:center;gap:6px;padding:7px 15px;font-family:'JetBrains Mono',monospace;font-size:.62rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;border:none;border-right:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);color:rgba(255,255,255,.5);transition:all .2s;min-height:34px}
+/* Fonte toggles — estilo pill group */
+.fonte-group{display:flex;border:1px solid rgba(255,255,255,.15);border-radius:24px;overflow:hidden;background:rgba(0,0,0,.2)}
+.ff{display:inline-flex;align-items:center;gap:5px;padding:6px 14px;font-family:'JetBrains Mono',monospace;font-size:.6rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;border:none;border-right:1px solid rgba(255,255,255,.1);background:transparent;color:rgba(255,255,255,.45);transition:all .22s;min-height:32px;white-space:nowrap}
 .ff:last-child{border-right:none}
-.ff .dot{width:7px;height:7px;border-radius:50%;background:currentColor;flex-shrink:0;transition:opacity .2s}
-.ff.on{color:#fff;background:rgba(255,255,255,.15)}
+.ff .dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0;transition:all .22s;opacity:.5}
+.ff.on{color:#fff}
 .ff.on .dot{opacity:1}
-.ff-capes.on{background:rgba(27,79,114,.75)}.ff-scielo.on{background:rgba(20,90,50,.75)}
-.ff-bdtd.on{background:rgba(110,47,26,.75)}.ff-cross.on{background:rgba(74,35,90,.75)}.ff-oa.on{background:rgba(26,106,74,.75)}
+.ff-capes.on{background:rgba(27,79,114,.8)}.ff-scielo.on{background:rgba(20,90,50,.8)}
+.ff-bdtd.on{background:rgba(110,47,26,.8)}.ff-cross.on{background:rgba(74,35,90,.8)}
+.ff-oa.on{background:rgba(13,92,74,.8)}
 
-/* BUSCA */
-.sp{background:var(--cream);border-bottom:1px solid var(--brd);padding:16px 20px}
+/* ══════════════ PAINEL DE BUSCA ══════════════ */
+.sp{background:var(--cream);border-bottom:2px solid var(--brd);padding:20px 24px;box-shadow:var(--shadow-sm)}
 .sr{display:flex;gap:8px}
 .sf{position:relative;flex:1}
-.sf svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--ink3);pointer-events:none}
-#query{width:100%;padding:12px 14px 12px 40px;font-family:'Source Serif 4',serif;font-size:.97rem;border:1.5px solid var(--brd);border-radius:var(--r);background:#fff;color:var(--ink);outline:none;transition:border-color .2s,box-shadow .2s;-webkit-appearance:none;min-height:44px}
-#query:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(184,134,11,.1)}
+.sf svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--ink3);pointer-events:none}
+#query{width:100%;padding:12px 16px 12px 42px;font-family:'Source Serif 4',serif;font-size:.97rem;border:1.5px solid var(--brd);border-radius:var(--r);background:var(--white);color:var(--ink);outline:none;transition:all .2s;-webkit-appearance:none;min-height:46px;box-shadow:var(--shadow-sm)}
+#query:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(184,134,11,.12),var(--shadow-sm)}
 #query::placeholder{color:var(--ink3);font-style:italic}
-.btn-p{padding:0 22px;background:var(--ink);color:#fdfbf8;border:none;border-radius:var(--r);font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;cursor:pointer;transition:background .2s;white-space:nowrap;min-height:44px}
-.btn-p:hover{background:#2c2825}.btn-p:disabled{opacity:.5;cursor:not-allowed}
-.filters{display:flex;gap:12px;margin-top:12px;flex-wrap:wrap;align-items:center}
-.fl{font-size:.62rem;color:var(--ink3);letter-spacing:.1em;text-transform:uppercase;font-family:'JetBrains Mono',monospace}
-.fg{display:flex;gap:6px;align-items:center}
-.fg label{font-size:.8rem;color:var(--ink2)}
-select,input[type=number]{font-family:'Source Serif 4',serif;font-size:.85rem;padding:7px 9px;border:1.5px solid var(--brd);border-radius:var(--r);background:#fff;color:var(--ink);outline:none;min-height:36px;-webkit-appearance:none}
-select:focus,input[type=number]:focus{border-color:var(--gold)}
-input[type=number]{width:82px}
+.btn-p{padding:0 24px;background:var(--ink);color:#fdfbf8;border:none;border-radius:var(--r);font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap;min-height:46px;box-shadow:var(--shadow-sm)}
+.btn-p:hover{background:#2c2825;box-shadow:var(--shadow-md)}
+.btn-p:disabled{opacity:.5;cursor:not-allowed}
 
-/* CONTEÚDO */
-.content{padding:14px 20px}
+/* ══════════════ FILTROS ══════════════ */
+.filters-bar{display:flex;gap:12px;margin-top:14px;flex-wrap:wrap;align-items:flex-start}
+.filter-block{display:flex;flex-direction:column;gap:4px}
+.filter-label{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);font-weight:500}
 
-/* ALERTA */
-.alerta{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;border-radius:6px;margin-bottom:12px;border:1px solid}
-.alerta-icon{font-size:1rem;flex-shrink:0;margin-top:1px}
-.alerta-title{font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:3px}
-.alerta-msg{font-size:.8rem;line-height:1.55}
-.alerta-link{display:inline-block;margin-top:5px;font-family:'JetBrains Mono',monospace;font-size:.65rem;text-decoration:underline;cursor:pointer;opacity:.8}
+/* Período */
+.period-row{display:flex;gap:6px;align-items:center}
+.period-row span{font-size:.8rem;color:var(--ink3)}
+input[type=number]{font-family:'Source Serif 4',serif;font-size:.84rem;padding:6px 9px;border:1.5px solid var(--brd);border-radius:var(--r);background:var(--white);color:var(--ink);outline:none;min-height:34px;-webkit-appearance:none;width:80px;transition:border-color .2s}
+input[type=number]:focus{border-color:var(--gold)}
+
+/* Multi-select checkboxes */
+.multi-check{display:flex;flex-wrap:wrap;gap:4px;margin-top:2px}
+.mchk{display:none}
+.mchk-label{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border:1.5px solid var(--brd);border-radius:20px;background:var(--white);color:var(--ink2);font-family:'JetBrains Mono',monospace;font-size:.62rem;font-weight:500;letter-spacing:.06em;cursor:pointer;transition:all .18s;user-select:none;white-space:nowrap}
+.mchk-label:hover{border-color:var(--gold);color:var(--ink)}
+.mchk:checked + .mchk-label{background:var(--ink);color:var(--white);border-color:var(--ink)}
+.mchk-label .chk-dot{width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0}
+
+/* Por página */
+.ppag-row{display:flex;gap:6px;align-items:center}
+select{font-family:'Source Serif 4',serif;font-size:.84rem;padding:6px 9px;border:1.5px solid var(--brd);border-radius:var(--r);background:var(--white);color:var(--ink);outline:none;min-height:34px;-webkit-appearance:none;cursor:pointer;transition:border-color .2s}
+select:focus{border-color:var(--gold)}
+
+/* ══════════════ CONTEÚDO ══════════════ */
+.content{padding:16px 24px}
+
+/* Alerta profissional */
+.alerta{display:flex;align-items:flex-start;gap:14px;padding:14px 18px;border-radius:var(--r-lg);margin-bottom:14px;border:1px solid;box-shadow:var(--shadow-sm)}
+.alerta-icon{font-size:1.1rem;flex-shrink:0;margin-top:1px}
+.alerta-title{font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px}
+.alerta-msg{font-size:.82rem;line-height:1.55}
+.alerta-link{display:inline-block;margin-top:6px;font-family:'JetBrains Mono',monospace;font-size:.66rem;text-decoration:underline;cursor:pointer;opacity:.8}
 .alerta-warn{background:var(--warn-bg);border-color:var(--warn-brd);color:var(--warn-txt)}
 
-/* BARRA RESULTADOS */
-.rbar{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px}
-.rc{display:flex;flex-direction:column;gap:5px}
-.rc-count{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--ink3)}
-.rc-count strong{color:var(--ink);font-weight:700;font-size:.82rem}
+/* Barra de resultados */
+.rbar{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px}
+.rc{display:flex;flex-direction:column;gap:6px}
+.rc-count{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--ink3);letter-spacing:.05em}
+.rc-count strong{color:var(--ink);font-weight:700;font-size:.84rem}
 .src-pills{display:flex;gap:4px;flex-wrap:wrap}
-.pill{display:inline-flex;align-items:center;gap:3px;padding:2px 9px;border-radius:20px;font-family:'JetBrains Mono',monospace;font-size:.58rem;font-weight:600;color:#fff}
-.pc{background:var(--capes)}.po{background:var(--openalex)}.ps{background:var(--scielo)}.pb{background:var(--bdtd)}.px{background:var(--cross)}
-.exg{display:flex;gap:6px;flex-wrap:wrap}
-.be{padding:7px 14px;border:1.5px solid var(--brd);border-radius:var(--r);background:#fff;color:var(--ink2);font-family:'JetBrains Mono',monospace;font-size:.63rem;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:all .2s;min-height:34px}
-.be:hover{background:var(--ink);color:#fff;border-color:var(--ink)}
+.pill{display:inline-flex;align-items:center;gap:3px;padding:3px 10px;border-radius:20px;font-family:'JetBrains Mono',monospace;font-size:.58rem;font-weight:600;color:#fff;letter-spacing:.05em}
+.pc{background:var(--capes)}.ps{background:var(--scielo)}.pb{background:var(--bdtd)}.px{background:var(--cross)}.po{background:var(--oa)}
 
-/* PAGINAÇÃO */
-.paginacao{display:flex;align-items:center;justify-content:center;gap:4px;margin-top:20px;flex-wrap:wrap}
-.pg-btn{display:inline-flex;align-items:center;justify-content:center;min-width:36px;height:36px;padding:0 10px;border:1.5px solid var(--brd);border-radius:var(--r);background:#fff;color:var(--ink2);font-family:'JetBrains Mono',monospace;font-size:.72rem;cursor:pointer;transition:all .2s;user-select:none}
-.pg-btn:hover:not(.ativo):not(.desab){background:var(--bg);border-color:var(--gold)}
-.pg-btn.ativo{background:var(--ink);color:#fff;border-color:var(--ink);font-weight:700;cursor:default}
-.pg-btn.desab{opacity:.35;cursor:not-allowed}
-.pg-info{font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--ink3);padding:0 8px}
-.por-pag{display:flex;align-items:center;gap:6px;margin-top:12px;justify-content:center}
-.por-pag label{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--ink3)}
-.por-pag select{font-size:.78rem;padding:4px 8px;min-height:30px}
+/* Botões de exportação */
+.exg{display:flex;gap:6px;flex-wrap:wrap;align-items:flex-start}
+.be{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1.5px solid var(--brd);border-radius:var(--r);background:var(--white);color:var(--ink2);font-family:'JetBrains Mono',monospace;font-size:.63rem;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:all .2s;min-height:36px;box-shadow:var(--shadow-sm);font-weight:500}
+.be svg{flex-shrink:0}
+.be:hover{background:var(--ink);color:var(--white);border-color:var(--ink);box-shadow:var(--shadow-md)}
+.be-excel:hover{background:#1d6f42;border-color:#1d6f42}
+.be-pdf:hover{background:#c0392b;border-color:#c0392b}
 
-/* ESTADO */
-.state{text-align:center;padding:60px 20px;color:var(--ink3)}
-.si{font-size:2.4rem;margin-bottom:14px;opacity:.4}
-.state h3{font-family:'Playfair Display',serif;font-size:1.15rem;color:var(--ink2);margin-bottom:8px;font-weight:600;font-style:italic}
-.state p{font-size:.84rem;max-width:420px;margin:0 auto;line-height:1.65}
+/* Paginação */
+.paginacao{display:flex;align-items:center;justify-content:center;gap:4px;margin-top:22px;flex-wrap:wrap}
+.pg-btn{display:inline-flex;align-items:center;justify-content:center;min-width:36px;height:36px;padding:0 10px;border:1.5px solid var(--brd);border-radius:var(--r);background:var(--white);color:var(--ink2);font-family:'JetBrains Mono',monospace;font-size:.72rem;cursor:pointer;transition:all .2s;user-select:none;box-shadow:var(--shadow-sm)}
+.pg-btn:hover:not(.ativo):not(.desab){border-color:var(--gold);color:var(--gold)}
+.pg-btn.ativo{background:var(--ink);color:var(--white);border-color:var(--ink);font-weight:700;cursor:default;box-shadow:var(--shadow-md)}
+.pg-btn.desab{opacity:.3;cursor:not-allowed;box-shadow:none}
+.pg-sep{font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--ink3);padding:0 4px}
+
+/* ══════════════ ESTADO ══════════════ */
+.state{text-align:center;padding:64px 24px;color:var(--ink3)}
+.si{font-size:2.6rem;margin-bottom:14px;opacity:.35}
+.state h3{font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--ink2);margin-bottom:8px;font-weight:600;font-style:italic}
+.state p{font-size:.84rem;max-width:440px;margin:0 auto;line-height:1.7}
 .spinner{width:32px;height:32px;border:3px solid var(--brd);border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 16px}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* TAGS */
-.tag{display:inline-block;padding:2px 8px;border-radius:20px;font-family:'JetBrains Mono',monospace;font-size:.56rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#fff;white-space:nowrap}
-.tc{background:var(--capes)}.ts{background:var(--scielo)}.tb{background:var(--bdtd)}.tx{background:var(--cross)}.to{background:var(--openalex)}
+/* ══════════════ TAGS ══════════════ */
+.tag{display:inline-block;padding:2px 9px;border-radius:20px;font-family:'JetBrains Mono',monospace;font-size:.55rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:#fff;white-space:nowrap}
+.tc{background:var(--capes)}.ts{background:var(--scielo)}.tb{background:var(--bdtd)}.tx{background:var(--cross)}.to{background:var(--oa)}
 
-/* CHIPS */
+/* Chips de palavras-chave */
 .chips{display:flex;flex-wrap:wrap;gap:3px;margin-top:4px}
-.chip{background:rgba(184,134,11,.08);border:1px solid rgba(184,134,11,.2);border-radius:20px;padding:1px 8px;font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--gold2)}
+.chip{background:var(--gold-lt);border:1px solid rgba(184,134,11,.22);border-radius:20px;padding:1px 8px;font-family:'JetBrains Mono',monospace;font-size:.57rem;color:var(--gold);font-weight:500}
 
-/* CARDS mobile */
+/* ══════════════ CARDS — mobile ══════════════ */
 .cards{display:flex;flex-direction:column;gap:12px}
-.card{background:#fff;border:1px solid var(--brd);border-radius:8px;padding:14px;box-shadow:0 1px 4px rgba(26,23,20,.07)}
-.card-hdr{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}
-.card-tit{font-family:'Source Serif 4',serif;font-size:.93rem;font-weight:500;font-style:italic;color:var(--ink);line-height:1.4;flex:1}
-.cgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;margin-bottom:8px}
-.cf label{display:block;font-family:'JetBrains Mono',monospace;font-size:.52rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:1px}
-.cf .cv{font-size:.8rem;color:var(--ink2);line-height:1.4;word-break:break-word}
+.card{background:var(--white);border:1px solid var(--brd);border-radius:var(--r-lg);padding:16px;box-shadow:var(--shadow-sm);transition:box-shadow .2s}
+.card:hover{box-shadow:var(--shadow-md)}
+.card-hdr{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:12px}
+.card-tit{font-family:'Source Serif 4',serif;font-size:.94rem;font-weight:500;font-style:italic;color:var(--ink);line-height:1.45;flex:1}
+.cgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;margin-bottom:10px}
+.cf label{display:block;font-family:'JetBrains Mono',monospace;font-size:.52rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);margin-bottom:2px;font-weight:500}
+.cf .cv{font-size:.8rem;color:var(--ink2);line-height:1.45;word-break:break-word}
 .cf.full{grid-column:1/-1}
-.cresum{font-size:.8rem;color:var(--ink2);line-height:1.55}
+.cresum{font-size:.8rem;color:var(--ink2);line-height:1.6}
 .cresum.tr{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-.cvm{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--gold);cursor:pointer;margin-top:3px;display:inline-block}
-.clinks{display:flex;gap:10px;margin-top:10px;padding-top:8px;border-top:1px solid var(--brd2);flex-wrap:wrap}
-.clinks a{color:var(--gold);text-decoration:none;font-family:'JetBrains Mono',monospace;font-size:.63rem;font-weight:500}
+.cvm{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--gold);cursor:pointer;margin-top:4px;display:inline-block;font-weight:500}
+.clinks{display:flex;gap:10px;margin-top:12px;padding-top:10px;border-top:1px solid var(--brd2);flex-wrap:wrap}
+.clinks a{color:var(--gold);text-decoration:none;font-family:'JetBrains Mono',monospace;font-size:.63rem;font-weight:500;display:inline-flex;align-items:center;gap:4px}
+.clinks a:hover{text-decoration:underline}
 
-/* TABELA desktop */
-.tw{width:100%;border:1px solid var(--brd);border-radius:var(--r);background:#fff;box-shadow:0 1px 4px rgba(26,23,20,.07);overflow:hidden}
+/* ══════════════ TABELA — desktop ══════════════ */
+.tw{width:100%;border:1px solid var(--brd);border-radius:var(--r-lg);background:var(--white);box-shadow:var(--shadow-md);overflow:hidden}
 table{width:100%;border-collapse:collapse;table-layout:fixed}
 col.c1{width:6%}col.c2{width:5%}col.c3{width:5%}col.c4{width:6%}col.c5{width:6%}
 col.c6{width:4%}col.c7{width:3%}col.c8{width:13%}col.c9{width:9%}col.c10{width:8%}
 col.c11{width:6%}col.c12{width:9%}col.c13{width:7%}col.c14{width:9%}col.c15{width:5%}
-thead{background:var(--ink);color:#fdfbf8}
-thead th{padding:9px 7px;text-align:left;font-family:'JetBrains Mono',monospace;font-size:.52rem;letter-spacing:.1em;text-transform:uppercase;font-weight:500;border-right:1px solid rgba(255,255,255,.07);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;vertical-align:bottom}
+thead{background:var(--ink)}
+thead th{padding:11px 9px;text-align:left;font-family:'JetBrains Mono',monospace;font-size:.52rem;letter-spacing:.12em;text-transform:uppercase;font-weight:600;border-right:1px solid rgba(255,255,255,.07);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;vertical-align:bottom;color:#e8e4dc}
 thead th:last-child{border-right:none}
 tbody tr{border-bottom:1px solid var(--brd2);transition:background .12s}
+tbody tr:nth-child(even){background:#faf8f5}
 tbody tr:last-child{border-bottom:none}
-tbody tr:hover{background:#fdf9f2}
-tbody td{padding:8px 7px;vertical-align:top;border-right:1px solid var(--brd2);font-size:.75rem;color:var(--ink2);overflow:hidden;word-break:break-word}
+tbody tr:hover{background:var(--gold-lt)}
+tbody td{padding:9px 9px;vertical-align:top;border-right:1px solid var(--brd2);font-size:.76rem;color:var(--ink2);overflow:hidden;word-break:break-word}
 tbody td:last-child{border-right:none}
 .ct{color:var(--ink)!important;font-weight:500;font-style:italic;line-height:1.4}
-a.lk{color:var(--gold);text-decoration:none;font-family:'JetBrains Mono',monospace;font-size:.6rem;display:block;margin-bottom:1px}
+a.lk{color:var(--gold);text-decoration:none;font-family:'JetBrains Mono',monospace;font-size:.6rem;display:block;margin-bottom:2px;font-weight:500}
 a.lk:hover{text-decoration:underline}
-.resum{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;font-size:.74rem;line-height:1.5;cursor:pointer}
+.resum{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;font-size:.74rem;line-height:1.55;cursor:pointer}
 .resum.open{-webkit-line-clamp:unset;display:block}
-.rbtn2{font-family:'JetBrains Mono',monospace;font-size:.56rem;color:var(--gold);cursor:pointer;margin-top:2px}
-.sel span{display:inline-block;background:rgba(184,134,11,.08);border:1px solid rgba(184,134,11,.2);border-radius:20px;padding:1px 6px;margin:1px;color:var(--gold2);font-family:'JetBrains Mono',monospace;font-size:.56rem}
+.rbtn2{font-family:'JetBrains Mono',monospace;font-size:.56rem;color:var(--gold);cursor:pointer;margin-top:3px;font-weight:500}
+.sel span{display:inline-block;background:var(--gold-lt);border:1px solid rgba(184,134,11,.22);border-radius:20px;padding:1px 6px;margin:1px;color:var(--gold);font-family:'JetBrains Mono',monospace;font-size:.55rem}
 
-@media(max-width:767px){.vr{display:none}.tw{display:none!important}.cards{display:flex}.cgrid{grid-template-columns:1fr}.fonte-filters{flex-wrap:wrap;border-radius:var(--r)}.ff{flex:1;justify-content:center;border-right:none;border-bottom:1px solid rgba(255,255,255,.1)}}
+/* ══════════════ BREAKPOINTS ══════════════ */
+@media(max-width:767px){
+  .vr,.vr2{display:none}
+  .tw{display:none!important}
+  .cards{display:flex}
+  .cgrid{grid-template-columns:1fr}
+  .fonte-group{flex-wrap:wrap;border-radius:var(--r-lg)}
+  .ff{flex:1 0 auto;justify-content:center;border-right:none;border-bottom:1px solid rgba(255,255,255,.1)}
+}
 @media(min-width:768px){.cards{display:none!important}.tw{display:block}}
 
-footer{margin-top:40px;border-top:1px solid var(--brd);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+/* ══════════════ RODAPÉ ══════════════ */
+footer{margin-top:40px;border-top:1px solid var(--brd);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;background:var(--cream)}
 .footer-txt{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--ink3);letter-spacing:.09em}
-.btn-diag{padding:5px 12px;border:1.5px solid var(--brd);border-radius:var(--r);background:transparent;color:var(--ink3);font-family:'JetBrains Mono',monospace;font-size:.58rem;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:5px}
+.btn-diag{padding:6px 14px;border:1.5px solid var(--brd);border-radius:20px;background:transparent;color:var(--ink3);font-family:'JetBrains Mono',monospace;font-size:.6rem;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:5px}
 .btn-diag:hover{background:var(--ink);color:#fff;border-color:var(--ink)}
 </style>
 </head>
 <body>
 
+<!-- ═══════  HEADER  ═══════ -->
 <header>
   <div class="hdr">
-    <div>
+    <div class="brand">
       <div class="logo-t">Repositório Acadêmico</div>
-      <div class="logo-s">Busca Integrada · v11</div>
+      <div class="logo-s">Busca Integrada de Publicações · v12</div>
     </div>
     <div class="vr"></div>
-    <div class="fonte-filters" id="fonteFilters">
+    <div class="fonte-group" id="fonteGroup">
       <button class="ff ff-capes on"  data-fonte="capes"    onclick="toggleFonte(this)"><span class="dot"></span>CAPES</button>
       <button class="ff ff-scielo on" data-fonte="scielo"   onclick="toggleFonte(this)"><span class="dot"></span>SciELO</button>
       <button class="ff ff-bdtd on"   data-fonte="bdtd"     onclick="toggleFonte(this)"><span class="dot"></span>BDTD</button>
       <button class="ff ff-cross on"  data-fonte="crossref" onclick="toggleFonte(this)"><span class="dot"></span>Crossref</button>
+      <button class="ff ff-oa on"     data-fonte="openalex" onclick="toggleFonte(this)"><span class="dot"></span>OpenAlex</button>
     </div>
   </div>
 </header>
 
+<!-- ═══════  BUSCA  ═══════ -->
 <div class="sp">
   <div class="sr">
     <div class="sf">
       <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-      <input type="text" id="query" placeholder="Tema, autor, palavra-chave ou instituição…" autocomplete="off" spellcheck="false"/>
+      <input type="text" id="query" placeholder="Digite tema, autor, palavra-chave ou instituição…" autocomplete="off" spellcheck="false"/>
     </div>
-    <button class="btn-p" id="btnB" onclick="buscar(1)">Pesquisar</button>
+    <button class="btn-p" id="btnB" onclick="buscar(1)">
+      Pesquisar
+    </button>
   </div>
-  <div class="filters">
-    <span class="fl">Filtros</span>
-    <div class="fg">
-      <label>Período</label>
-      <input type="number" id="am" value="2015" min="1900" max="2099"/>
-      <label>–</label>
-      <input type="number" id="ax" placeholder="atual" min="1900" max="2099"/>
+
+  <div class="filters-bar">
+
+    <!-- Período -->
+    <div class="filter-block">
+      <span class="filter-label">Período</span>
+      <div class="period-row">
+        <input type="number" id="am" value="2015" min="1900" max="2099" title="Ano inicial"/>
+        <span>–</span>
+        <input type="number" id="ax" placeholder="atual" min="1900" max="2099" title="Ano final"/>
+      </div>
     </div>
-    <div class="fg">
-      <label for="tp">Tipo</label>
-      <select id="tp">
-        <option value="">Todos</option>
-        <option value="tese">Tese de Doutorado</option>
-        <option value="dissertação">Dissertação de Mestrado</option>
-        <option value="artigo">Artigo Científico</option>
-      </select>
+
+    <!-- Tipo — multi-select com checkboxes estilizados -->
+    <div class="filter-block">
+      <span class="filter-label">Tipo de publicação</span>
+      <div class="multi-check">
+        <input class="mchk" type="checkbox" id="tp-tese"    value="tese de doutorado"/>
+        <label class="mchk-label" for="tp-tese"><span class="chk-dot"></span>Tese de Doutorado</label>
+
+        <input class="mchk" type="checkbox" id="tp-diss"    value="dissertação de mestrado"/>
+        <label class="mchk-label" for="tp-diss"><span class="chk-dot"></span>Dissertação de Mestrado</label>
+
+        <input class="mchk" type="checkbox" id="tp-artigo"  value="artigo científico"/>
+        <label class="mchk-label" for="tp-artigo"><span class="chk-dot"></span>Artigo Científico</label>
+
+        <input class="mchk" type="checkbox" id="tp-livro"   value="livro"/>
+        <label class="mchk-label" for="tp-livro"><span class="chk-dot"></span>Livro / Capítulo</label>
+
+        <input class="mchk" type="checkbox" id="tp-mono"    value="monografia"/>
+        <label class="mchk-label" for="tp-mono"><span class="chk-dot"></span>Monografia</label>
+      </div>
     </div>
-    <div class="fg">
-      <label>Por página</label>
-      <select id="porPag">
-        <option value="10">10</option>
-        <option value="20" selected>20</option>
-        <option value="50">50</option>
-        <option value="100">100</option>
-      </select>
+
+    <!-- Por página -->
+    <div class="filter-block">
+      <span class="filter-label">Por página</span>
+      <div class="ppag-row">
+        <select id="porPag">
+          <option value="10">10</option>
+          <option value="20" selected>20</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select>
+      </div>
     </div>
+
   </div>
 </div>
 
+<!-- ═══════  CONTEÚDO  ═══════ -->
 <div class="content">
+
   <div id="alertaArea"></div>
 
+  <!-- Barra de resultados -->
   <div class="rbar" id="rbar" style="display:none">
     <div class="rc">
-      <div class="rc-count"><strong id="tot">0</strong> publicações · página <strong id="pAtual">1</strong> de <strong id="pTotal">1</strong> · <span id="ql"></span></div>
+      <div class="rc-count">
+        <strong id="tot">0</strong> publicações · página <strong id="pAtual">1</strong> de <strong id="pTotal">1</strong>
+        <span id="ql" style="color:var(--ink3);margin-left:6px"></span>
+      </div>
       <div class="src-pills" id="srcPills"></div>
     </div>
     <div class="exg">
-      <button class="be" onclick="xCSV()">↓ CSV</button>
-      <button class="be" onclick="xExcel()">↓ Excel</button>
-      <button class="be" onclick="xPDF()">↓ PDF</button>
+      <button class="be" onclick="xCSV()">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        CSV
+      </button>
+      <button class="be be-excel" onclick="xExcel()">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Excel (.xlsx)
+      </button>
+      <button class="be be-pdf" onclick="xPDF()">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        PDF (imprimir)
+      </button>
     </div>
   </div>
 
+  <!-- Estado -->
   <div id="stArea">
     <div class="state">
       <div class="si">📚</div>
       <h3>Pesquise publicações acadêmicas</h3>
-      <p>Selecione as fontes, defina o período e pesquise. Resultados incluem teses, dissertações e artigos — com paginação para navegar em centenas de registros.</p>
+      <p>Selecione as fontes no cabeçalho, defina o período e os tipos de publicação desejados. Os resultados incluem teses, dissertações e artigos com paginação completa.</p>
     </div>
   </div>
 
+  <!-- Cards — mobile -->
   <div class="cards" id="cards"></div>
 
+  <!-- Tabela — desktop -->
   <div class="tw" id="tw" style="display:none">
     <table>
       <colgroup><col class="c1"/><col class="c2"/><col class="c3"/><col class="c4"/><col class="c5"/><col class="c6"/><col class="c7"/><col class="c8"/><col class="c9"/><col class="c10"/><col class="c11"/><col class="c12"/><col class="c13"/><col class="c14"/><col class="c15"/></colgroup>
       <thead><tr>
-        <th>Fonte</th><th>Link CAPES</th><th>Link SciELO</th><th>Revista</th><th>Classificação</th>
+        <th>Fonte</th><th>Link CAPES</th><th>Link / DOI</th><th>Revista</th><th>Classificação</th>
         <th>Ano</th><th>Vol.</th><th>Título do Periódico</th><th>Resumo</th><th>Palavras-chave</th>
         <th>Seletor KW</th><th>Autor(es)</th><th>Titulação</th><th>Instituição / Programa</th><th>Região</th>
       </tr></thead>
@@ -242,239 +327,456 @@ footer{margin-top:40px;border-top:1px solid var(--brd);padding:12px 20px;display
     </table>
   </div>
 
-  <!-- PAGINAÇÃO -->
+  <!-- Paginação -->
   <div class="paginacao" id="paginacao" style="display:none"></div>
+
 </div>
 
+<!-- ═══════  RODAPÉ  ═══════ -->
 <footer>
-  <span class="footer-txt">Repositório Acadêmico v11 · CAPES · SciELO · BDTD · Crossref</span>
+  <span class="footer-txt">Repositório Acadêmico v12 · CAPES · SciELO · BDTD · Crossref · OpenAlex</span>
   <button class="btn-diag" onclick="diagnosticar()">
-    <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
+    <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
     Diagnosticar fontes
   </button>
 </footer>
 
 <script>
 'use strict';
-const COLS=['repositorio','link_capes','link_scielo','revista','classificacao','ano_da_publicacao','volume','titulo_do_periodico','resumo','palavras_chaves','seletor_palavras_chaves','autor','titulacao','instituicao_programa','regiao'];
-const LABELS=['REPOSITÓRIO','LINK/CAPES','LINK/SCIELO','REVISTA','CLASSIFICAÇÃO','ANO DA PUBLICAÇÃO','VOLUME','TÍTULO DO PERIÓDICO','RESUMO','PALAVRAS-CHAVES','SELETOR_PALAVRAS_CHAVES','AUTOR','TITULAÇÃO','INSTITUIÇÃO/PROGRAMA','REGIÃO'];
-const PILLCLS={CAPES:'pc',SciELO:'ps',BDTD:'pb',Crossref:'px',OpenAlex:'po'};
 
-let dados=[], ultimaQuery='', ultimoAnoMin='', ultimoAnoMax='', ultimasFontes='';
+/* ══════════════════════════════════════════════
+   COLUNAS EXPORTAÇÃO
+══════════════════════════════════════════════ */
+const COLS = [
+  'repositorio','link_capes','link_scielo','revista','classificacao',
+  'ano_da_publicacao','volume','titulo_do_periodico','resumo',
+  'palavras_chaves','seletor_palavras_chaves','autor','titulacao',
+  'instituicao_programa','regiao'
+];
+const LABELS = [
+  'REPOSITÓRIO','LINK/CAPES','LINK/SCIELO','REVISTA','CLASSIFICAÇÃO',
+  'ANO DA PUBLICAÇÃO','VOLUME','TÍTULO DO PERIÓDICO','RESUMO',
+  'PALAVRAS-CHAVES','SELETOR PALAVRAS-CHAVES','AUTOR','TITULAÇÃO',
+  'INSTITUIÇÃO / PROGRAMA','REGIÃO'
+];
+const PILLCLS = {CAPES:'pc',SciELO:'ps',BDTD:'pb',Crossref:'px',OpenAlex:'po'};
 
-// ── Toggle fonte ──────────────────────────────────────────────────
-function toggleFonte(btn){btn.classList.toggle('on');}
-function fontesAtivas(){return[...document.querySelectorAll('.ff.on')].map(b=>b.dataset.fonte).join(',');}
+let todos = [];   // todos os registros da busca atual (sem paginação)
+let dados = [];   // página atual
 
-// ── Busca ─────────────────────────────────────────────────────────
-async function buscar(pagina){
+/* ══════════════════════════════════════════════
+   TOGGLES DE FONTE
+══════════════════════════════════════════════ */
+function toggleFonte(btn) { btn.classList.toggle('on'); }
+function fontesAtivas() {
+  return [...document.querySelectorAll('.ff.on')].map(b => b.dataset.fonte).join(',');
+}
+
+/* ══════════════════════════════════════════════
+   FILTRO MULTI-SELECT DE TIPO
+══════════════════════════════════════════════ */
+function tiposSelecionados() {
+  return [...document.querySelectorAll('.mchk:checked')].map(c => c.value);
+}
+
+function filtrar(lst) {
+  const tipos = tiposSelecionados();
+  if (!tipos.length) return lst; // sem filtro = todos
+  return lst.filter(d => {
+    const t = (d.titulacao || d.classificacao || '').toLowerCase();
+    return tipos.some(tp => t.includes(tp));
+  });
+}
+
+/* ══════════════════════════════════════════════
+   BUSCA PRINCIPAL
+══════════════════════════════════════════════ */
+async function buscar(pagina) {
   pagina = pagina || 1;
-  const q=document.getElementById('query').value.trim();
-  if(!q){alert('Informe um termo de busca.');return;}
-  const ativas=fontesAtivas();
-  if(!ativas){mostrarAlerta('warn','Nenhuma fonte selecionada','Ative ao menos uma fonte no cabeçalho.');return;}
+  const q = document.getElementById('query').value.trim();
+  if (!q) { alert('Informe um termo de busca.'); return; }
 
-  const am=document.getElementById('am').value||'2015';
-  const ax=document.getElementById('ax').value||'';
-  const pp=document.getElementById('porPag').value||'20';
+  const ativas = fontesAtivas();
+  if (!ativas) { alert('Selecione ao menos uma fonte no cabeçalho.'); return; }
 
-  ultimaQuery=q; ultimoAnoMin=am; ultimoAnoMax=ax; ultimasFontes=ativas;
+  const am = document.getElementById('am').value || '2015';
+  const ax = document.getElementById('ax').value || '';
+  const pp = document.getElementById('porPag').value || '20';
 
-  loading(q,pagina);
-  document.getElementById('btnB').disabled=true;
+  loading(q, pagina);
+  document.getElementById('btnB').disabled = true;
 
-  try{
-    const url='/api/search?q='+encodeURIComponent(q)+'&fontes='+ativas+'&anoMin='+am+(ax?'&anoMax='+ax:'')+'&pagina='+pagina+'&por_pagina='+pp;
-    const r=await fetch(url);
-    const ct=r.headers.get('content-type')||'';
-    if(!ct.includes('json')){
-      const txt=await r.text();
-      throw new Error('API retornou HTML. Verifique o deploy. Prévia: '+txt.slice(0,80));
+  try {
+    const url = '/api/search?q=' + encodeURIComponent(q)
+      + '&fontes=' + ativas
+      + '&anoMin=' + am
+      + (ax ? '&anoMax=' + ax : '')
+      + '&pagina=' + pagina
+      + '&por_pagina=' + pp;
+
+    const r  = await fetch(url);
+    const ct = r.headers.get('content-type') || '';
+
+    if (!ct.includes('json')) {
+      const txt = await r.text();
+      throw new Error('API retornou HTML. Deploy incorreto. Prévia: ' + txt.slice(0, 100));
     }
-    if(!r.ok) throw new Error('HTTP '+r.status);
-    const j=await r.json();
-    dados=filtrar(j.resultados||[]);
-    mostrarAlertas(j.source_errors||[], j.por_fonte||{});
-    render(dados, q, j.por_fonte||{}, j.pagina||pagina, j.total_paginas||1, j.total_unicos||0);
-  }catch(e){erro(e.message);}
-  finally{document.getElementById('btnB').disabled=false;}
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+
+    const j = await r.json();
+    dados = filtrar(j.resultados || []);
+    todos = dados; // para exportação da página atual
+
+    mostrarAlertas(j.source_errors || [], j.por_fonte || {});
+    render(dados, q, j.por_fonte || {}, j.pagina || pagina, j.total_paginas || 1, j.total_unicos || 0);
+  } catch (e) {
+    erro(e.message);
+  } finally {
+    document.getElementById('btnB').disabled = false;
+  }
 }
 
-// ── Filtro local (por tipo) ───────────────────────────────────────
-function filtrar(lst){
-  const tp=document.getElementById('tp').value.toLowerCase();
-  if(!tp) return lst;
-  return lst.filter(d=>{
-    const t=(d.titulacao||d.classificacao||'').toLowerCase();
-    return t.includes(tp);
-  });
+/* ══════════════════════════════════════════════
+   RENDER
+══════════════════════════════════════════════ */
+function tagH(n) {
+  const lc = (n || '').toLowerCase();
+  const c  = lc.includes('scielo')   ? 'ts'
+           : lc.includes('bdtd')     ? 'tb'
+           : lc.includes('crossref') ? 'tx'
+           : lc.includes('openalex') ? 'to'
+           : 'tc';
+  return '<span class="tag ' + c + '">' + esc(n) + '</span>';
 }
 
-// ── Paginação ─────────────────────────────────────────────────────
-function renderPaginacao(pAtual, pTotal){
-  const el=document.getElementById('paginacao');
-  if(pTotal<=1){el.style.display='none';return;}
-  el.style.display='flex';
+function chipsH(kw) {
+  if (!kw) return '<span style="opacity:.3;font-size:.78rem">—</span>';
+  return '<div class="chips">' +
+    kw.split(';').map(k => k.trim()).filter(Boolean)
+      .map(k => '<span class="chip">' + esc(k) + '</span>').join('') +
+    '</div>';
+}
 
-  let html='';
-  // Prev
-  html+=`<button class="pg-btn${pAtual===1?' desab':''}" onclick="${pAtual>1?'buscar('+(pAtual-1)+')':'void 0'}">‹</button>`;
+function selH(s) {
+  if (!s) return '<span style="opacity:.3">—</span>';
+  return '<span class="sel">' +
+    s.split(';').map(t => '<span>' + esc(t.trim()) + '</span>').join('') +
+    '</span>';
+}
 
-  // Páginas
-  const pages=[];
-  if(pTotal<=7){for(let i=1;i<=pTotal;i++)pages.push(i);}
-  else{
-    pages.push(1);
-    if(pAtual>3) pages.push('...');
-    for(let i=Math.max(2,pAtual-1);i<=Math.min(pTotal-1,pAtual+1);i++) pages.push(i);
-    if(pAtual<pTotal-2) pages.push('...');
-    pages.push(pTotal);
+function v(x) { return esc(x) || '<span style="opacity:.28">—</span>'; }
+
+function render(lst, q, porFonte, pAtual, pTotal, totalUnicos) {
+  const rbar  = document.getElementById('rbar');
+  const st    = document.getElementById('stArea');
+  const cards = document.getElementById('cards');
+  const tbody = document.getElementById('tbody');
+  const tw    = document.getElementById('tw');
+
+  document.getElementById('tot').textContent    = totalUnicos;
+  document.getElementById('pAtual').textContent = pAtual;
+  document.getElementById('pTotal').textContent = pTotal;
+  document.getElementById('ql').textContent     = lst.length ? '· "' + q + '"' : '';
+
+  // Pills por fonte
+  document.getElementById('srcPills').innerHTML = Object.entries(porFonte)
+    .filter(([, n]) => n > 0)
+    .map(([f, n]) => '<span class="pill ' + (PILLCLS[f] || 'px') + '">' + esc(f) + ' · ' + n + '</span>')
+    .join('');
+
+  if (!totalUnicos) {
+    st.style.display = '';
+    st.innerHTML = '<div class="state"><div class="si">🔍</div><h3>Nenhum resultado encontrado</h3><p>Tente outros termos, ajuste os filtros ou ative mais fontes.</p></div>';
+    rbar.style.display = 'none'; cards.innerHTML = ''; tbody.innerHTML = ''; tw.style.display = 'none';
+    document.getElementById('paginacao').style.display = 'none';
+    return;
   }
 
-  pages.forEach(p=>{
-    if(p==='...'){html+=`<span class="pg-info">…</span>`;}
-    else{html+=`<button class="pg-btn${p===pAtual?' ativo':''}" onclick="${p!==pAtual?'buscar('+p+')':'void 0'}">${p}</button>`;}
-  });
-
-  // Next
-  html+=`<button class="pg-btn${pAtual===pTotal?' desab':''}" onclick="${pAtual<pTotal?'buscar('+(pAtual+1)+')':'void 0'}">›</button>`;
-  el.innerHTML=html;
-}
-
-// ── Alertas ───────────────────────────────────────────────────────
-function mostrarAlerta(tipo,titulo,msg,diagLink=false){
-  document.getElementById('alertaArea').innerHTML=
-    `<div class="alerta alerta-${tipo}"><span class="alerta-icon">${tipo==='warn'?'⚠️':'🚫'}</span>
-    <div><div class="alerta-title">${esc(titulo)}</div><div class="alerta-msg">${esc(msg)}</div>
-    ${diagLink?'<span class="alerta-link" onclick="diagnosticar()">→ Executar diagnóstico</span>':''}</div></div>`;
-}
-
-function mostrarAlertas(erros,porFonte){
-  const area=document.getElementById('alertaArea');
-  if(!erros||!erros.length){area.innerHTML='';return;}
-  const fail=[...new Set(erros.map(e=>e.fonte.split('/')[0]))];
-  const ok=Object.keys(porFonte).filter(f=>(porFonte[f]||0)>0);
-  area.innerHTML=`<div class="alerta alerta-warn"><span class="alerta-icon">⚠️</span>
-    <div><div class="alerta-title">Fontes parcialmente indisponíveis</div>
-    <div class="alerta-msg">${fail.map(f=>`<strong>${esc(f)}</strong>`).join(', ')} não responderam.${ok.length?' Dados de: '+ok.map(f=>`<strong>${esc(f)}</strong>`).join(', ')+'.':''}</div>
-    <span class="alerta-link" onclick="diagnosticar()">→ Diagnosticar fontes</span></div></div>`;
-}
-
-// ── Render ─────────────────────────────────────────────────────────
-function tagH(n){const lc=(n||'').toLowerCase();const c=lc.includes('scielo')?'ts':lc.includes('bdtd')?'tb':lc.includes('cross')?'tx':lc.includes('openalex')?'to':'tc';return'<span class="tag '+c+'">'+esc(n)+'</span>';}
-function chipsH(kw){if(!kw)return'<span style="opacity:.3;font-size:.78rem">—</span>';return'<div class="chips">'+kw.split(';').map(k=>k.trim()).filter(Boolean).map(k=>'<span class="chip">'+esc(k)+'</span>').join('')+'</div>';}
-function selH(s){if(!s)return'<span style="opacity:.3">—</span>';return'<span class="sel">'+s.split(';').map(t=>'<span>'+esc(t.trim())+'</span>').join('')+'</span>';}
-function v(x){return esc(x)||'—';}
-
-function render(lst,q,porFonte,pAtual,pTotal,totalUnicos){
-  const rbar=document.getElementById('rbar'),st=document.getElementById('stArea');
-  const cards=document.getElementById('cards'),tbody=document.getElementById('tbody'),tw=document.getElementById('tw');
-
-  document.getElementById('tot').textContent=totalUnicos;
-  document.getElementById('pAtual').textContent=pAtual;
-  document.getElementById('pTotal').textContent=pTotal;
-  document.getElementById('ql').textContent=lst.length?'"'+q+'"':'';
-  document.getElementById('srcPills').innerHTML=Object.entries(porFonte).filter(([,n])=>n>0)
-    .map(([f,n])=>'<span class="pill '+(PILLCLS[f]||'px')+'">'+esc(f)+' '+n+'</span>').join('');
-
-  if(!totalUnicos){
-    st.style.display='';
-    st.innerHTML='<div class="state"><div class="si">🔍</div><h3>Nenhum resultado encontrado</h3><p>Tente outros termos, ajuste o período ou ative mais fontes.</p></div>';
-    rbar.style.display='none';cards.innerHTML='';tbody.innerHTML='';tw.style.display='none';
-    document.getElementById('paginacao').style.display='none';return;
-  }
-
-  st.style.display='none';rbar.style.display='flex';tw.style.display='block';
+  st.style.display  = 'none';
+  rbar.style.display = 'flex';
+  tw.style.display   = 'block';
   renderPaginacao(pAtual, pTotal);
 
-  // CARDS
-  cards.innerHTML=lst.map((d,i)=>{
-    const rid='cr'+i;
-    const lc=d.link_capes?'<a href="'+esc(d.link_capes)+'" target="_blank" rel="noopener">CAPES ↗</a>':'';
-    const ls=d.link_scielo?'<a href="'+esc(d.link_scielo)+'" target="_blank" rel="noopener">Link ↗</a>':'';
-    return '<div class="card">'+
-      '<div class="card-hdr"><div class="card-tit">'+(esc(d.titulo_do_periodico)||'<em>Sem título</em>')+'</div>'+tagH(d.repositorio)+'</div>'+
-      '<div class="cgrid">'+
-        '<div class="cf"><label>Autor(es)</label><div class="cv">'+(esc(d.autor)||'—')+'</div></div>'+
-        '<div class="cf"><label>Ano</label><div class="cv">'+(esc(d.ano_da_publicacao)||'—')+'</div></div>'+
-        '<div class="cf"><label>Titulação</label><div class="cv">'+(esc(d.titulacao)||'—')+'</div></div>'+
-        '<div class="cf"><label>Região</label><div class="cv">'+(esc(d.regiao)||'—')+'</div></div>'+
-        '<div class="cf full"><label>Instituição / Programa</label><div class="cv">'+(esc(d.instituicao_programa)||'—')+'</div></div>'+
-        (d.revista?'<div class="cf full"><label>Revista</label><div class="cv">'+esc(d.revista)+'</div></div>':'')+
-        (d.volume?'<div class="cf"><label>Volume</label><div class="cv">'+esc(d.volume)+'</div></div>':'')+
-        (d.classificacao?'<div class="cf"><label>Classificação</label><div class="cv">'+esc(d.classificacao)+'</div></div>':'')+
-        (d.palavras_chaves?'<div class="cf full"><label>Palavras-chave</label>'+chipsH(d.palavras_chaves)+'</div>':'')+
-        (d.seletor_palavras_chaves?'<div class="cf full"><label>Seletor KW</label>'+chipsH(d.seletor_palavras_chaves)+'</div>':'')+
-      '</div>'+
-      (d.resumo?'<div class="cf full"><label>Resumo</label><div class="cresum tr" id="'+rid+'">'+esc(d.resumo)+'</div><span class="cvm" onclick="expC(\''+rid+'\',this)">↕ ver mais</span></div>':'')+
-      ((lc||ls)?'<div class="clinks">'+lc+ls+'</div>':'')+
+  // ── CARDS ──
+  cards.innerHTML = lst.map((d, i) => {
+    const rid = 'cr' + i;
+    const lc  = d.link_capes  ? '<a href="' + esc(d.link_capes)  + '" target="_blank" rel="noopener">CAPES ↗</a>' : '';
+    const ls  = d.link_scielo ? '<a href="' + esc(d.link_scielo) + '" target="_blank" rel="noopener">DOI / Link ↗</a>' : '';
+    return '<div class="card">' +
+      '<div class="card-hdr"><div class="card-tit">' + (esc(d.titulo_do_periodico) || '<em style="opacity:.4">Sem título</em>') + '</div>' + tagH(d.repositorio) + '</div>' +
+      '<div class="cgrid">' +
+        '<div class="cf"><label>Autor(es)</label><div class="cv">' + (esc(d.autor) || '—') + '</div></div>' +
+        '<div class="cf"><label>Ano</label><div class="cv">' + (esc(d.ano_da_publicacao) || '—') + '</div></div>' +
+        '<div class="cf"><label>Titulação</label><div class="cv">' + (esc(d.titulacao) || '—') + '</div></div>' +
+        '<div class="cf"><label>Região</label><div class="cv">' + (esc(d.regiao) || '—') + '</div></div>' +
+        '<div class="cf full"><label>Instituição / Programa</label><div class="cv">' + (esc(d.instituicao_programa) || '—') + '</div></div>' +
+        (d.revista ? '<div class="cf full"><label>Revista / Periódico</label><div class="cv">' + esc(d.revista) + '</div></div>' : '') +
+        (d.volume  ? '<div class="cf"><label>Volume</label><div class="cv">' + esc(d.volume) + '</div></div>' : '') +
+        (d.classificacao ? '<div class="cf"><label>Classificação</label><div class="cv">' + esc(d.classificacao) + '</div></div>' : '') +
+        (d.palavras_chaves ? '<div class="cf full"><label>Palavras-chave</label>' + chipsH(d.palavras_chaves) + '</div>' : '') +
+        (d.seletor_palavras_chaves ? '<div class="cf full"><label>Seletor KW</label>' + chipsH(d.seletor_palavras_chaves) + '</div>' : '') +
+      '</div>' +
+      (d.resumo ? '<div class="cf full" style="margin-top:6px"><label style="font-family:\'JetBrains Mono\',monospace;font-size:.52rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3)">Resumo</label><div class="cresum tr" id="' + rid + '">' + esc(d.resumo) + '</div><span class="cvm" onclick="expC(\'' + rid + '\',this)">↕ ver mais</span></div>' : '') +
+      ((lc || ls) ? '<div class="clinks">' + lc + ls + '</div>' : '') +
     '</div>';
   }).join('');
 
-  // TABELA
-  tbody.innerHTML=lst.map((d,i)=>{
-    const rid='tr'+i;
-    const lc=d.link_capes?'<a class="lk" href="'+esc(d.link_capes)+'" target="_blank" rel="noopener">Abrir↗</a>':'—';
-    const ls=d.link_scielo?'<a class="lk" href="'+esc(d.link_scielo)+'" target="_blank" rel="noopener">Abrir↗</a>':'—';
-    return '<tr>'+
-      '<td>'+tagH(d.repositorio)+'</td><td>'+lc+'</td><td>'+ls+'</td>'+
-      '<td title="'+esc(d.revista)+'">'+v(d.revista)+'</td>'+
-      '<td>'+v(d.classificacao)+'</td>'+
-      '<td style="font-family:\'JetBrains Mono\',monospace;font-size:.7rem;text-align:center">'+v(d.ano_da_publicacao)+'</td>'+
-      '<td style="font-family:\'JetBrains Mono\',monospace;font-size:.7rem;text-align:center">'+v(d.volume)+'</td>'+
-      '<td class="ct" title="'+esc(d.titulo_do_periodico)+'">'+v(d.titulo_do_periodico)+'</td>'+
-      '<td><div class="resum" id="'+rid+'">'+(d.resumo?esc(d.resumo):'<em style="opacity:.3">—</em>')+'</div>'+(d.resumo?'<div class="rbtn2" onclick="expT(\''+rid+'\')">↕ ver mais</div>':'')+'</td>'+
-      '<td style="font-size:.72rem;line-height:1.55" title="'+esc(d.palavras_chaves)+'">'+v(d.palavras_chaves)+'</td>'+
-      '<td>'+selH(d.seletor_palavras_chaves)+'</td>'+
-      '<td title="'+esc(d.autor)+'">'+v(d.autor)+'</td>'+
-      '<td>'+v(d.titulacao)+'</td>'+
-      '<td title="'+esc(d.instituicao_programa)+'">'+v(d.instituicao_programa)+'</td>'+
-      '<td>'+v(d.regiao)+'</td>'+
+  // ── TABELA ──
+  tbody.innerHTML = lst.map((d, i) => {
+    const rid = 'tr' + i;
+    const lc  = d.link_capes  ? '<a class="lk" href="' + esc(d.link_capes)  + '" target="_blank" rel="noopener">CAPES ↗</a>' : '—';
+    const ls  = d.link_scielo ? '<a class="lk" href="' + esc(d.link_scielo) + '" target="_blank" rel="noopener">DOI ↗</a>' : '—';
+    return '<tr>' +
+      '<td>' + tagH(d.repositorio) + '</td>' +
+      '<td>' + lc + '</td><td>' + ls + '</td>' +
+      '<td title="' + esc(d.revista) + '">' + v(d.revista) + '</td>' +
+      '<td>' + v(d.classificacao) + '</td>' +
+      '<td style="font-family:\'JetBrains Mono\',monospace;font-size:.7rem;text-align:center;color:var(--ink)">' + v(d.ano_da_publicacao) + '</td>' +
+      '<td style="font-family:\'JetBrains Mono\',monospace;font-size:.7rem;text-align:center">' + v(d.volume) + '</td>' +
+      '<td class="ct" title="' + esc(d.titulo_do_periodico) + '">' + v(d.titulo_do_periodico) + '</td>' +
+      '<td><div class="resum" id="' + rid + '">' + (d.resumo ? esc(d.resumo) : '<em style="opacity:.28">—</em>') + '</div>' + (d.resumo ? '<div class="rbtn2" onclick="expT(\'' + rid + '\')">↕ ver mais</div>' : '') + '</td>' +
+      '<td style="font-size:.72rem;line-height:1.55" title="' + esc(d.palavras_chaves) + '">' + v(d.palavras_chaves) + '</td>' +
+      '<td>' + selH(d.seletor_palavras_chaves) + '</td>' +
+      '<td title="' + esc(d.autor) + '">' + v(d.autor) + '</td>' +
+      '<td>' + v(d.titulacao) + '</td>' +
+      '<td title="' + esc(d.instituicao_programa) + '">' + v(d.instituicao_programa) + '</td>' +
+      '<td>' + v(d.regiao) + '</td>' +
     '</tr>';
   }).join('');
 
-  window.scrollTo({top:0,behavior:'smooth'});
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function expC(id,btn){const el=document.getElementById(id);if(!el)return;el.classList.toggle('tr');btn.textContent=el.classList.contains('tr')?'↕ ver mais':'↕ ver menos';}
-function expT(id){document.getElementById(id)?.classList.toggle('open');}
+/* ══════════════════════════════════════════════
+   PAGINAÇÃO
+══════════════════════════════════════════════ */
+function renderPaginacao(pAtual, pTotal) {
+  const el = document.getElementById('paginacao');
+  if (pTotal <= 1) { el.style.display = 'none'; return; }
+  el.style.display = 'flex';
 
-function loading(q,p){
-  document.getElementById('alertaArea').innerHTML='';
-  document.getElementById('rbar').style.display='none';
-  document.getElementById('cards').innerHTML='';document.getElementById('tbody').innerHTML='';
-  document.getElementById('tw').style.display='none';document.getElementById('paginacao').style.display='none';
-  const s=document.getElementById('stArea');s.style.display='';
-  s.innerHTML='<div class="state"><div class="spinner"></div><h3>Consultando bases de dados…</h3><p>Página '+p+' · fontes: '+fontesAtivas().toUpperCase()+'</p></div>';
+  const pages = [];
+  if (pTotal <= 7) {
+    for (let i = 1; i <= pTotal; i++) pages.push(i);
+  } else {
+    pages.push(1);
+    if (pAtual > 3) pages.push('…');
+    for (let i = Math.max(2, pAtual - 1); i <= Math.min(pTotal - 1, pAtual + 1); i++) pages.push(i);
+    if (pAtual < pTotal - 2) pages.push('…');
+    pages.push(pTotal);
+  }
+
+  let html = '<button class="pg-btn' + (pAtual === 1 ? ' desab' : '') + '" onclick="' + (pAtual > 1 ? 'buscar(' + (pAtual - 1) + ')' : 'void 0') + '">‹ Anterior</button>';
+  pages.forEach(p => {
+    if (p === '…') {
+      html += '<span class="pg-sep">…</span>';
+    } else {
+      html += '<button class="pg-btn' + (p === pAtual ? ' ativo' : '') + '" onclick="' + (p !== pAtual ? 'buscar(' + p + ')' : 'void 0') + '">' + p + '</button>';
+    }
+  });
+  html += '<button class="pg-btn' + (pAtual === pTotal ? ' desab' : '') + '" onclick="' + (pAtual < pTotal ? 'buscar(' + (pAtual + 1) + ')' : 'void 0') + '">Próxima ›</button>';
+  el.innerHTML = html;
 }
 
-function erro(msg){
-  const s=document.getElementById('stArea');s.style.display='';
-  s.innerHTML='<div class="state"><div class="si">⚠️</div><h3>Erro na busca</h3><p style="font-size:.78rem;font-family:monospace;color:var(--ink2);margin-top:8px;word-break:break-all">'+esc(msg)+'</p></div>';
+/* ══════════════════════════════════════════════
+   ALERTAS
+══════════════════════════════════════════════ */
+function mostrarAlertas(erros, porFonte) {
+  const area = document.getElementById('alertaArea');
+  if (!erros || !erros.length) { area.innerHTML = ''; return; }
+  const fail = [...new Set(erros.map(e => e.fonte.split('/')[0]))];
+  const ok   = Object.keys(porFonte).filter(f => (porFonte[f] || 0) > 0);
+  area.innerHTML = '<div class="alerta alerta-warn"><span class="alerta-icon">⚠️</span>' +
+    '<div><div class="alerta-title">Fontes parcialmente indisponíveis</div>' +
+    '<div class="alerta-msg">' + fail.map(f => '<strong>' + esc(f) + '</strong>').join(', ') +
+    ' não responderam nesta consulta.' +
+    (ok.length ? ' Exibindo dados de: ' + ok.map(f => '<strong>' + esc(f) + '</strong>').join(', ') + '.' : '') +
+    '</div><span class="alerta-link" onclick="diagnosticar()">→ Executar diagnóstico de fontes</span></div></div>';
 }
 
-async function diagnosticar(){
-  const q=document.getElementById('query').value||'educação';
-  const w=window.open('/api/debug?q='+encodeURIComponent(q),'_blank');
-  if(!w) alert('Abra /api/debug?q=educação no navegador para diagnosticar as fontes.');
+function expanders() {}
+
+function expC(id, btn) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.toggle('tr');
+  btn.textContent = el.classList.contains('tr') ? '↕ ver mais' : '↕ ver menos';
+}
+function expT(id) { document.getElementById(id)?.classList.toggle('open'); }
+
+function loading(q, p) {
+  document.getElementById('alertaArea').innerHTML = '';
+  document.getElementById('rbar').style.display   = 'none';
+  document.getElementById('cards').innerHTML       = '';
+  document.getElementById('tbody').innerHTML       = '';
+  document.getElementById('tw').style.display     = 'none';
+  document.getElementById('paginacao').style.display = 'none';
+  const s = document.getElementById('stArea');
+  s.style.display = '';
+  const flist = fontesAtivas().split(',').map(f => f.toUpperCase()).join(', ');
+  s.innerHTML = '<div class="state"><div class="spinner"></div><h3>Consultando bases de dados…</h3><p>Buscando <em>"' + esc(q) + '"</em> · página ' + p + ' · fontes: ' + flist + '</p></div>';
 }
 
-function esc(v){return String(v||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-
-// ── Exportações ───────────────────────────────────────────────────
-function xCSV(){if(!dados.length)return;const h=LABELS.join(';');const r=dados.map(d=>COLS.map(c=>'"'+String(d[c]||'').replace(/"/g,'""')+'"').join(';'));dl('\uFEFF'+[h,...r].join('\r\n'),'repositorio-v10.csv','text/csv;charset=utf-8');}
-function xExcel(){if(!dados.length)return;const h=LABELS.join('\t');const r=dados.map(d=>COLS.map(c=>String(d[c]||'').replace(/[\t\r\n]/g,' ')).join('\t'));dl('\uFEFF'+[h,...r].join('\r\n'),'repositorio-v10.xlsx','application/vnd.ms-excel;charset=utf-8');}
-function xPDF(){
-  if(!dados.length)return;
-  const rows=dados.map(d=>'<tr><td>'+d.repositorio+'</td><td><em>'+d.titulo_do_periodico+'</em></td><td>'+d.autor+'</td><td>'+d.ano_da_publicacao+'</td><td>'+d.titulacao+'</td><td>'+d.instituicao_programa+'</td><td>'+d.regiao+'</td><td>'+String(d.palavras_chaves||'').slice(0,80)+'</td><td>'+String(d.resumo||'').slice(0,180)+'</td><td>'+(d.link_capes||d.link_scielo?'<a href="'+(d.link_capes||d.link_scielo)+'">Link</a>':'')+'</td></tr>').join('');
-  const w=window.open('','_blank');
-  w.document.write('<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Repositório v10</title><style>@page{size:A3 landscape;margin:11mm}body{font-family:Georgia,serif;font-size:8px;color:#1a1714}h1{font-size:11px;margin-bottom:2px}p{color:#888;font-size:7.5px;margin-bottom:9px}table{width:100%;border-collapse:collapse}th{background:#1a1714;color:#fff;padding:4px 5px;text-align:left;font-size:6.5px;letter-spacing:.08em;text-transform:uppercase}td{padding:4px 5px;border-bottom:1px solid #eee;vertical-align:top}tr:nth-child(even)td{background:#fdf9f2}a{color:#b8860b}</style></head><body><h1>Repositório Acadêmico v11</h1><p>'+dados.length+' publicação(ões) · '+new Date().toLocaleDateString('pt-BR')+'</p><table><thead><tr><th>Fonte</th><th>Título</th><th>Autor</th><th>Ano</th><th>Titulação</th><th>Instituição</th><th>Região</th><th>Palavras-chave</th><th>Resumo</th><th>Link</th></tr></thead><tbody>'+rows+'</tbody></table></body></html>');
-  w.document.close();setTimeout(()=>w.print(),700);
+function erro(msg) {
+  const s = document.getElementById('stArea');
+  s.style.display = '';
+  s.innerHTML = '<div class="state"><div class="si">⚠️</div><h3>Erro na busca</h3><p style="font-size:.78rem;font-family:monospace;color:var(--ink2);margin-top:8px;word-break:break-all">' + esc(msg) + '</p></div>';
 }
-function dl(c,n,m){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([c],{type:m}));a.download=n;a.click();URL.revokeObjectURL(a.href);}
 
-document.getElementById('query').addEventListener('keydown',e=>{if(e.key==='Enter')buscar(1);});
-document.getElementById('porPag').addEventListener('change',()=>{if(ultimaQuery)buscar(1);});
+function esc(v) {
+  return String(v || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+async function diagnosticar() {
+  const q   = document.getElementById('query').value || 'educação';
+  const win = window.open('/api/debug?q=' + encodeURIComponent(q), '_blank');
+  if (!win) alert('Abra /api/debug no navegador para diagnosticar as fontes.');
+}
+
+/* ══════════════════════════════════════════════
+   EXPORTAÇÃO CSV
+══════════════════════════════════════════════ */
+function xCSV() {
+  if (!todos.length) { alert('Nenhum dado para exportar.'); return; }
+  const header = LABELS.join(';');
+  const rows   = todos.map(d => COLS.map(c => '"' + String(d[c] || '').replace(/"/g,'""') + '"').join(';'));
+  dl('\uFEFF' + [header, ...rows].join('\r\n'), 'repositorio-academico.csv', 'text/csv;charset=utf-8');
+}
+
+/* ══════════════════════════════════════════════
+   EXPORTAÇÃO EXCEL (.xlsx) — SheetJS profissional
+══════════════════════════════════════════════ */
+function xExcel() {
+  if (!todos.length) { alert('Nenhum dado para exportar.'); return; }
+  if (typeof XLSX === 'undefined') { alert('Biblioteca XLSX não carregada. Verifique a conexão.'); return; }
+
+  // Monta array de objetos com cabeçalhos profissionais
+  const wsData = todos.map(d => {
+    const row = {};
+    COLS.forEach((c, i) => { row[LABELS[i]] = d[c] || ''; });
+    return row;
+  });
+
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.json_to_sheet(wsData, { header: LABELS });
+
+  // Largura das colunas
+  const colWidths = [
+    12, 30, 30, 25, 22, 8, 6, 55, 80, 60, 40, 35, 22, 40, 12
+  ];
+  ws['!cols'] = colWidths.map(w => ({ wch: w }));
+
+  // Congela linha de cabeçalho
+  ws['!freeze'] = { xSplit: 0, ySplit: 1 };
+
+  // Estilo do cabeçalho (SheetJS CE não suporta estilos avançados sem Pro,
+  // mas a estrutura e larguras já tornam o arquivo profissional)
+  XLSX.utils.book_append_sheet(wb, ws, 'Publicações');
+
+  // Aba de metadados
+  const metaData = [
+    ['Campo', 'Descrição'],
+    ['REPOSITÓRIO',            'Fonte de origem: CAPES, SciELO, BDTD, Crossref, OpenAlex'],
+    ['LINK/CAPES',             'URL do registro no Catálogo de Teses da CAPES'],
+    ['LINK/SCIELO',            'URL do artigo no SciELO ou DOI do artigo'],
+    ['REVISTA',                'Nome da revista ou periódico científico'],
+    ['CLASSIFICAÇÃO',          'Tipo da publicação (Tese, Dissertação, Artigo, etc.)'],
+    ['ANO DA PUBLICAÇÃO',      'Ano de publicação ou defesa'],
+    ['VOLUME',                 'Volume do periódico'],
+    ['TÍTULO DO PERIÓDICO',    'Título completo da publicação'],
+    ['RESUMO',                 'Resumo/abstract da publicação'],
+    ['PALAVRAS-CHAVES',        'Descritores e palavras-chave da publicação'],
+    ['SELETOR PALAVRAS-CHAVES','Até 3 palavras-chave principais (selecionadas automaticamente)'],
+    ['AUTOR',                  'Nome(s) do(s) autor(es)'],
+    ['TITULAÇÃO',              'Grau acadêmico do autor ou tipo da publicação'],
+    ['INSTITUIÇÃO / PROGRAMA', 'Universidade, instituto ou programa de pós-graduação'],
+    ['REGIÃO',                 'Região do Brasil (inferida pela instituição)'],
+  ];
+  const wsMeta = XLSX.utils.aoa_to_sheet(metaData);
+  wsMeta['!cols'] = [{ wch: 28 }, { wch: 60 }];
+  XLSX.utils.book_append_sheet(wb, wsMeta, 'Metadados');
+
+  // Gera o arquivo
+  const q = (document.getElementById('query').value || 'busca').slice(0, 30).replace(/[^a-zA-Z0-9\s]/g, '').trim().replace(/\s+/g, '_');
+  XLSX.writeFile(wb, 'repositorio_' + q + '_' + new Date().toISOString().slice(0, 10) + '.xlsx');
+}
+
+/* ══════════════════════════════════════════════
+   EXPORTAÇÃO PDF
+══════════════════════════════════════════════ */
+function xPDF() {
+  if (!todos.length) { alert('Nenhum dado para exportar.'); return; }
+  const q = document.getElementById('query').value || 'busca';
+  const rows = todos.map(d =>
+    '<tr><td>' + esc(d.repositorio) + '</td>' +
+    '<td><em>' + esc(d.titulo_do_periodico) + '</em></td>' +
+    '<td>' + esc(d.autor) + '</td>' +
+    '<td>' + esc(d.ano_da_publicacao) + '</td>' +
+    '<td>' + esc(d.titulacao) + '</td>' +
+    '<td>' + esc(d.instituicao_programa) + '</td>' +
+    '<td>' + esc(d.regiao) + '</td>' +
+    '<td>' + esc(String(d.palavras_chaves || '').slice(0, 80)) + '</td>' +
+    '<td>' + esc(String(d.resumo || '').slice(0, 200)) + (d.resumo && d.resumo.length > 200 ? '…' : '') + '</td>' +
+    '<td>' + (d.link_capes || d.link_scielo ? '<a href="' + esc(d.link_capes || d.link_scielo) + '">Link</a>' : '—') + '</td>' +
+    '</tr>'
+  ).join('');
+
+  const w = window.open('', '_blank');
+  w.document.write(`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">
+    <title>Repositório Acadêmico — ${esc(q)}</title>
+    <style>
+      @page{size:A3 landscape;margin:12mm}
+      body{font-family:'Times New Roman',Georgia,serif;font-size:8.5px;color:#1a1714;padding:0}
+      .cover{margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid #1a1714}
+      .cover h1{font-size:14px;font-weight:700;margin-bottom:3px}
+      .cover p{font-size:8px;color:#666}
+      table{width:100%;border-collapse:collapse;margin-top:8px}
+      thead tr{background:#1a1714;color:#fff}
+      th{padding:5px 6px;text-align:left;font-size:7px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;border-right:1px solid rgba(255,255,255,.15)}
+      th:last-child{border-right:none}
+      td{padding:5px 6px;border-bottom:1px solid #e8e4dc;vertical-align:top;font-size:8px;border-right:1px solid #e8e4dc}
+      td:last-child{border-right:none}
+      tr:nth-child(even) td{background:#fdf9f2}
+      a{color:#b8860b;text-decoration:none}
+      em{font-style:italic}
+    </style></head><body>
+    <div class="cover">
+      <h1>Repositório Acadêmico Integrado</h1>
+      <p>Busca: <strong>${esc(q)}</strong> · ${todos.length} publicação(ões) · Gerado em ${new Date().toLocaleDateString('pt-BR', {day:'2-digit',month:'long',year:'numeric'})}</p>
+    </div>
+    <table>
+      <thead><tr>
+        <th>Fonte</th><th>Título</th><th>Autor(es)</th><th>Ano</th>
+        <th>Titulação</th><th>Instituição</th><th>Região</th>
+        <th>Palavras-chave</th><th>Resumo</th><th>Link</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    </body></html>`);
+  w.document.close();
+  setTimeout(() => w.print(), 800);
+}
+
+/* ══════════════════════════════════════════════
+   UTILITÁRIO DOWNLOAD
+══════════════════════════════════════════════ */
+function dl(content, name, mime) {
+  const a  = document.createElement('a');
+  a.href   = URL.createObjectURL(new Blob([content], { type: mime }));
+  a.download = name;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+/* ══════════════════════════════════════════════
+   EVENTOS
+══════════════════════════════════════════════ */
+document.getElementById('query').addEventListener('keydown', e => {
+  if (e.key === 'Enter') buscar(1);
+});
+document.getElementById('porPag').addEventListener('change', () => {
+  if (todos.length) buscar(1);
+});
 </script>
 </body>
 </html>
