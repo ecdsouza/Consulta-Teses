@@ -139,8 +139,8 @@ select:focus{border-color:var(--gold)}
 .clinks a{color:var(--gold);text-decoration:none;font-family:'JetBrains Mono',monospace;font-size:.63rem;font-weight:500}
 .clinks a:hover{text-decoration:underline}
 
-/* região AI badge */
-.ai-badge{display:inline-block;background:#f0f4ff;border:1px solid #b0beff;border-radius:20px;padding:1px 8px;font-family:'JetBrains Mono',monospace;font-size:.58rem;color:#3350aa;font-weight:500}
+/* região AI badge — inferência sinalizada */
+.ai-badge{display:inline-flex;align-items:center;gap:4px;background:#eef2ff;border:1px solid #c7d0f8;border-radius:20px;padding:2px 9px;font-family:'JetBrains Mono',monospace;font-size:.58rem;color:#3350aa;font-weight:500}.ai-badge::before{content:'⚙';font-size:.6rem;opacity:.7}
 
 /* ═══ TABELA desktop ═══ */
 .tw{width:100%;border:1px solid var(--brd);border-radius:var(--r-lg);background:var(--white);box-shadow:var(--shadow-md);overflow:hidden}
@@ -384,13 +384,17 @@ function tagH(n){const lc=(n||'').toLowerCase();const c=lc.includes('scielo')?'t
 function chipsH(kw){if(!kw)return'<span style="opacity:.28;font-size:.78rem">—</span>';return'<div class="chips">'+kw.split(';').map(k=>k.trim()).filter(Boolean).map(k=>'<span class="chip">'+esc(k)+'</span>').join('')+'</div>';}
 function selH(s){if(!s)return'<span style="opacity:.28">—</span>';return'<span class="sel">'+s.split(';').map(t=>'<span>'+esc(t.trim())+'</span>').join('')+'</span>';}
 
-/* Região: destaca AI+ com badge azul */
+/* Região: AI- = inferido do documento; vazio = não encontrado */
 function regiaoH(r){
-  if(!r||r==='—') return '<span style="opacity:.28">—</span>';
-  if(r.startsWith('AI +')){
-    return '<span class="ai-badge" title="Inferência automática">'+esc(r)+'</span>';
+  // Vazio = não encontrado
+  if(!r||r.trim()==='') return '<span style="opacity:.28">—</span>';
+  // AI- = inferido automaticamente do documento — exibe badge com a região
+  if(r.startsWith('AI - ')){
+    const regiao = r.slice(5); // remove 'AI - '
+    return '<span class="ai-badge" title="Inferido automaticamente do documento">'+esc(regiao)+'</span>';
   }
-  return esc(r);
+  // Dado confirmado pela fonte — exibe normalmente
+  return '<strong style="color:var(--ink)">'+esc(r)+'</strong>';
 }
 
 function v(x){return esc(x)||'<span style="opacity:.28">—</span>';}
@@ -552,7 +556,7 @@ function xExcel(){
     ['AUTOR','Nome(s) do(s) autor(es)'],
     ['TITULAÇÃO','Grau acadêmico ou tipo'],
     ['INSTITUIÇÃO / PROGRAMA','Universidade e programa'],
-    ['REGIÃO','Região do Brasil · "AI + ..." = inferência automática'],
+    ['REGIÃO','Região do Brasil. "AI - [Região]" = inferida do documento automaticamente. Vazio = não identificado'],
   ];
   const wsMeta=XLSX.utils.aoa_to_sheet(meta);
   wsMeta['!cols']=[{wch:28},{wch:62}];

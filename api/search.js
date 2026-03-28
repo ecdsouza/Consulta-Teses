@@ -115,38 +115,39 @@ function inferirRegiao(texto) {
 
 /**
  * Tenta inferir região a partir de múltiplas fontes do registro.
- * Se não encontrar, retorna "AI + [pista encontrada]" ou "AI + não identificado".
+ * Regras:
+ *  - Região direta da fonte        → "Sudeste"       (dado confirmado)
+ *  - Inferida do documento         → "AI - Sudeste"  (inferência sinalizada)
+ *  - Não encontrada                → ""              (exibe "—" no frontend)
  */
 function resolverRegiao(regiaoDireta, inst, municipio, titulo) {
-  // 1. Se veio direto da fonte
+  // 1. Veio direto da fonte (campo regiao/nmRegiao preenchido)
   if (regiaoDireta && regiaoDireta.trim()) {
+    // Normaliza para o nome padrão das regiões brasileiras
     const r = inferirRegiao(regiaoDireta) || regiaoDireta.trim();
-    return r;
+    return r; // sem prefixo — dado confirmado
   }
-  // 2. Pela instituição
+
+  // 2. Inferência pela sigla/nome da IES
   if (inst) {
     const r = inferirRegiao(inst);
-    if (r) return r;
+    if (r) return `AI - ${r}`; // inferido do documento
   }
-  // 3. Pelo município do programa
+
+  // 3. Inferência pelo município do programa (CAPES fornece municipioPrograma)
   if (municipio) {
     const r = inferirRegiao(municipio);
-    if (r) return r;
-    // Retorna AI com o município identificado
-    return `AI + ${municipio}`;
+    if (r) return `AI - ${r}`; // inferido do documento
   }
-  // 4. Pelo título (busca nomes de estados)
+
+  // 4. Inferência pelo título (ex: "Educação em Minas Gerais")
   if (titulo) {
     const r = inferirRegiao(titulo);
-    if (r) return r;
+    if (r) return `AI - ${r}`; // inferido do documento
   }
-  // 5. Pela instituição com AI hint
-  if (inst) {
-    // Pega sigla ou primeiro token relevante da instituição
-    const hint = inst.split(/[,\-—]/)[0].trim().slice(0, 40);
-    return `AI + ${hint}`;
-  }
-  return 'AI + não identificado';
+
+  // 5. Não encontrado — retorna vazio (frontend exibe "—")
+  return '';
 }
 
 // ════════════════════════════════════════════════════════
