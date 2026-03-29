@@ -8,12 +8,14 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
+/* ══════ VARIÁVEIS ══════ */
 :root{
   --ink:#1a1714;--ink2:#4a4540;--ink3:#8a847e;
   --bg:#f4f1ec;--cream:#fdfbf8;--white:#ffffff;
   --brd:#d8d3ca;--brd2:#e8e4dd;
   --gold:#b8860b;--gold2:#d4a017;--gold-lt:#fdf6e3;
   --scielo:#145a32;--bdtd:#6e2f1a;--cross:#4a235a;--oa:#0d5c4a;
+  --tese-c:#1b3a5c; --diss-c:#145a32; --art-c:#5a2d82;
   --warn-bg:#fffbf0;--warn-brd:#e9c06e;--warn-txt:#7a5800;
   --shadow-sm:0 1px 3px rgba(26,23,20,.08);
   --shadow-md:0 4px 12px rgba(26,23,20,.12);
@@ -24,166 +26,168 @@
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
 body{font-family:'Source Serif 4',Georgia,serif;background:var(--bg);color:var(--ink);min-height:100vh;font-size:14.5px;line-height:1.65}
 
-/* ═══ HEADER ═══ */
+/* ══════ HEADER ══════ */
 header{background:var(--ink);color:#fdfbf8;position:sticky;top:0;z-index:300;box-shadow:var(--shadow-lg)}
-.hdr{padding:14px 24px 12px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
-.logo-t{font-family:'Playfair Display',serif;font-size:clamp(1rem,4vw,1.4rem);font-weight:700;line-height:1.2;letter-spacing:-.01em}
-.logo-s{font-size:.58rem;color:var(--gold2);letter-spacing:.2em;text-transform:uppercase;font-family:'JetBrains Mono',monospace;margin-top:2px}
-.vr{width:1px;height:38px;background:rgba(255,255,255,.12);flex-shrink:0}
+.hdr{padding:12px 24px 10px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.logo-t{font-family:'Playfair Display',serif;font-size:clamp(1rem,4vw,1.35rem);font-weight:700;line-height:1.2}
+.logo-s{font-size:.57rem;color:var(--gold2);letter-spacing:.2em;text-transform:uppercase;font-family:'JetBrains Mono',monospace;margin-top:2px}
+.vr{width:1px;height:36px;background:rgba(255,255,255,.12);flex-shrink:0}
 .fonte-group{display:flex;border:1px solid rgba(255,255,255,.15);border-radius:24px;overflow:hidden;background:rgba(0,0,0,.2)}
-.ff{display:inline-flex;align-items:center;gap:5px;padding:7px 15px;font-family:'JetBrains Mono',monospace;font-size:.6rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;border:none;border-right:1px solid rgba(255,255,255,.1);background:transparent;color:rgba(255,255,255,.42);transition:all .22s;min-height:32px;white-space:nowrap}
+.ff{display:inline-flex;align-items:center;gap:5px;padding:6px 14px;font-family:'JetBrains Mono',monospace;font-size:.59rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;border:none;border-right:1px solid rgba(255,255,255,.1);background:transparent;color:rgba(255,255,255,.42);transition:all .2s;min-height:30px;white-space:nowrap}
 .ff:last-child{border-right:none}
-.ff .dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0;transition:opacity .22s;opacity:.45}
+.ff .dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0;transition:opacity .2s;opacity:.4}
 .ff.on{color:#fff}.ff.on .dot{opacity:1}
-.ff-capes.on{background:rgba(27,79,114,.8)}.ff-scielo.on{background:rgba(20,90,50,.8)}
-.ff-bdtd.on{background:rgba(110,47,26,.8)}.ff-cross.on{background:rgba(74,35,90,.8)}
-.ff-oa.on{background:rgba(13,92,74,.8)}
+.ff-scielo.on{background:rgba(20,90,50,.8)}.ff-bdtd.on{background:rgba(110,47,26,.8)}
+.ff-cross.on{background:rgba(74,35,90,.8)}.ff-oa.on{background:rgba(13,92,74,.8)}
 
-/* ═══ BUSCA ═══ */
-.sp{background:var(--cream);border-bottom:2px solid var(--brd);padding:20px 24px;box-shadow:var(--shadow-sm)}
+/* ══════ BUSCA ══════ */
+.sp{background:var(--cream);border-bottom:2px solid var(--brd);padding:18px 24px;box-shadow:var(--shadow-sm)}
 .sr{display:flex;gap:8px}
 .sf{position:relative;flex:1}
 .sf svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--ink3);pointer-events:none}
-#query{width:100%;padding:12px 16px 12px 42px;font-family:'Source Serif 4',serif;font-size:.97rem;border:1.5px solid var(--brd);border-radius:var(--r);background:var(--white);color:var(--ink);outline:none;transition:all .2s;-webkit-appearance:none;min-height:46px;box-shadow:var(--shadow-sm)}
+#query{width:100%;padding:12px 16px 12px 42px;font-family:'Source Serif 4',serif;font-size:.97rem;border:1.5px solid var(--brd);border-radius:var(--r);background:var(--white);color:var(--ink);outline:none;transition:all .2s;min-height:46px}
 #query:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(184,134,11,.12)}
 #query::placeholder{color:var(--ink3);font-style:italic}
-.btn-p{padding:0 24px;background:var(--ink);color:#fdfbf8;border:none;border-radius:var(--r);font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap;min-height:46px;box-shadow:var(--shadow-sm)}
-.btn-p:hover{background:#2c2825;box-shadow:var(--shadow-md)}
-.btn-p:disabled{opacity:.5;cursor:not-allowed}
+.btn-p{padding:0 24px;background:var(--ink);color:#fdfbf8;border:none;border-radius:var(--r);font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap;min-height:46px}
+.btn-p:hover{background:#2c2825}.btn-p:disabled{opacity:.5;cursor:not-allowed}
 
-/* ═══ FILTROS ═══ */
-.filters-bar{display:flex;gap:16px;margin-top:16px;flex-wrap:wrap;align-items:flex-start}
+/* ══════ FILTROS ══════ */
+.filters-bar{display:flex;gap:20px;margin-top:16px;flex-wrap:wrap;align-items:flex-end}
 .filter-block{display:flex;flex-direction:column;gap:5px}
 .filter-label{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.13em;text-transform:uppercase;color:var(--ink3);font-weight:500}
 .period-row{display:flex;gap:6px;align-items:center}
 .period-row span{font-size:.8rem;color:var(--ink3)}
-input[type=number]{font-family:'Source Serif 4',serif;font-size:.84rem;padding:6px 9px;border:1.5px solid var(--brd);border-radius:var(--r);background:var(--white);color:var(--ink);outline:none;min-height:36px;-webkit-appearance:none;width:82px;transition:border-color .2s}
+input[type=number]{font-family:'Source Serif 4',serif;font-size:.84rem;padding:7px 10px;border:1.5px solid var(--brd);border-radius:var(--r);background:var(--white);color:var(--ink);outline:none;min-height:38px;-webkit-appearance:none;width:84px;transition:border-color .2s}
 input[type=number]:focus{border-color:var(--gold)}
-
-/* ══ MULTI-CHECKBOX PILLS ══ */
-.multi-check{display:flex;flex-wrap:wrap;gap:5px;margin-top:2px}
-.mchk{position:absolute;opacity:0;pointer-events:none;width:0;height:0}
-.mchk-label{
-  display:inline-flex;align-items:center;gap:6px;
-  padding:5px 13px;border:1.5px solid var(--brd);border-radius:20px;
-  background:var(--white);color:var(--ink2);
-  font-family:'JetBrains Mono',monospace;font-size:.62rem;font-weight:500;letter-spacing:.06em;
-  cursor:pointer;transition:all .18s;user-select:none;white-space:nowrap
-}
-.mchk-label::before{
-  content:'';display:inline-block;width:8px;height:8px;border-radius:50%;
-  border:1.5px solid var(--brd);background:transparent;flex-shrink:0;transition:all .18s
-}
-.mchk-label:hover{border-color:var(--gold);color:var(--ink)}
-.mchk:checked + .mchk-label{background:var(--ink);color:var(--white);border-color:var(--ink)}
-.mchk:checked + .mchk-label::before{background:var(--gold2);border-color:var(--gold2)}
-
-select{font-family:'Source Serif 4',serif;font-size:.84rem;padding:6px 9px;border:1.5px solid var(--brd);border-radius:var(--r);background:var(--white);color:var(--ink);outline:none;min-height:36px;-webkit-appearance:none;cursor:pointer;transition:border-color .2s}
+select{font-family:'Source Serif 4',serif;font-size:.84rem;padding:7px 10px;border:1.5px solid var(--brd);border-radius:var(--r);background:var(--white);color:var(--ink);outline:none;min-height:38px;-webkit-appearance:none;cursor:pointer}
 select:focus{border-color:var(--gold)}
 
-/* ═══ CONTEÚDO ═══ */
-.content{padding:16px 24px}
-.alerta{display:flex;align-items:flex-start;gap:14px;padding:14px 18px;border-radius:var(--r-lg);margin-bottom:14px;border:1px solid;box-shadow:var(--shadow-sm)}
-.alerta-icon{font-size:1.1rem;flex-shrink:0;margin-top:1px}
-.alerta-title{font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px}
-.alerta-msg{font-size:.82rem;line-height:1.55}
-.alerta-link{display:inline-block;margin-top:6px;font-family:'JetBrains Mono',monospace;font-size:.66rem;text-decoration:underline;cursor:pointer;opacity:.8}
+/* ══ FILTRO DE TIPO — segmented tabs ══ */
+.tipo-tabs{display:flex;gap:0;border:1.5px solid var(--brd);border-radius:24px;overflow:hidden;background:var(--white)}
+.tipo-tab{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;font-family:'JetBrains Mono',monospace;font-size:.63rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;border:none;border-right:1px solid var(--brd);background:transparent;color:var(--ink3);transition:all .2s;min-height:38px;white-space:nowrap;user-select:none}
+.tipo-tab:last-child{border-right:none}
+.tipo-tab .tipo-dot{width:8px;height:8px;border-radius:50%;background:var(--brd);flex-shrink:0;transition:all .2s}
+.tipo-tab:hover{color:var(--ink);background:var(--bg)}
+.tipo-tab.ativo{color:var(--white);background:var(--ink)}
+.tipo-tab.ativo .tipo-dot{background:var(--gold2)}
+/* Cores específicas por tipo quando ativo */
+.tipo-tab[data-tipo="todos"].ativo{background:var(--ink)}
+.tipo-tab[data-tipo="tese"].ativo{background:var(--tese-c)}
+.tipo-tab[data-tipo="dissertacao"].ativo{background:var(--diss-c)}
+.tipo-tab[data-tipo="artigo"].ativo{background:var(--art-c)}
+/* Contador dentro da tab */
+.tipo-count{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;border-radius:20px;background:rgba(255,255,255,.2);font-size:.55rem;font-weight:700}
+.tipo-tab:not(.ativo) .tipo-count{background:var(--brd2);color:var(--ink3)}
+
+/* ══════ CONTEÚDO ══════ */
+.content{padding:14px 24px}
+.alerta{display:flex;align-items:flex-start;gap:14px;padding:12px 16px;border-radius:var(--r-lg);margin-bottom:12px;border:1px solid}
+.alerta-icon{font-size:1rem;flex-shrink:0;margin-top:1px}
+.alerta-title{font-family:'JetBrains Mono',monospace;font-size:.67rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px}
+.alerta-msg{font-size:.8rem;line-height:1.55}
+.alerta-link{display:inline-block;margin-top:5px;font-family:'JetBrains Mono',monospace;font-size:.64rem;text-decoration:underline;cursor:pointer;opacity:.8}
 .alerta-warn{background:var(--warn-bg);border-color:var(--warn-brd);color:var(--warn-txt)}
 
-.rbar{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px}
-.rc{display:flex;flex-direction:column;gap:6px}
-.rc-count{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--ink3)}
+.rbar{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+.rc{display:flex;flex-direction:column;gap:5px}
+.rc-count{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--ink3)}
 .rc-count strong{color:var(--ink);font-weight:700;font-size:.84rem}
-.src-pills{display:flex;gap:4px;flex-wrap:wrap}
-.pill{display:inline-flex;align-items:center;gap:3px;padding:3px 10px;border-radius:20px;font-family:'JetBrains Mono',monospace;font-size:.58rem;font-weight:600;color:#fff}
+.src-pills{display:flex;gap:4px;flex-wrap:wrap;margin-top:2px}
+.pill{display:inline-flex;align-items:center;gap:3px;padding:2px 9px;border-radius:20px;font-family:'JetBrains Mono',monospace;font-size:.57rem;font-weight:600;color:#fff}
 .ps{background:var(--scielo)}.pb{background:var(--bdtd)}.px{background:var(--cross)}.po{background:var(--oa)}
+
 .exg{display:flex;gap:6px;flex-wrap:wrap;align-items:flex-start}
-.be{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1.5px solid var(--brd);border-radius:var(--r);background:var(--white);color:var(--ink2);font-family:'JetBrains Mono',monospace;font-size:.63rem;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:all .2s;min-height:36px;box-shadow:var(--shadow-sm);font-weight:500}
+.be{display:inline-flex;align-items:center;gap:5px;padding:8px 15px;border:1.5px solid var(--brd);border-radius:var(--r);background:var(--white);color:var(--ink2);font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;transition:all .2s;min-height:36px;font-weight:500}
 .be:hover{background:var(--ink);color:var(--white);border-color:var(--ink)}
 .be-excel:hover{background:#1d6f42;border-color:#1d6f42}
 .be-pdf:hover{background:#c0392b;border-color:#c0392b}
 
-.paginacao{display:flex;align-items:center;justify-content:center;gap:4px;margin-top:22px;flex-wrap:wrap}
-.pg-btn{display:inline-flex;align-items:center;justify-content:center;min-width:36px;height:36px;padding:0 10px;border:1.5px solid var(--brd);border-radius:var(--r);background:var(--white);color:var(--ink2);font-family:'JetBrains Mono',monospace;font-size:.72rem;cursor:pointer;transition:all .2s;user-select:none;box-shadow:var(--shadow-sm)}
+/* ══════ PAGINAÇÃO ══════ */
+.paginacao{display:flex;align-items:center;justify-content:center;gap:4px;margin-top:20px;flex-wrap:wrap}
+.pg-btn{display:inline-flex;align-items:center;justify-content:center;min-width:36px;height:36px;padding:0 10px;border:1.5px solid var(--brd);border-radius:var(--r);background:var(--white);color:var(--ink2);font-family:'JetBrains Mono',monospace;font-size:.72rem;cursor:pointer;transition:all .2s;user-select:none}
 .pg-btn:hover:not(.ativo):not(.desab){border-color:var(--gold);color:var(--gold)}
 .pg-btn.ativo{background:var(--ink);color:var(--white);border-color:var(--ink);font-weight:700;cursor:default}
-.pg-btn.desab{opacity:.3;cursor:not-allowed;box-shadow:none}
+.pg-btn.desab{opacity:.28;cursor:not-allowed}
 .pg-sep{font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--ink3);padding:0 4px}
 
-.state{text-align:center;padding:64px 24px;color:var(--ink3)}
+/* ══════ ESTADO ══════ */
+.state{text-align:center;padding:60px 24px;color:var(--ink3)}
 .si{font-size:2.6rem;margin-bottom:14px;opacity:.35}
 .state h3{font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--ink2);margin-bottom:8px;font-weight:600;font-style:italic}
 .state p{font-size:.84rem;max-width:440px;margin:0 auto;line-height:1.7}
 .spinner{width:32px;height:32px;border:3px solid var(--brd);border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 16px}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-.tag{display:inline-block;padding:2px 9px;border-radius:20px;font-family:'JetBrains Mono',monospace;font-size:.55rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:#fff;white-space:nowrap}
-.tc{background:var(--capes)}.ts{background:var(--scielo)}.tb{background:var(--bdtd)}.tx{background:var(--cross)}.to{background:var(--oa)}
+/* ══════ TAGS / CHIPS ══════ */
+.tag{display:inline-block;padding:2px 9px;border-radius:20px;font-family:'JetBrains Mono',monospace;font-size:.55rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#fff;white-space:nowrap}
+.ts{background:var(--scielo)}.tb{background:var(--bdtd)}.tx{background:var(--cross)}.to{background:var(--oa)}
 .chips{display:flex;flex-wrap:wrap;gap:3px;margin-top:4px}
 .chip{background:var(--gold-lt);border:1px solid rgba(184,134,11,.22);border-radius:20px;padding:1px 8px;font-family:'JetBrains Mono',monospace;font-size:.57rem;color:var(--gold);font-weight:500}
+.ai-badge{display:inline-flex;align-items:center;gap:4px;background:#eef2ff;border:1px solid #c7d0f8;border-radius:20px;padding:2px 9px;font-family:'JetBrains Mono',monospace;font-size:.57rem;color:#3350aa;font-weight:500}
+.ai-badge::before{content:'⚙';font-size:.58rem;opacity:.7}
 
-/* ═══ CARDS mobile ═══ */
+/* ══════ CARDS mobile ══════ */
 .cards{display:flex;flex-direction:column;gap:12px}
-.card{background:var(--white);border:1px solid var(--brd);border-radius:var(--r-lg);padding:16px;box-shadow:var(--shadow-sm);transition:box-shadow .2s}
+.card{background:var(--white);border:1px solid var(--brd);border-radius:var(--r-lg);padding:14px;box-shadow:var(--shadow-sm);transition:box-shadow .2s}
 .card:hover{box-shadow:var(--shadow-md)}
-.card-hdr{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:12px}
-.card-tit{font-family:'Source Serif 4',serif;font-size:.94rem;font-weight:500;font-style:italic;color:var(--ink);line-height:1.45;flex:1}
-.cgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;margin-bottom:10px}
-.cf label{display:block;font-family:'JetBrains Mono',monospace;font-size:.52rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);margin-bottom:2px}
-.cf .cv{font-size:.8rem;color:var(--ink2);line-height:1.45;word-break:break-word}
+.card-hdr{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}
+.card-tit{font-family:'Source Serif 4',serif;font-size:.93rem;font-weight:500;font-style:italic;color:var(--ink);line-height:1.45;flex:1}
+.cgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px 16px;margin-bottom:8px}
+.cf label{display:block;font-family:'JetBrains Mono',monospace;font-size:.52rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);margin-bottom:1px}
+.cf .cv{font-size:.8rem;color:var(--ink2);line-height:1.4;word-break:break-word}
 .cf.full{grid-column:1/-1}
 .cresum{font-size:.8rem;color:var(--ink2);line-height:1.6}
 .cresum.tr{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .cvm{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--gold);cursor:pointer;margin-top:4px;display:inline-block;font-weight:500}
-.clinks{display:flex;gap:10px;margin-top:12px;padding-top:10px;border-top:1px solid var(--brd2);flex-wrap:wrap}
-.clinks a{color:var(--gold);text-decoration:none;font-family:'JetBrains Mono',monospace;font-size:.63rem;font-weight:500}
+.clinks{display:flex;gap:10px;margin-top:10px;padding-top:8px;border-top:1px solid var(--brd2);flex-wrap:wrap}
+.clinks a{color:var(--gold);text-decoration:none;font-family:'JetBrains Mono',monospace;font-size:.62rem;font-weight:500}
 .clinks a:hover{text-decoration:underline}
 
-/* região AI badge — inferência sinalizada */
-.ai-badge{display:inline-flex;align-items:center;gap:4px;background:#eef2ff;border:1px solid #c7d0f8;border-radius:20px;padding:2px 9px;font-family:'JetBrains Mono',monospace;font-size:.58rem;color:#3350aa;font-weight:500}.ai-badge::before{content:'⚙';font-size:.6rem;opacity:.7}
-
-/* ═══ TABELA desktop ═══ */
+/* ══════ TABELA desktop ══════ */
 .tw{width:100%;border:1px solid var(--brd);border-radius:var(--r-lg);background:var(--white);box-shadow:var(--shadow-md);overflow:hidden}
 table{width:100%;border-collapse:collapse;table-layout:fixed}
 col.c1{width:6%}col.c2{width:5%}col.c3{width:5%}col.c4{width:6%}col.c5{width:6%}
 col.c6{width:4%}col.c7{width:3%}col.c8{width:13%}col.c9{width:9%}col.c10{width:8%}
 col.c11{width:6%}col.c12{width:9%}col.c13{width:7%}col.c14{width:9%}col.c15{width:5%}
 thead{background:var(--ink)}
-thead th{padding:11px 9px;text-align:left;font-family:'JetBrains Mono',monospace;font-size:.52rem;letter-spacing:.12em;text-transform:uppercase;font-weight:600;border-right:1px solid rgba(255,255,255,.07);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;vertical-align:bottom;color:#e8e4dc}
+thead th{padding:10px 8px;text-align:left;font-family:'JetBrains Mono',monospace;font-size:.51rem;letter-spacing:.11em;text-transform:uppercase;font-weight:600;border-right:1px solid rgba(255,255,255,.07);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;vertical-align:bottom;color:#e8e4dc}
 thead th:last-child{border-right:none}
 tbody tr{border-bottom:1px solid var(--brd2);transition:background .12s}
 tbody tr:nth-child(even){background:#faf8f5}
 tbody tr:last-child{border-bottom:none}
 tbody tr:hover{background:var(--gold-lt)}
-tbody td{padding:9px 9px;vertical-align:top;border-right:1px solid var(--brd2);font-size:.76rem;color:var(--ink2);overflow:hidden;word-break:break-word}
+tbody td{padding:8px 8px;vertical-align:top;border-right:1px solid var(--brd2);font-size:.75rem;color:var(--ink2);overflow:hidden;word-break:break-word}
 tbody td:last-child{border-right:none}
 .ct{color:var(--ink)!important;font-weight:500;font-style:italic;line-height:1.4}
-a.lk{color:var(--gold);text-decoration:none;font-family:'JetBrains Mono',monospace;font-size:.6rem;display:block;margin-bottom:2px;font-weight:500}
+a.lk{color:var(--gold);text-decoration:none;font-family:'JetBrains Mono',monospace;font-size:.6rem;display:block;font-weight:500}
 a.lk:hover{text-decoration:underline}
 .resum{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;font-size:.74rem;line-height:1.55;cursor:pointer}
 .resum.open{-webkit-line-clamp:unset;display:block}
-.rbtn2{font-family:'JetBrains Mono',monospace;font-size:.56rem;color:var(--gold);cursor:pointer;margin-top:3px;font-weight:500}
-.sel span{display:inline-block;background:var(--gold-lt);border:1px solid rgba(184,134,11,.22);border-radius:20px;padding:1px 6px;margin:1px;color:var(--gold);font-family:'JetBrains Mono',monospace;font-size:.55rem}
+.rbtn2{font-family:'JetBrains Mono',monospace;font-size:.56rem;color:var(--gold);cursor:pointer;margin-top:2px;font-weight:500}
+.sel span{display:inline-block;background:var(--gold-lt);border:1px solid rgba(184,134,11,.2);border-radius:20px;padding:1px 6px;margin:1px;color:var(--gold);font-family:'JetBrains Mono',monospace;font-size:.55rem}
 
 @media(max-width:767px){
   .vr{display:none}.tw{display:none!important}.cards{display:flex}.cgrid{grid-template-columns:1fr}
   .fonte-group{flex-wrap:wrap;border-radius:var(--r-lg)}.ff{flex:1 0 auto;justify-content:center;border-right:none;border-bottom:1px solid rgba(255,255,255,.1)}
+  .tipo-tabs{flex-wrap:wrap;border-radius:var(--r-lg)}.tipo-tab{flex:1 0 auto;justify-content:center;border-right:none;border-bottom:1px solid var(--brd)}
 }
 @media(min-width:768px){.cards{display:none!important}.tw{display:block}}
 
-footer{margin-top:40px;border-top:1px solid var(--brd);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;background:var(--cream)}
-.footer-txt{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--ink3)}
-.btn-diag{padding:6px 14px;border:1.5px solid var(--brd);border-radius:20px;background:transparent;color:var(--ink3);font-family:'JetBrains Mono',monospace;font-size:.6rem;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:5px}
+/* ══════ RODAPÉ ══════ */
+footer{margin-top:40px;border-top:1px solid var(--brd);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;background:var(--cream)}
+.footer-txt{font-family:'JetBrains Mono',monospace;font-size:.57rem;color:var(--ink3)}
+.btn-diag{padding:5px 13px;border:1.5px solid var(--brd);border-radius:20px;background:transparent;color:var(--ink3);font-family:'JetBrains Mono',monospace;font-size:.59rem;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:4px}
 .btn-diag:hover{background:var(--ink);color:#fff;border-color:var(--ink)}
 </style>
 </head>
 <body>
 
+<!-- HEADER -->
 <header>
   <div class="hdr">
     <div>
       <div class="logo-t">Repositório Acadêmico</div>
-      <div class="logo-s">Busca Integrada de Publicações · v16</div>
+      <div class="logo-s">Busca Integrada · v17</div>
     </div>
     <div class="vr"></div>
     <div class="fonte-group">
@@ -195,17 +199,19 @@ footer{margin-top:40px;border-top:1px solid var(--brd);padding:14px 24px;display
   </div>
 </header>
 
+<!-- BUSCA -->
 <div class="sp">
   <div class="sr">
     <div class="sf">
       <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-      <input type="text" id="query" placeholder="Digite tema, autor, palavra-chave ou instituição…" autocomplete="off" spellcheck="false"/>
+      <input type="text" id="query" placeholder="Tema, autor, palavra-chave ou instituição…" autocomplete="off" spellcheck="false"/>
     </div>
-    <button class="btn-p" id="btnB" onclick="buscar(1)">Pesquisar</button>
+    <button class="btn-p" id="btnB" onclick="buscar()">Pesquisar</button>
   </div>
 
   <div class="filters-bar">
 
+    <!-- Período -->
     <div class="filter-block">
       <span class="filter-label">Período</span>
       <div class="period-row">
@@ -215,24 +221,29 @@ footer{margin-top:40px;border-top:1px solid var(--brd);padding:14px 24px;display
       </div>
     </div>
 
+    <!-- Tipo — segmented tabs -->
     <div class="filter-block">
-      <span class="filter-label">Tipo de publicação — selecione um ou mais</span>
-      <div class="multi-check">
-        <input class="mchk" type="checkbox" id="tp-tese"   value="tese de doutorado"/>
-        <label class="mchk-label" for="tp-tese">Tese de Doutorado</label>
-
-        <input class="mchk" type="checkbox" id="tp-diss"   value="dissertação de mestrado"/>
-        <label class="mchk-label" for="tp-diss">Dissertação de Mestrado</label>
-
-        <input class="mchk" type="checkbox" id="tp-artigo" value="artigo científico"/>
-        <label class="mchk-label" for="tp-artigo">Artigo Científico</label>
-
+      <span class="filter-label">Tipo de publicação</span>
+      <div class="tipo-tabs" id="tipoTabs">
+        <button class="tipo-tab ativo" data-tipo="todos" onclick="setTipo(this)">
+          <span class="tipo-dot"></span>Todos <span class="tipo-count" id="cnt-todos">—</span>
+        </button>
+        <button class="tipo-tab" data-tipo="tese" onclick="setTipo(this)">
+          <span class="tipo-dot"></span>Tese de Doutorado <span class="tipo-count" id="cnt-tese">—</span>
+        </button>
+        <button class="tipo-tab" data-tipo="dissertacao" onclick="setTipo(this)">
+          <span class="tipo-dot"></span>Dissertação de Mestrado <span class="tipo-count" id="cnt-diss">—</span>
+        </button>
+        <button class="tipo-tab" data-tipo="artigo" onclick="setTipo(this)">
+          <span class="tipo-dot"></span>Artigo Científico <span class="tipo-count" id="cnt-art">—</span>
+        </button>
       </div>
     </div>
 
+    <!-- Por página -->
     <div class="filter-block">
       <span class="filter-label">Por página</span>
-      <select id="porPag">
+      <select id="porPag" onchange="renderPagina(1)">
         <option value="10">10</option>
         <option value="20" selected>20</option>
         <option value="50">50</option>
@@ -243,30 +254,28 @@ footer{margin-top:40px;border-top:1px solid var(--brd);padding:14px 24px;display
   </div>
 </div>
 
+<!-- CONTEÚDO -->
 <div class="content">
+
   <div id="alertaArea"></div>
 
   <div class="rbar" id="rbar" style="display:none">
     <div class="rc">
       <div class="rc-count">
         <strong id="tot">0</strong> publicações · pág. <strong id="pAtual">1</strong>/<strong id="pTotal">1</strong>
-        <span id="ql" style="color:var(--ink3);margin-left:6px"></span>
+        <span id="ql" style="color:var(--ink3);margin-left:5px"></span>
       </div>
       <div class="src-pills" id="srcPills"></div>
-      <div class="src-pills" id="tipoPills"></div>
     </div>
     <div class="exg">
       <button class="be" onclick="xCSV()">
-        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        CSV
+        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>CSV
       </button>
       <button class="be be-excel" onclick="xExcel()">
-        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        Excel (.xlsx)
+        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Excel
       </button>
       <button class="be be-pdf" onclick="xPDF()">
-        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        PDF
+        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>PDF
       </button>
     </div>
   </div>
@@ -275,12 +284,11 @@ footer{margin-top:40px;border-top:1px solid var(--brd);padding:14px 24px;display
     <div class="state">
       <div class="si">📚</div>
       <h3>Pesquise publicações acadêmicas</h3>
-      <p>Selecione fontes, defina o período e marque um ou mais tipos de publicação. Sem marcação = retorna todos os tipos.</p>
+      <p>Busca simultânea em SciELO, BDTD, Crossref e OpenAlex. Filtre por tipo de publicação e período.</p>
     </div>
   </div>
 
   <div class="cards" id="cards"></div>
-
   <div class="tw" id="tw" style="display:none">
     <table>
       <colgroup><col class="c1"/><col class="c2"/><col class="c3"/><col class="c4"/><col class="c5"/><col class="c6"/><col class="c7"/><col class="c8"/><col class="c9"/><col class="c10"/><col class="c11"/><col class="c12"/><col class="c13"/><col class="c14"/><col class="c15"/></colgroup>
@@ -297,183 +305,116 @@ footer{margin-top:40px;border-top:1px solid var(--brd);padding:14px 24px;display
 </div>
 
 <footer>
-  <span class="footer-txt">Repositório Acadêmico v16 · SciELO · BDTD · Crossref · OpenAlex</span>
+  <span class="footer-txt">Repositório Acadêmico v17 · SciELO · BDTD · Crossref · OpenAlex</span>
   <button class="btn-diag" onclick="diagnosticar()">
-    <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
     Diagnosticar fontes
   </button>
 </footer>
 
 <script>
 'use strict';
-
-const COLS=[
-  'repositorio','link_capes','link_scielo','revista','classificacao',
-  'ano_da_publicacao','volume','titulo_do_periodico','resumo',
-  'palavras_chaves','seletor_palavras_chaves','autor','titulacao',
-  'instituicao_programa','regiao'
-];
-const LABELS=[
-  'REPOSITÓRIO','LINK/CAPES','LINK/SCIELO','REVISTA','CLASSIFICAÇÃO',
-  'ANO DA PUBLICAÇÃO','VOLUME','TÍTULO DO PERIÓDICO','RESUMO',
-  'PALAVRAS-CHAVES','SELETOR PALAVRAS-CHAVES','AUTOR','TITULAÇÃO',
-  'INSTITUIÇÃO / PROGRAMA','REGIÃO'
-];
+const COLS=['repositorio','link_capes','link_scielo','revista','classificacao','ano_da_publicacao','volume','titulo_do_periodico','resumo','palavras_chaves','seletor_palavras_chaves','autor','titulacao','instituicao_programa','regiao'];
+const LABELS=['REPOSITÓRIO','LINK/CAPES','LINK/SCIELO','REVISTA','CLASSIFICAÇÃO','ANO DA PUBLICAÇÃO','VOLUME','TÍTULO DO PERIÓDICO','RESUMO','PALAVRAS-CHAVES','SELETOR PALAVRAS-CHAVES','AUTOR','TITULAÇÃO','INSTITUIÇÃO / PROGRAMA','REGIÃO'];
 const PILLCLS={SciELO:'ps',BDTD:'pb',Crossref:'px',OpenAlex:'po'};
 
-let dados=[];
+// Estado global — servidor retorna TUDO, frontend filtra+pagina
+let TODOS = [];     // todos os registros da busca atual
+let FILTRADOS = []; // após filtro de tipo
+let tipoAtivo = 'todos';
+let paginaAtual = 1;
 
-/* ── Normaliza acentos para comparação ── */
-function normCmp(s){
-  return String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-}
-
-/* ── Fonte toggles ── */
+// ── Fonte toggles ──
 function toggleFonte(btn){btn.classList.toggle('on');}
 function fontesAtivas(){return[...document.querySelectorAll('.ff.on')].map(b=>b.dataset.fonte).join(',');}
 
-/* ── Tipos selecionados (multi-checkbox) ── */
-function tiposSelecionados(){
-  return[...document.querySelectorAll('.mchk:checked')].map(c=>c.value);
+// ── Tipo (tab único selecionado) ──
+function normCmp(s){return String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');}
+
+function setTipo(btn){
+  document.querySelectorAll('.tipo-tab').forEach(t=>t.classList.remove('ativo'));
+  btn.classList.add('ativo');
+  tipoAtivo = btn.dataset.tipo;
+  aplicarFiltro();
 }
 
-/* ── Filtro local — normaliza acentos ── */
-function filtrar(lst){
-  const tipos=tiposSelecionados();
-  if(!tipos.length) return lst; // sem marcação = todos
-  return lst.filter(d=>{
-    const t=normCmp(d.titulacao||d.classificacao||'');
-    // Retorna true se qualquer tipo selecionado está contido na titulação
-    return tipos.some(tp => t.includes(normCmp(tp)));
+function aplicarFiltro(){
+  if(tipoAtivo==='todos'){
+    FILTRADOS=[...TODOS];
+  } else {
+    const mapTipo={'tese':'tese de doutorado','dissertacao':'dissertação de mestrado','artigo':'artigo científico'};
+    const alvo = normCmp(mapTipo[tipoAtivo]||tipoAtivo);
+    FILTRADOS = TODOS.filter(d=>{
+      const t=normCmp(d.titulacao||d.classificacao||'');
+      return t.includes(alvo);
+    });
+  }
+  renderPagina(1);
+}
+
+function atualizarContadores(){
+  const cnts={tese:0,dissertacao:0,artigo:0};
+  TODOS.forEach(d=>{
+    const t=normCmp(d.titulacao||'');
+    if(t.includes('tese de doutorado')) cnts.tese++;
+    else if(t.includes('dissertação de mestrado')||t.includes('dissertacao de mestrado')) cnts.dissertacao++;
+    else if(t.includes('artigo')) cnts.artigo++;
   });
+  document.getElementById('cnt-todos').textContent=TODOS.length;
+  document.getElementById('cnt-tese').textContent=cnts.tese;
+  document.getElementById('cnt-diss').textContent=cnts.dissertacao;
+  document.getElementById('cnt-art').textContent=cnts.artigo;
 }
 
-/* ── Busca ── */
-async function buscar(pagina){
-  pagina=pagina||1;
+// ── Busca ──
+async function buscar(){
   const q=document.getElementById('query').value.trim();
   if(!q){alert('Informe um termo de busca.');return;}
   const ativas=fontesAtivas();
-  if(!ativas){alert('Selecione ao menos uma fonte no cabeçalho.');return;}
+  if(!ativas){alert('Selecione ao menos uma fonte.');return;}
   const am=document.getElementById('am').value||'2016';
   const ax=document.getElementById('ax').value||'';
-  const pp=document.getElementById('porPag').value||'20';
-  loading(q,pagina);
+  loading(q);
   document.getElementById('btnB').disabled=true;
   try{
-    const url='/api/search?q='+encodeURIComponent(q)+'&fontes='+ativas+'&anoMin='+am+(ax?'&anoMax='+ax:'')+'&pagina='+pagina+'&por_pagina='+pp;
+    const url='/api/search?q='+encodeURIComponent(q)+'&fontes='+ativas+'&anoMin='+am+(ax?'&anoMax='+ax:'');
     const r=await fetch(url);
     const ct=r.headers.get('content-type')||'';
     if(!ct.includes('json')){const txt=await r.text();throw new Error('API retornou HTML. Prévia: '+txt.slice(0,100));}
     if(!r.ok) throw new Error('HTTP '+r.status);
     const j=await r.json();
-    dados=filtrar(j.resultados||[]);
+    TODOS=j.resultados||[];
+    tipoAtivo='todos';
+    // Reseta tabs
+    document.querySelectorAll('.tipo-tab').forEach(t=>t.classList.remove('ativo'));
+    document.querySelector('.tipo-tab[data-tipo="todos"]').classList.add('ativo');
+    atualizarContadores();
     mostrarAlertas(j.source_errors||[],j.por_fonte||{});
-    render(dados,q,j.por_fonte||{},j.pagina||pagina,j.total_paginas||1,j.total_unicos||0);
+    aplicarFiltro(); // aplica filtro atual (todos) e renderiza
+    document.getElementById('ql').textContent=TODOS.length?'· "'+q+'"':'';
   }catch(e){erro(e.message);}
   finally{document.getElementById('btnB').disabled=false;}
 }
 
-/* ── Render ── */
-function tagH(n){const lc=(n||'').toLowerCase();const c=lc.includes('scielo')?'ts':lc.includes('bdtd')?'tb':lc.includes('cross')?'tx':lc.includes('openalex')?'to':'tc';return'<span class="tag '+c+'">'+esc(n)+'</span>';}
-function chipsH(kw){if(!kw)return'<span style="opacity:.28;font-size:.78rem">—</span>';return'<div class="chips">'+kw.split(';').map(k=>k.trim()).filter(Boolean).map(k=>'<span class="chip">'+esc(k)+'</span>').join('')+'</div>';}
-function selH(s){if(!s)return'<span style="opacity:.28">—</span>';return'<span class="sel">'+s.split(';').map(t=>'<span>'+esc(t.trim())+'</span>').join('')+'</span>';}
+// ── Paginação local ──
+function renderPagina(pagina){
+  paginaAtual=Math.max(1,pagina);
+  const pp=parseInt(document.getElementById('porPag').value)||20;
+  const total=FILTRADOS.length;
+  const totalPags=Math.ceil(total/pp)||1;
+  if(paginaAtual>totalPags) paginaAtual=totalPags;
+  const inicio=(paginaAtual-1)*pp;
+  const slice=FILTRADOS.slice(inicio,inicio+pp);
 
-/* Região: AI- = inferido do documento; vazio = não encontrado */
-function regiaoH(r){
-  // Vazio = não encontrado
-  if(!r||r.trim()==='') return '<span style="opacity:.28">—</span>';
-  // AI- = inferido automaticamente do documento — exibe badge com a região
-  if(r.startsWith('AI - ')){
-    const regiao = r.slice(5); // remove 'AI - '
-    return '<span class="ai-badge" title="Inferido automaticamente do documento">'+esc(regiao)+'</span>';
-  }
-  // Dado confirmado pela fonte — exibe normalmente
-  return '<strong style="color:var(--ink)">'+esc(r)+'</strong>';
+  document.getElementById('tot').textContent=total;
+  document.getElementById('pAtual').textContent=paginaAtual;
+  document.getElementById('pTotal').textContent=totalPags;
+
+  renderTabela(slice);
+  renderPaginacao(paginaAtual,totalPags);
+  window.scrollTo({top:document.querySelector('.sp').offsetHeight+56,behavior:'smooth'});
 }
 
-function v(x){return esc(x)||'<span style="opacity:.28">—</span>';}
-
-function render(lst,q,porFonte,pAtual,pTotal,totalUnicos){
-  const rbar=document.getElementById('rbar'),st=document.getElementById('stArea');
-  const cards=document.getElementById('cards'),tbody=document.getElementById('tbody'),tw=document.getElementById('tw');
-
-  document.getElementById('tot').textContent=totalUnicos;
-  document.getElementById('pAtual').textContent=pAtual;
-  document.getElementById('pTotal').textContent=pTotal;
-  document.getElementById('ql').textContent=lst.length?'· "'+q+'"':'';
-  // Pills por tipo
-  const porTipo = {};
-  lst.forEach(d => { const t=d.titulacao||d.classificacao; if(t) porTipo[t]=(porTipo[t]||0)+1; });
-  document.getElementById('tipoPills').innerHTML = Object.entries(porTipo)
-    .sort(([,a],[,b])=>b-a)
-    .map(([t,n])=>{
-      const c = t.includes('Doutorado')?'#6e2f1a':t.includes('Mestrado')?'#1b4f72':'#145a32';
-      return '<span class="pill" style="background:'+c+'">'+esc(t)+' · '+n+'</span>';
-    }).join('');
-
-  document.getElementById('srcPills').innerHTML=Object.entries(porFonte).filter(([,n])=>n>0)
-    .map(([f,n])=>'<span class="pill '+(PILLCLS[f]||'px')+'">'+esc(f)+' · '+n+'</span>').join('');
-
-  if(!totalUnicos){
-    st.style.display='';st.innerHTML='<div class="state"><div class="si">🔍</div><h3>Nenhum resultado</h3><p>Tente outros termos, ajuste o período ou ative mais fontes.</p></div>';
-    rbar.style.display='none';cards.innerHTML='';tbody.innerHTML='';tw.style.display='none';
-    document.getElementById('paginacao').style.display='none';return;
-  }
-  st.style.display='none';rbar.style.display='flex';tw.style.display='block';
-  renderPaginacao(pAtual,pTotal);
-
-  // CARDS
-  cards.innerHTML=lst.map((d,i)=>{
-    const rid='cr'+i;
-    const lc=d.link_capes?'<a href="'+esc(d.link_capes)+'" target="_blank" rel="noopener">CAPES ↗</a>':'';
-    const ls=d.link_scielo?'<a href="'+esc(d.link_scielo)+'" target="_blank" rel="noopener">DOI / Link ↗</a>':'';
-    return '<div class="card">'+
-      '<div class="card-hdr"><div class="card-tit">'+(esc(d.titulo_do_periodico)||'<em style="opacity:.4">Sem título</em>')+'</div>'+tagH(d.repositorio)+'</div>'+
-      '<div class="cgrid">'+
-        '<div class="cf"><label>Autor(es)</label><div class="cv">'+(esc(d.autor)||'—')+'</div></div>'+
-        '<div class="cf"><label>Ano</label><div class="cv">'+(esc(d.ano_da_publicacao)||'—')+'</div></div>'+
-        '<div class="cf"><label>Titulação</label><div class="cv">'+(esc(d.titulacao)||'—')+'</div></div>'+
-        '<div class="cf"><label>Região</label><div class="cv">'+regiaoH(d.regiao)+'</div></div>'+
-        '<div class="cf full"><label>Instituição / Programa</label><div class="cv">'+(esc(d.instituicao_programa)||'—')+'</div></div>'+
-        (d.revista?'<div class="cf full"><label>Revista / Periódico</label><div class="cv">'+esc(d.revista)+'</div></div>':'')+
-        (d.volume?'<div class="cf"><label>Volume</label><div class="cv">'+esc(d.volume)+'</div></div>':'')+
-        (d.classificacao?'<div class="cf"><label>Classificação</label><div class="cv">'+esc(d.classificacao)+'</div></div>':'')+
-        (d.palavras_chaves?'<div class="cf full"><label>Palavras-chave</label>'+chipsH(d.palavras_chaves)+'</div>':'')+
-        (d.seletor_palavras_chaves?'<div class="cf full"><label>Seletor KW</label>'+chipsH(d.seletor_palavras_chaves)+'</div>':'')+
-      '</div>'+
-      (d.resumo?'<div class="cf full" style="margin-top:6px"><label style="font-family:\'JetBrains Mono\',monospace;font-size:.52rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3)">Resumo</label><div class="cresum tr" id="'+rid+'">'+esc(d.resumo)+'</div><span class="cvm" onclick="expC(\''+rid+'\',this)">↕ ver mais</span></div>':'')+
-      ((lc||ls)?'<div class="clinks">'+lc+ls+'</div>':'')+
-    '</div>';
-  }).join('');
-
-  // TABELA
-  tbody.innerHTML=lst.map((d,i)=>{
-    const rid='tr'+i;
-    const lc=d.link_capes?'<a class="lk" href="'+esc(d.link_capes)+'" target="_blank" rel="noopener">CAPES ↗</a>':'—';
-    const ls=d.link_scielo?'<a class="lk" href="'+esc(d.link_scielo)+'" target="_blank" rel="noopener">DOI ↗</a>':'—';
-    return '<tr>'+
-      '<td>'+tagH(d.repositorio)+'</td>'+
-      '<td>'+lc+'</td><td>'+ls+'</td>'+
-      '<td title="'+esc(d.revista)+'">'+v(d.revista)+'</td>'+
-      '<td>'+v(d.classificacao)+'</td>'+
-      '<td style="font-family:\'JetBrains Mono\',monospace;font-size:.7rem;text-align:center;color:var(--ink)">'+v(d.ano_da_publicacao)+'</td>'+
-      '<td style="font-family:\'JetBrains Mono\',monospace;font-size:.7rem;text-align:center">'+v(d.volume)+'</td>'+
-      '<td class="ct" title="'+esc(d.titulo_do_periodico)+'">'+v(d.titulo_do_periodico)+'</td>'+
-      '<td><div class="resum" id="'+rid+'">'+(d.resumo?esc(d.resumo):'<em style="opacity:.28">—</em>')+'</div>'+(d.resumo?'<div class="rbtn2" onclick="expT(\''+rid+'\')">↕ ver mais</div>':'')+'</td>'+
-      '<td style="font-size:.72rem;line-height:1.55" title="'+esc(d.palavras_chaves)+'">'+v(d.palavras_chaves)+'</td>'+
-      '<td>'+selH(d.seletor_palavras_chaves)+'</td>'+
-      '<td title="'+esc(d.autor)+'">'+v(d.autor)+'</td>'+
-      '<td>'+v(d.titulacao)+'</td>'+
-      '<td title="'+esc(d.instituicao_programa)+'">'+v(d.instituicao_programa)+'</td>'+
-      '<td>'+regiaoH(d.regiao)+'</td>'+
-    '</tr>';
-  }).join('');
-
-  window.scrollTo({top:0,behavior:'smooth'});
-}
-
-/* ── Paginação ── */
 function renderPaginacao(pAtual,pTotal){
   const el=document.getElementById('paginacao');
   if(pTotal<=1){el.style.display='none';return;}
@@ -487,23 +428,101 @@ function renderPaginacao(pAtual,pTotal){
     if(pAtual<pTotal-2)pages.push('…');
     pages.push(pTotal);
   }
-  let html='<button class="pg-btn'+(pAtual===1?' desab':'')+'" onclick="'+(pAtual>1?'buscar('+(pAtual-1)+')':'void 0')+'">‹ Anterior</button>';
+  let h='<button class="pg-btn'+(pAtual===1?' desab':'')+'" onclick="'+(pAtual>1?'renderPagina('+(pAtual-1)+')':'void 0')+'">‹</button>';
   pages.forEach(p=>{
-    if(p==='…')html+='<span class="pg-sep">…</span>';
-    else html+='<button class="pg-btn'+(p===pAtual?' ativo':'')+'" onclick="'+(p!==pAtual?'buscar('+p+')':'void 0')+'">'+p+'</button>';
+    if(p==='…')h+='<span class="pg-sep">…</span>';
+    else h+='<button class="pg-btn'+(p===pAtual?' ativo':'')+'" onclick="'+(p!==pAtual?'renderPagina('+p+')':'void 0')+'">'+p+'</button>';
   });
-  html+='<button class="pg-btn'+(pAtual===pTotal?' desab':'')+'" onclick="'+(pAtual<pTotal?'buscar('+(pAtual+1)+')':'void 0')+'">Próxima ›</button>';
-  el.innerHTML=html;
+  h+='<button class="pg-btn'+(pAtual===pTotal?' desab':'')+'" onclick="'+(pAtual<pTotal?'renderPagina('+(pAtual+1)+')':'void 0')+'">›</button>';
+  el.innerHTML=h;
 }
 
-/* ── Alertas ── */
+// ── Render tabela e cards ──
+function tagH(n){const lc=(n||'').toLowerCase();const c=lc.includes('scielo')?'ts':lc.includes('bdtd')?'tb':lc.includes('cross')?'tx':lc.includes('openalex')?'to':'to';return'<span class="tag '+c+'">'+esc(n)+'</span>';}
+function chipsH(kw){if(!kw)return'<span style="opacity:.28;font-size:.78rem">—</span>';return'<div class="chips">'+kw.split(';').map(k=>k.trim()).filter(Boolean).map(k=>'<span class="chip">'+esc(k)+'</span>').join('')+'</div>';}
+function selH(s){if(!s)return'<span style="opacity:.28">—</span>';return'<span class="sel">'+s.split(';').map(t=>'<span>'+esc(t.trim())+'</span>').join('')+'</span>';}
+function regH(r){if(!r)return'<span style="opacity:.28">—</span>';if(r.startsWith('AI - ')){return'<span class="ai-badge" title="Inferido do documento">'+esc(r.slice(5))+'</span>';}return'<strong>'+esc(r)+'</strong>';}
+function v(x){return esc(x)||'<span style="opacity:.28">—</span>';}
+
+function renderTabela(lst){
+  const rbar=document.getElementById('rbar'),st=document.getElementById('stArea');
+  const cards=document.getElementById('cards'),tbody=document.getElementById('tbody'),tw=document.getElementById('tw');
+
+  if(!TODOS.length){
+    st.style.display='';
+    st.innerHTML='<div class="state"><div class="si">🔍</div><h3>Nenhum resultado</h3><p>Tente outros termos ou ative mais fontes.</p></div>';
+    rbar.style.display='none';cards.innerHTML='';tbody.innerHTML='';tw.style.display='none';
+    document.getElementById('paginacao').style.display='none';return;
+  }
+
+  if(!lst.length && FILTRADOS.length===0){
+    // Filtro de tipo retornou zero para essa combinação
+    st.style.display='';
+    st.innerHTML='<div class="state"><div class="si">🔍</div><h3>Nenhum resultado para este filtro</h3><p>Selecione "Todos" ou outro tipo de publicação.</p></div>';
+    rbar.style.display='flex';cards.innerHTML='';tbody.innerHTML='';tw.style.display='none';
+    document.getElementById('paginacao').style.display='none';return;
+  }
+
+  st.style.display='none';rbar.style.display='flex';tw.style.display='block';
+
+  // Atualiza pills de fonte com base nos FILTRADOS (não só na página)
+  const porFonte={};
+  FILTRADOS.forEach(r=>{porFonte[r.repositorio]=(porFonte[r.repositorio]||0)+1;});
+  document.getElementById('srcPills').innerHTML=Object.entries(porFonte).filter(([,n])=>n>0)
+    .map(([f,n])=>'<span class="pill '+(PILLCLS[f]||'po')+'">'+esc(f)+' · '+n+'</span>').join('');
+
+  // CARDS
+  cards.innerHTML=lst.map((d,i)=>{
+    const rid='cr'+i;
+    const lc=d.link_capes?'<a href="'+esc(d.link_capes)+'" target="_blank" rel="noopener">CAPES ↗</a>':'';
+    const ls=d.link_scielo?'<a href="'+esc(d.link_scielo)+'" target="_blank" rel="noopener">DOI / Link ↗</a>':'';
+    return '<div class="card">'+
+      '<div class="card-hdr"><div class="card-tit">'+(esc(d.titulo_do_periodico)||'<em style="opacity:.4">Sem título</em>')+'</div>'+tagH(d.repositorio)+'</div>'+
+      '<div class="cgrid">'+
+        '<div class="cf"><label>Autor(es)</label><div class="cv">'+(esc(d.autor)||'—')+'</div></div>'+
+        '<div class="cf"><label>Ano</label><div class="cv">'+(esc(d.ano_da_publicacao)||'—')+'</div></div>'+
+        '<div class="cf"><label>Titulação</label><div class="cv">'+(esc(d.titulacao)||'—')+'</div></div>'+
+        '<div class="cf"><label>Região</label><div class="cv">'+regH(d.regiao)+'</div></div>'+
+        '<div class="cf full"><label>Instituição / Programa</label><div class="cv">'+(esc(d.instituicao_programa)||'—')+'</div></div>'+
+        (d.revista?'<div class="cf full"><label>Revista / Periódico</label><div class="cv">'+esc(d.revista)+'</div></div>':'')+
+        (d.palavras_chaves?'<div class="cf full"><label>Palavras-chave</label>'+chipsH(d.palavras_chaves)+'</div>':'')+
+        (d.seletor_palavras_chaves?'<div class="cf full"><label>Seletor KW</label>'+chipsH(d.seletor_palavras_chaves)+'</div>':'')+
+      '</div>'+
+      (d.resumo?'<div class="cf full" style="margin-top:5px"><label style="font-family:\'JetBrains Mono\',monospace;font-size:.52rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3)">Resumo</label><div class="cresum tr" id="'+rid+'">'+esc(d.resumo)+'</div><span class="cvm" onclick="expC(\''+rid+'\',this)">↕ ver mais</span></div>':'')+
+      ((lc||ls)?'<div class="clinks">'+lc+ls+'</div>':'')+
+    '</div>';
+  }).join('');
+
+  // TABELA
+  tbody.innerHTML=lst.map((d,i)=>{
+    const rid='tr'+i;
+    const lc=d.link_capes?'<a class="lk" href="'+esc(d.link_capes)+'" target="_blank">CAPES↗</a>':'—';
+    const ls=d.link_scielo?'<a class="lk" href="'+esc(d.link_scielo)+'" target="_blank">DOI↗</a>':'—';
+    return '<tr>'+
+      '<td>'+tagH(d.repositorio)+'</td><td>'+lc+'</td><td>'+ls+'</td>'+
+      '<td title="'+esc(d.revista)+'">'+v(d.revista)+'</td>'+
+      '<td>'+v(d.classificacao)+'</td>'+
+      '<td style="font-family:\'JetBrains Mono\',monospace;font-size:.7rem;text-align:center;color:var(--ink)">'+v(d.ano_da_publicacao)+'</td>'+
+      '<td style="font-family:\'JetBrains Mono\',monospace;font-size:.7rem;text-align:center">'+v(d.volume)+'</td>'+
+      '<td class="ct" title="'+esc(d.titulo_do_periodico)+'">'+v(d.titulo_do_periodico)+'</td>'+
+      '<td><div class="resum" id="'+rid+'">'+(d.resumo?esc(d.resumo):'<em style="opacity:.28">—</em>')+'</div>'+(d.resumo?'<div class="rbtn2" onclick="expT(\''+rid+'\')">↕ mais</div>':'')+'</td>'+
+      '<td style="font-size:.72rem;line-height:1.55" title="'+esc(d.palavras_chaves)+'">'+v(d.palavras_chaves)+'</td>'+
+      '<td>'+selH(d.seletor_palavras_chaves)+'</td>'+
+      '<td title="'+esc(d.autor)+'">'+v(d.autor)+'</td>'+
+      '<td>'+v(d.titulacao)+'</td>'+
+      '<td title="'+esc(d.instituicao_programa)+'">'+v(d.instituicao_programa)+'</td>'+
+      '<td>'+regH(d.regiao)+'</td>'+
+    '</tr>';
+  }).join('');
+}
+
 function mostrarAlertas(erros,porFonte){
   const area=document.getElementById('alertaArea');
   if(!erros||!erros.length){area.innerHTML='';return;}
   const fail=[...new Set(erros.map(e=>e.fonte.split('/')[0]))];
   const ok=Object.keys(porFonte).filter(f=>(porFonte[f]||0)>0);
-  area.innerHTML='<div class="alerta alerta-warn"><span class="alerta-icon">⚠️</span>'+
-    '<div><div class="alerta-title">Fontes parcialmente indisponíveis</div>'+
+  area.innerHTML='<div class="alerta alerta-warn"><span class="alerta-icon">⚠️</span><div>'+
+    '<div class="alerta-title">Fontes parcialmente indisponíveis</div>'+
     '<div class="alerta-msg">'+fail.map(f=>'<strong>'+esc(f)+'</strong>').join(', ')+' não responderam.'+
     (ok.length?' Dados de: '+ok.map(f=>'<strong>'+esc(f)+'</strong>').join(', ')+'.':'')+
     '</div><span class="alerta-link" onclick="diagnosticar()">→ Executar diagnóstico</span></div></div>';
@@ -512,131 +531,53 @@ function mostrarAlertas(erros,porFonte){
 function expC(id,btn){const el=document.getElementById(id);if(!el)return;el.classList.toggle('tr');btn.textContent=el.classList.contains('tr')?'↕ ver mais':'↕ ver menos';}
 function expT(id){document.getElementById(id)?.classList.toggle('open');}
 
-function loading(q,p){
+function loading(q){
   document.getElementById('alertaArea').innerHTML='';
   document.getElementById('rbar').style.display='none';
   document.getElementById('cards').innerHTML='';document.getElementById('tbody').innerHTML='';
   document.getElementById('tw').style.display='none';document.getElementById('paginacao').style.display='none';
+  ['cnt-todos','cnt-tese','cnt-diss','cnt-art'].forEach(id=>{document.getElementById(id).textContent='—';});
   const s=document.getElementById('stArea');s.style.display='';
-  s.innerHTML='<div class="state"><div class="spinner"></div><h3>Consultando bases de dados…</h3><p>Página '+p+' · fontes: '+fontesAtivas().toUpperCase()+'</p></div>';
+  s.innerHTML='<div class="state"><div class="spinner"></div><h3>Consultando bases de dados…</h3><p>Buscando <em>"'+esc(q)+'"</em></p></div>';
 }
-function erro(msg){
-  const s=document.getElementById('stArea');s.style.display='';
-  s.innerHTML='<div class="state"><div class="si">⚠️</div><h3>Erro na busca</h3><p style="font-size:.78rem;font-family:monospace;color:var(--ink2);margin-top:8px;word-break:break-all">'+esc(msg)+'</p></div>';
-}
+function erro(msg){const s=document.getElementById('stArea');s.style.display='';s.innerHTML='<div class="state"><div class="si">⚠️</div><h3>Erro na busca</h3><p style="font-size:.78rem;font-family:monospace;color:var(--ink2);margin-top:8px;word-break:break-all">'+esc(msg)+'</p></div>';}
 function esc(v){return String(v||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-function capesProbe(){
-  const q=document.getElementById('query').value||'educação';
-  window.open('/api/capes-probe?q='+encodeURIComponent(q),'_blank');
-}
 async function diagnosticar(){const q=document.getElementById('query').value||'educação';window.open('/api/debug?q='+encodeURIComponent(q),'_blank');}
 
-/* ── Busca todos os registros para exportação ── */
-async function fetchTodos(){
-  const q=document.getElementById('query').value.trim();
-  const ativas=fontesAtivas();
-  const am=document.getElementById('am').value||'2016';
-  const ax=document.getElementById('ax').value||'';
-  if(!q||!ativas) return dados;
-  try{
-    const url='/api/search?q='+encodeURIComponent(q)+'&fontes='+ativas+'&anoMin='+am+(ax?'&anoMax='+ax:'')+'&exportar=1';
-    const r=await fetch(url);
-    if(!r.ok) return dados;
-    const j=await r.json();
-    let todos=j.resultados||[];
-    const tipos=tiposSelecionados();
-    if(tipos.length) todos=todos.filter(d=>{const t=normCmp(d.titulacao||d.classificacao||'');return tipos.some(tp=>t.includes(normCmp(tp)));});
-    return todos;
-  }catch(e){console.warn('fetchTodos falhou:',e);return dados;}
+// ── Exportações — usa FILTRADOS (todos, não só a página) ──
+function xCSV(){
+  if(!FILTRADOS.length){alert('Faça uma busca primeiro.');return;}
+  const h=LABELS.join(';');
+  const r=FILTRADOS.map(d=>COLS.map(c=>'"'+String(d[c]||'').replace(/"/g,'""')+'"').join(';'));
+  dl('\uFEFF'+[h,...r].join('\r\n'),'repositorio_'+new Date().toISOString().slice(0,10)+'.csv','text/csv;charset=utf-8');
 }
-
-/* ── Exportação CSV — todos os registros ── */
-async function xCSV(){
-  if(!dados.length){alert('Faça uma busca primeiro.');return;}
-  const btn=document.querySelector('.be');
-  try{
-    const todos=await fetchTodos();
-    if(!todos.length){alert('Nenhum dado para exportar.');return;}
-    const h=LABELS.join(';');
-    const r=todos.map(d=>COLS.map(c=>'"'+String(d[c]||'').replace(/"/g,'""')+'"').join(';'));
-    dl('\uFEFF'+[h,...r].join('\r\n'),'repositorio_'+new Date().toISOString().slice(0,10)+'.csv','text/csv;charset=utf-8');
-  }catch(e){alert('Erro ao exportar: '+e.message);}
-}
-
-/* ── Exportação Excel profissional ── */
-async function xExcel(){
-  if(!dados.length){alert('Faça uma busca primeiro.');return;}
+function xExcel(){
+  if(!FILTRADOS.length){alert('Faça uma busca primeiro.');return;}
   if(typeof XLSX==='undefined'){alert('Biblioteca XLSX não carregada.');return;}
-  const todos=await fetchTodos();
-  if(!todos.length){alert('Nenhum dado para exportar.');return;}
-  const wsData=todos.map(d=>{const row={};COLS.forEach((c,i)=>{row[LABELS[i]]=d[c]||'';});return row;});
+  const wsData=FILTRADOS.map(d=>{const row={};COLS.forEach((c,i)=>{row[LABELS[i]]=d[c]||'';});return row;});
   const wb=XLSX.utils.book_new();
   const ws=XLSX.utils.json_to_sheet(wsData,{header:LABELS});
   ws['!cols']=[12,30,30,25,22,8,6,55,80,60,40,35,22,40,16].map(w=>({wch:w}));
   ws['!freeze']={xSplit:0,ySplit:1};
   XLSX.utils.book_append_sheet(wb,ws,'Publicações');
-  const meta=[
-    ['Campo','Descrição'],
-    ['REPOSITÓRIO','Fonte: SciELO, BDTD, Crossref, OpenAlex (Teses/Artigos BR)'],
-    ['LINK/CAPES','URL do registro no Catálogo de Teses CAPES'],
-    ['LINK/SCIELO','URL do artigo no SciELO ou DOI'],
-    ['REVISTA','Revista ou periódico científico'],
-    ['CLASSIFICAÇÃO','Tipo da publicação'],
-    ['ANO DA PUBLICAÇÃO','Ano de publicação ou defesa'],
-    ['VOLUME','Volume do periódico'],
-    ['TÍTULO DO PERIÓDICO','Título completo'],
-    ['RESUMO','Abstract da publicação'],
-    ['PALAVRAS-CHAVES','Descritores e palavras-chave'],
-    ['SELETOR PALAVRAS-CHAVES','Até 3 palavras-chave principais'],
-    ['AUTOR','Nome(s) do(s) autor(es)'],
-    ['TITULAÇÃO','Grau acadêmico ou tipo'],
-    ['INSTITUIÇÃO / PROGRAMA','Universidade e programa'],
-    ['REGIÃO','Região do Brasil. "AI - [Região]" = inferida do documento automaticamente. Vazio = não identificado'],
-  ];
+  const meta=[['Campo','Descrição'],['REPOSITÓRIO','Fonte: SciELO, BDTD, Crossref, OpenAlex'],['LINK/CAPES','URL no Catálogo CAPES'],['LINK/SCIELO','URL ou DOI do artigo'],['REVISTA','Revista ou periódico'],['CLASSIFICAÇÃO','Tipo da publicação'],['ANO DA PUBLICAÇÃO','Ano de publicação ou defesa'],['VOLUME','Volume do periódico'],['TÍTULO DO PERIÓDICO','Título completo'],['RESUMO','Abstract'],['PALAVRAS-CHAVES','Descritores'],['SELETOR PALAVRAS-CHAVES','Até 3 palavras-chave principais'],['AUTOR','Autor(es)'],['TITULAÇÃO','Grau acadêmico ou tipo'],['INSTITUIÇÃO / PROGRAMA','Universidade e programa'],['REGIÃO','Região BR. "AI - X" = inferida do documento']];
   const wsMeta=XLSX.utils.aoa_to_sheet(meta);
   wsMeta['!cols']=[{wch:28},{wch:62}];
   XLSX.utils.book_append_sheet(wb,wsMeta,'Metadados');
   const q=(document.getElementById('query').value||'busca').slice(0,30).replace(/[^a-zA-Z0-9\s]/g,'').trim().replace(/\s+/g,'_');
   XLSX.writeFile(wb,'repositorio_'+q+'_'+new Date().toISOString().slice(0,10)+'.xlsx');
 }
-
-/* ── Exportação PDF ── */
-async function xPDF(){
-  if(!dados.length){alert('Faça uma busca primeiro.');return;}
+function xPDF(){
+  if(!FILTRADOS.length){alert('Faça uma busca primeiro.');return;}
   const q=document.getElementById('query').value||'busca';
-  const todos=await fetchTodos();
-  const rows=todos.map(d=>
-    '<tr><td>'+esc(d.repositorio)+'</td><td><em>'+esc(d.titulo_do_periodico)+'</em></td>'+
-    '<td>'+esc(d.autor)+'</td><td>'+esc(d.ano_da_publicacao)+'</td>'+
-    '<td>'+esc(d.titulacao)+'</td><td>'+esc(d.instituicao_programa)+'</td>'+
-    '<td>'+esc(d.regiao)+'</td><td>'+esc(String(d.palavras_chaves||'').slice(0,80))+'</td>'+
-    '<td>'+esc(String(d.resumo||'').slice(0,200))+(d.resumo&&d.resumo.length>200?'…':'')+'</td>'+
-    '<td>'+(d.link_capes||d.link_scielo?'<a href="'+esc(d.link_capes||d.link_scielo)+'">Link</a>':'—')+'</td></tr>'
-  ).join('');
+  const rows=FILTRADOS.map(d=>'<tr><td>'+esc(d.repositorio)+'</td><td><em>'+esc(d.titulo_do_periodico)+'</em></td><td>'+esc(d.autor)+'</td><td>'+esc(d.ano_da_publicacao)+'</td><td>'+esc(d.titulacao)+'</td><td>'+esc(d.instituicao_programa)+'</td><td>'+esc(d.regiao)+'</td><td>'+esc(String(d.palavras_chaves||'').slice(0,80))+'</td><td>'+esc(String(d.resumo||'').slice(0,180))+(d.resumo&&d.resumo.length>180?'…':'')+'</td><td>'+(d.link_capes||d.link_scielo?'<a href="'+esc(d.link_capes||d.link_scielo)+'">Link</a>':'—')+'</td></tr>').join('');
   const w=window.open('','_blank');
-  w.document.write('<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Repositório · '+esc(q)+'</title>'+
-    '<style>@page{size:A3 landscape;margin:12mm}body{font-family:Georgia,serif;font-size:8.5px;color:#1a1714}'+
-    '.cover{margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid #1a1714}'+
-    '.cover h1{font-size:14px;font-weight:700;margin-bottom:3px}.cover p{font-size:8px;color:#666}'+
-    'table{width:100%;border-collapse:collapse;margin-top:8px}'+
-    'thead tr{background:#1a1714;color:#fff}'+
-    'th{padding:5px 6px;text-align:left;font-size:7px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;border-right:1px solid rgba(255,255,255,.15)}'+
-    'th:last-child{border-right:none}'+
-    'td{padding:5px 6px;border-bottom:1px solid #e8e4dc;vertical-align:top;font-size:8px;border-right:1px solid #e8e4dc}'+
-    'td:last-child{border-right:none}tr:nth-child(even) td{background:#fdf9f2}'+
-    'a{color:#b8860b;text-decoration:none}em{font-style:italic}</style></head><body>'+
-    '<div class="cover"><h1>Repositório Acadêmico Integrado</h1>'+
-    '<p>Busca: <strong>'+esc(q)+'</strong> · '+todos.length+' publicação(ões) · '+new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'})+'</p></div>'+
-    '<table><thead><tr><th>Fonte</th><th>Título</th><th>Autor(es)</th><th>Ano</th>'+
-    '<th>Titulação</th><th>Instituição</th><th>Região</th><th>Palavras-chave</th><th>Resumo</th><th>Link</th></tr></thead>'+
-    '<tbody>'+rows+'</tbody></table></body></html>');
+  w.document.write('<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Repositório · '+esc(q)+'</title><style>@page{size:A3 landscape;margin:11mm}body{font-family:Georgia,serif;font-size:8.5px;color:#1a1714}.cover{margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid #1a1714}.cover h1{font-size:13px;font-weight:700;margin-bottom:2px}.cover p{font-size:8px;color:#666}table{width:100%;border-collapse:collapse}thead tr{background:#1a1714;color:#fff}th{padding:5px 6px;text-align:left;font-size:7px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;border-right:1px solid rgba(255,255,255,.15)}th:last-child{border-right:none}td{padding:4px 6px;border-bottom:1px solid #e8e4dc;vertical-align:top;font-size:8px;border-right:1px solid #e8e4dc}td:last-child{border-right:none}tr:nth-child(even) td{background:#fdf9f2}a{color:#b8860b;text-decoration:none}em{font-style:italic}</style></head><body><div class="cover"><h1>Repositório Acadêmico Integrado</h1><p>Busca: <strong>'+esc(q)+'</strong> · '+FILTRADOS.length+' publicação(ões) · '+new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'})+'</p></div><table><thead><tr><th>Fonte</th><th>Título</th><th>Autor(es)</th><th>Ano</th><th>Titulação</th><th>Instituição</th><th>Região</th><th>Palavras-chave</th><th>Resumo</th><th>Link</th></tr></thead><tbody>'+rows+'</tbody></table></body></html>');
   w.document.close();setTimeout(()=>w.print(),800);
 }
+function dl(c,n,m){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([c],{type:m}));a.download=n;a.click();URL.revokeObjectURL(a.href);}
 
-function dl(content,name,mime){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([content],{type:mime}));a.download=name;a.click();URL.revokeObjectURL(a.href);}
-
-document.getElementById('query').addEventListener('keydown',e=>{if(e.key==='Enter')buscar(1);});
-document.getElementById('porPag').addEventListener('change',()=>{if(dados.length)buscar(1);});
+document.getElementById('query').addEventListener('keydown',e=>{if(e.key==='Enter')buscar();});
 </script>
 </body>
 </html>
