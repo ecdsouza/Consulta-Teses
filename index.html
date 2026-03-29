@@ -14,7 +14,7 @@
   --bg:#f4f1ec;--cream:#fdfbf8;--white:#ffffff;
   --brd:#d8d3ca;--brd2:#e8e4dd;
   --gold:#b8860b;--gold2:#d4a017;--gold-lt:#fdf6e3;
-  --scielo:#145a32;--bdtd:#6e2f1a;--cross:#4a235a;--oa:#0d5c4a;
+  --capes:#1b4f72;--scielo:#145a32;--bdtd:#6e2f1a;--cross:#4a235a;--oa:#0d5c4a;
   --tese-c:#1b3a5c; --diss-c:#145a32; --art-c:#5a2d82;
   --warn-bg:#fffbf0;--warn-brd:#e9c06e;--warn-txt:#7a5800;
   --shadow-sm:0 1px 3px rgba(26,23,20,.08);
@@ -37,7 +37,7 @@ header{background:var(--ink);color:#fdfbf8;position:sticky;top:0;z-index:300;box
 .ff:last-child{border-right:none}
 .ff .dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0;transition:opacity .2s;opacity:.4}
 .ff.on{color:#fff}.ff.on .dot{opacity:1}
-.ff-scielo.on{background:rgba(20,90,50,.8)}.ff-bdtd.on{background:rgba(110,47,26,.8)}
+.ff-capes.on{background:rgba(27,79,114,.8)}.ff-scielo.on{background:rgba(20,90,50,.8)}.ff-bdtd.on{background:rgba(110,47,26,.8)}
 .ff-cross.on{background:rgba(74,35,90,.8)}.ff-oa.on{background:rgba(13,92,74,.8)}
 
 /* ══════ BUSCA ══════ */
@@ -94,7 +94,7 @@ select:focus{border-color:var(--gold)}
 .rc-count strong{color:var(--ink);font-weight:700;font-size:.84rem}
 .src-pills{display:flex;gap:4px;flex-wrap:wrap;margin-top:2px}
 .pill{display:inline-flex;align-items:center;gap:3px;padding:2px 9px;border-radius:20px;font-family:'JetBrains Mono',monospace;font-size:.57rem;font-weight:600;color:#fff}
-.ps{background:var(--scielo)}.pb{background:var(--bdtd)}.px{background:var(--cross)}.po{background:var(--oa)}
+.pc{background:var(--capes)}.ps{background:var(--scielo)}.pb{background:var(--bdtd)}.px{background:var(--cross)}.po{background:var(--oa)}
 
 .exg{display:flex;gap:6px;flex-wrap:wrap;align-items:flex-start}
 .be{display:inline-flex;align-items:center;gap:5px;padding:8px 15px;border:1.5px solid var(--brd);border-radius:var(--r);background:var(--white);color:var(--ink2);font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;transition:all .2s;min-height:36px;font-weight:500}
@@ -120,7 +120,7 @@ select:focus{border-color:var(--gold)}
 
 /* ══════ TAGS / CHIPS ══════ */
 .tag{display:inline-block;padding:2px 9px;border-radius:20px;font-family:'JetBrains Mono',monospace;font-size:.55rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#fff;white-space:nowrap}
-.ts{background:var(--scielo)}.tb{background:var(--bdtd)}.tx{background:var(--cross)}.to{background:var(--oa)}
+.tc{background:var(--capes)}.ts{background:var(--scielo)}.tb{background:var(--bdtd)}.tx{background:var(--cross)}.to{background:var(--oa)}
 .chips{display:flex;flex-wrap:wrap;gap:3px;margin-top:4px}
 .chip{background:var(--gold-lt);border:1px solid rgba(184,134,11,.22);border-radius:20px;padding:1px 8px;font-family:'JetBrains Mono',monospace;font-size:.57rem;color:var(--gold);font-weight:500}
 .ai-badge{display:inline-flex;align-items:center;gap:4px;background:#eef2ff;border:1px solid #c7d0f8;border-radius:20px;padding:2px 9px;font-family:'JetBrains Mono',monospace;font-size:.57rem;color:#3350aa;font-weight:500}
@@ -187,10 +187,11 @@ footer{margin-top:40px;border-top:1px solid var(--brd);padding:12px 24px;display
   <div class="hdr">
     <div>
       <div class="logo-t">Repositório Acadêmico</div>
-      <div class="logo-s">Busca Integrada · v17</div>
+      <div class="logo-s">Busca Integrada · v18</div>
     </div>
     <div class="vr"></div>
     <div class="fonte-group">
+      <button class="ff ff-capes on"  data-fonte="capes"    onclick="toggleFonte(this)"><span class="dot"></span>CAPES</button>
       <button class="ff ff-scielo on" data-fonte="scielo"   onclick="toggleFonte(this)"><span class="dot"></span>SciELO</button>
       <button class="ff ff-bdtd on"   data-fonte="bdtd"     onclick="toggleFonte(this)"><span class="dot"></span>BDTD</button>
       <button class="ff ff-cross on"  data-fonte="crossref" onclick="toggleFonte(this)"><span class="dot"></span>Crossref</button>
@@ -305,7 +306,7 @@ footer{margin-top:40px;border-top:1px solid var(--brd);padding:12px 24px;display
 </div>
 
 <footer>
-  <span class="footer-txt">Repositório Acadêmico v17 · SciELO · BDTD · Crossref · OpenAlex</span>
+  <span class="footer-txt">Repositório Acadêmico v18 · CAPES · SciELO · BDTD · Crossref · OpenAlex</span>
   <button class="btn-diag" onclick="diagnosticar()">
     <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
     Diagnosticar fontes
@@ -316,7 +317,7 @@ footer{margin-top:40px;border-top:1px solid var(--brd);padding:12px 24px;display
 'use strict';
 const COLS=['repositorio','link_capes','link_scielo','revista','classificacao','ano_da_publicacao','volume','titulo_do_periodico','resumo','palavras_chaves','seletor_palavras_chaves','autor','titulacao','instituicao_programa','regiao'];
 const LABELS=['REPOSITÓRIO','LINK/CAPES','LINK/SCIELO','REVISTA','CLASSIFICAÇÃO','ANO DA PUBLICAÇÃO','VOLUME','TÍTULO DO PERIÓDICO','RESUMO','PALAVRAS-CHAVES','SELETOR PALAVRAS-CHAVES','AUTOR','TITULAÇÃO','INSTITUIÇÃO / PROGRAMA','REGIÃO'];
-const PILLCLS={SciELO:'ps',BDTD:'pb',Crossref:'px',OpenAlex:'po'};
+const PILLCLS={CAPES:'pc',SciELO:'ps',BDTD:'pb',Crossref:'px',OpenAlex:'po'};
 
 // Estado global — servidor retorna TUDO, frontend filtra+pagina
 let TODOS = [];     // todos os registros da busca atual
@@ -438,7 +439,7 @@ function renderPaginacao(pAtual,pTotal){
 }
 
 // ── Render tabela e cards ──
-function tagH(n){const lc=(n||'').toLowerCase();const c=lc.includes('scielo')?'ts':lc.includes('bdtd')?'tb':lc.includes('cross')?'tx':lc.includes('openalex')?'to':'to';return'<span class="tag '+c+'">'+esc(n)+'</span>';}
+function tagH(n){const lc=(n||'').toLowerCase();const c=lc.includes('capes')?'tc':lc.includes('scielo')?'ts':lc.includes('bdtd')?'tb':lc.includes('cross')?'tx':lc.includes('openalex')?'to':'to';return'<span class="tag '+c+'">'+esc(n)+'</span>';}
 function chipsH(kw){if(!kw)return'<span style="opacity:.28;font-size:.78rem">—</span>';return'<div class="chips">'+kw.split(';').map(k=>k.trim()).filter(Boolean).map(k=>'<span class="chip">'+esc(k)+'</span>').join('')+'</div>';}
 function selH(s){if(!s)return'<span style="opacity:.28">—</span>';return'<span class="sel">'+s.split(';').map(t=>'<span>'+esc(t.trim())+'</span>').join('')+'</span>';}
 function regH(r){if(!r)return'<span style="opacity:.28">—</span>';if(r.startsWith('AI - ')){return'<span class="ai-badge" title="Inferido do documento">'+esc(r.slice(5))+'</span>';}return'<strong>'+esc(r)+'</strong>';}
