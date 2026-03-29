@@ -318,32 +318,35 @@ const PILLCLS={CAPES:'pc',SciELO:'ps',BDTD:'pb',Crossref:'px',OpenAlex:'po'};
 // Estado global — servidor retorna TUDO, frontend filtra+pagina
 let TODOS = [];     // todos os registros da busca atual
 let FILTRADOS = []; // após filtro de tipo
-let tipoAtivo = 'todos';
 let paginaAtual = 1;
 
 // ── Fonte toggles ──
 function toggleFonte(btn){btn.classList.toggle('on');}
 function fontesAtivas(){return[...document.querySelectorAll('.ff.on')].map(b=>b.dataset.fonte).join(',');}
 
-// ── Tipo (tab único selecionado) ──
+// ── Tipo — multi-select independente ──
 function normCmp(s){return String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');}
 
-function setTipo(btn){
-  document.querySelectorAll('.tipo-tab').forEach(t=>t.classList.remove('ativo'));
-  btn.classList.add('ativo');
-  tipoAtivo = btn.dataset.tipo;
+function toggleTipo(btn){
+  btn.classList.toggle('ativo');
   aplicarFiltro();
 }
 
 function aplicarFiltro(){
-  if(tipoAtivo==='todos'){
+  const mapTipo={
+    'tese'       :'tese de doutorado',
+    'dissertacao':'dissertação de mestrado',
+    'artigo'     :'artigo científico'
+  };
+  const ativos=[...document.querySelectorAll('.tipo-tab.ativo')].map(b=>b.dataset.tipo);
+
+  if(!ativos.length){
+    // Nenhum pill ativo = mostra todos
     FILTRADOS=[...TODOS];
   } else {
-    const mapTipo={'tese':'tese de doutorado','dissertacao':'dissertação de mestrado','artigo':'artigo científico'};
-    const alvo = normCmp(mapTipo[tipoAtivo]||tipoAtivo);
-    FILTRADOS = TODOS.filter(d=>{
+    FILTRADOS=TODOS.filter(d=>{
       const t=normCmp(d.titulacao||d.classificacao||'');
-      return t.includes(alvo);
+      return ativos.some(a=>t.includes(normCmp(mapTipo[a]||a)));
     });
   }
   renderPagina(1);
