@@ -13,7 +13,7 @@
   --bg:#f4f1ec;--cream:#fdfbf8;--white:#ffffff;
   --brd:#d8d3ca;--brd2:#e8e4dd;
   --gold:#b8860b;--gold2:#d4a017;--gold-lt:#fdf6e3;
-  --capes:#1b4f72;--scielo:#145a32;--bdtd:#6e2f1a;--cross:#4a235a;--oa:#0d5c4a;
+  --scielo:#145a32;--bdtd:#6e2f1a;--cross:#4a235a;--oa:#0d5c4a;
   --warn-bg:#fffbf0;--warn-brd:#e9c06e;--warn-txt:#7a5800;
   --shadow-sm:0 1px 3px rgba(26,23,20,.08);
   --shadow-md:0 4px 12px rgba(26,23,20,.12);
@@ -96,7 +96,7 @@ select:focus{border-color:var(--gold)}
 .rc-count strong{color:var(--ink);font-weight:700;font-size:.84rem}
 .src-pills{display:flex;gap:4px;flex-wrap:wrap}
 .pill{display:inline-flex;align-items:center;gap:3px;padding:3px 10px;border-radius:20px;font-family:'JetBrains Mono',monospace;font-size:.58rem;font-weight:600;color:#fff}
-.pc{background:var(--capes)}.ps{background:var(--scielo)}.pb{background:var(--bdtd)}.px{background:var(--cross)}.po{background:var(--oa)}
+.ps{background:var(--scielo)}.pb{background:var(--bdtd)}.px{background:var(--cross)}.po{background:var(--oa)}
 .exg{display:flex;gap:6px;flex-wrap:wrap;align-items:flex-start}
 .be{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1.5px solid var(--brd);border-radius:var(--r);background:var(--white);color:var(--ink2);font-family:'JetBrains Mono',monospace;font-size:.63rem;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:all .2s;min-height:36px;box-shadow:var(--shadow-sm);font-weight:500}
 .be:hover{background:var(--ink);color:var(--white);border-color:var(--ink)}
@@ -183,11 +183,10 @@ footer{margin-top:40px;border-top:1px solid var(--brd);padding:14px 24px;display
   <div class="hdr">
     <div>
       <div class="logo-t">Repositório Acadêmico</div>
-      <div class="logo-s">Busca Integrada de Publicações · v14</div>
+      <div class="logo-s">Busca Integrada de Publicações · v16</div>
     </div>
     <div class="vr"></div>
     <div class="fonte-group">
-      <button class="ff ff-capes on"  data-fonte="capes"    onclick="toggleFonte(this)"><span class="dot"></span>CAPES</button>
       <button class="ff ff-scielo on" data-fonte="scielo"   onclick="toggleFonte(this)"><span class="dot"></span>SciELO</button>
       <button class="ff ff-bdtd on"   data-fonte="bdtd"     onclick="toggleFonte(this)"><span class="dot"></span>BDTD</button>
       <button class="ff ff-cross on"  data-fonte="crossref" onclick="toggleFonte(this)"><span class="dot"></span>Crossref</button>
@@ -228,11 +227,6 @@ footer{margin-top:40px;border-top:1px solid var(--brd);padding:14px 24px;display
         <input class="mchk" type="checkbox" id="tp-artigo" value="artigo científico"/>
         <label class="mchk-label" for="tp-artigo">Artigo Científico</label>
 
-        <input class="mchk" type="checkbox" id="tp-livro"  value="livro"/>
-        <label class="mchk-label" for="tp-livro">Livro / Capítulo</label>
-
-        <input class="mchk" type="checkbox" id="tp-mono"   value="monografia"/>
-        <label class="mchk-label" for="tp-mono">Monografia</label>
       </div>
     </div>
 
@@ -259,6 +253,7 @@ footer{margin-top:40px;border-top:1px solid var(--brd);padding:14px 24px;display
         <span id="ql" style="color:var(--ink3);margin-left:6px"></span>
       </div>
       <div class="src-pills" id="srcPills"></div>
+      <div class="src-pills" id="tipoPills"></div>
     </div>
     <div class="exg">
       <button class="be" onclick="xCSV()">
@@ -302,7 +297,7 @@ footer{margin-top:40px;border-top:1px solid var(--brd);padding:14px 24px;display
 </div>
 
 <footer>
-  <span class="footer-txt">Repositório Acadêmico v14 · CAPES · SciELO · BDTD · Crossref · OpenAlex</span>
+  <span class="footer-txt">Repositório Acadêmico v16 · SciELO · BDTD · Crossref · OpenAlex</span>
   <button class="btn-diag" onclick="diagnosticar()">
     <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
     Diagnosticar fontes
@@ -324,7 +319,7 @@ const LABELS=[
   'PALAVRAS-CHAVES','SELETOR PALAVRAS-CHAVES','AUTOR','TITULAÇÃO',
   'INSTITUIÇÃO / PROGRAMA','REGIÃO'
 ];
-const PILLCLS={CAPES:'pc',SciELO:'ps',BDTD:'pb',Crossref:'px',OpenAlex:'po'};
+const PILLCLS={SciELO:'ps',BDTD:'pb',Crossref:'px',OpenAlex:'po'};
 
 let dados=[];
 
@@ -407,6 +402,16 @@ function render(lst,q,porFonte,pAtual,pTotal,totalUnicos){
   document.getElementById('pAtual').textContent=pAtual;
   document.getElementById('pTotal').textContent=pTotal;
   document.getElementById('ql').textContent=lst.length?'· "'+q+'"':'';
+  // Pills por tipo
+  const porTipo = {};
+  lst.forEach(d => { const t=d.titulacao||d.classificacao; if(t) porTipo[t]=(porTipo[t]||0)+1; });
+  document.getElementById('tipoPills').innerHTML = Object.entries(porTipo)
+    .sort(([,a],[,b])=>b-a)
+    .map(([t,n])=>{
+      const c = t.includes('Doutorado')?'#6e2f1a':t.includes('Mestrado')?'#1b4f72':'#145a32';
+      return '<span class="pill" style="background:'+c+'">'+esc(t)+' · '+n+'</span>';
+    }).join('');
+
   document.getElementById('srcPills').innerHTML=Object.entries(porFonte).filter(([,n])=>n>0)
     .map(([f,n])=>'<span class="pill '+(PILLCLS[f]||'px')+'">'+esc(f)+' · '+n+'</span>').join('');
 
@@ -520,6 +525,10 @@ function erro(msg){
   s.innerHTML='<div class="state"><div class="si">⚠️</div><h3>Erro na busca</h3><p style="font-size:.78rem;font-family:monospace;color:var(--ink2);margin-top:8px;word-break:break-all">'+esc(msg)+'</p></div>';
 }
 function esc(v){return String(v||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function capesProbe(){
+  const q=document.getElementById('query').value||'educação';
+  window.open('/api/capes-probe?q='+encodeURIComponent(q),'_blank');
+}
 async function diagnosticar(){const q=document.getElementById('query').value||'educação';window.open('/api/debug?q='+encodeURIComponent(q),'_blank');}
 
 /* ── Busca todos os registros para exportação ── */
@@ -568,7 +577,7 @@ async function xExcel(){
   XLSX.utils.book_append_sheet(wb,ws,'Publicações');
   const meta=[
     ['Campo','Descrição'],
-    ['REPOSITÓRIO','Fonte: CAPES, SciELO, BDTD, Crossref, OpenAlex'],
+    ['REPOSITÓRIO','Fonte: SciELO, BDTD, Crossref, OpenAlex (Teses/Artigos BR)'],
     ['LINK/CAPES','URL do registro no Catálogo de Teses CAPES'],
     ['LINK/SCIELO','URL do artigo no SciELO ou DOI'],
     ['REVISTA','Revista ou periódico científico'],
