@@ -186,7 +186,7 @@ footer{margin-top:40px;border-top:1px solid var(--brd);padding:12px 24px;display
   <div class="hdr">
     <div>
       <div class="logo-t">Repositório Acadêmico</div>
-      <div class="logo-s">Busca Integrada · v18</div>
+      <div class="logo-s">Busca Integrada · v19</div>
     </div>
     <div class="vr"></div>
     <div class="fonte-group">
@@ -263,6 +263,7 @@ footer{margin-top:40px;border-top:1px solid var(--brd);padding:12px 24px;display
         <span id="ql" style="color:var(--ink3);margin-left:5px"></span>
       </div>
       <div class="src-pills" id="srcPills"></div>
+      <div id="capesStatus"></div>
     </div>
     <div class="exg">
       <button class="be" onclick="xCSV()">
@@ -302,7 +303,8 @@ footer{margin-top:40px;border-top:1px solid var(--brd);padding:12px 24px;display
 </div>
 
 <footer>
-  <span class="footer-txt">Repositório Acadêmico v18 · CAPES · SciELO · BDTD · Crossref · OpenAlex</span>
+  <span class="footer-txt">Repositório Acadêmico v19 · CAPES · SciELO · BDTD · Crossref · OpenAlex</span>
+  <button class="btn-diag" onclick="capesAuth()" title="Testa autenticação CAPES">🔑 CAPES Auth</button>
   <button class="btn-diag" onclick="diagnosticar()">
     <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
     Diagnosticar fontes
@@ -383,6 +385,7 @@ async function buscar(){
     if(!ct.includes('json')){const txt=await r.text();throw new Error('API retornou HTML. Prévia: '+txt.slice(0,100));}
     if(!r.ok) throw new Error('HTTP '+r.status);
     const j=await r.json();
+    window._lastJ=j;
     TODOS=j.resultados||[];
     // Mantém seleção de tipos entre buscas; só atualiza contadores
     atualizarContadores();
@@ -465,6 +468,14 @@ function renderTabela(lst){
   // Atualiza pills de fonte com base nos FILTRADOS (não só na página)
   const porFonte={};
   FILTRADOS.forEach(r=>{porFonte[r.repositorio]=(porFonte[r.repositorio]||0)+1;});
+  // Status autenticação CAPES
+  const capesStatusEl=document.getElementById('capesStatus');
+  const j=window._lastJ||{};
+  if(capesStatusEl&&j){
+    if(j.capes_autenticado) capesStatusEl.innerHTML='<span style="font-family:'JetBrains Mono',monospace;font-size:.58rem;color:#145a32;background:#f0fff4;border:1px solid #86efac;padding:2px 8px;border-radius:20px">🔒 CAPES autenticado</span>';
+    else capesStatusEl.innerHTML='';
+  }
+
   document.getElementById('srcPills').innerHTML=Object.entries(porFonte).filter(([,n])=>n>0)
     .map(([f,n])=>'<span class="pill '+(PILLCLS[f]||'po')+'">'+esc(f)+' · '+n+'</span>').join('');
 
@@ -539,6 +550,10 @@ function loading(q){
 }
 function erro(msg){const s=document.getElementById('stArea');s.style.display='';s.innerHTML='<div class="state"><div class="si">⚠️</div><h3>Erro na busca</h3><p style="font-size:.78rem;font-family:monospace;color:var(--ink2);margin-top:8px;word-break:break-all">'+esc(msg)+'</p></div>';}
 function esc(v){return String(v||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function capesAuth(){
+  const q=document.getElementById('query').value||'educação';
+  window.open('/api/capes-auth?q='+encodeURIComponent(q),'_blank');
+}
 async function diagnosticar(){const q=document.getElementById('query').value||'educação';window.open('/api/debug?q='+encodeURIComponent(q),'_blank');}
 
 // ── Exportações — usa FILTRADOS (todos, não só a página) ──
