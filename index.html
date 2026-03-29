@@ -63,20 +63,19 @@ select{font-family:'Source Serif 4',serif;font-size:.84rem;padding:7px 10px;bord
 select:focus{border-color:var(--gold)}
 
 /* ══ FILTRO DE TIPO — segmented tabs ══ */
-.tipo-tabs{display:flex;gap:0;border:1.5px solid var(--brd);border-radius:24px;overflow:hidden;background:var(--white)}
-.tipo-tab{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;font-family:'JetBrains Mono',monospace;font-size:.63rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;border:none;border-right:1px solid var(--brd);background:transparent;color:var(--ink3);transition:all .2s;min-height:38px;white-space:nowrap;user-select:none}
-.tipo-tab:last-child{border-right:none}
-.tipo-tab .tipo-dot{width:8px;height:8px;border-radius:50%;background:var(--brd);flex-shrink:0;transition:all .2s}
-.tipo-tab:hover{color:var(--ink);background:var(--bg)}
-.tipo-tab.ativo{color:var(--white);background:var(--ink)}
-.tipo-tab.ativo .tipo-dot{background:var(--gold2)}
-/* Cores específicas por tipo quando ativo */
+.tipo-tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tipo-tab{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;font-family:'JetBrains Mono',monospace;font-size:.62rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;border:1.5px solid var(--brd);border-radius:20px;background:var(--white);color:var(--ink3);transition:all .2s;min-height:36px;white-space:nowrap;user-select:none}
+.tipo-tab .tipo-dot{width:7px;height:7px;border-radius:50%;background:var(--brd);flex-shrink:0;transition:all .2s}
+.tipo-tab:hover{border-color:var(--ink);color:var(--ink)}
+.tipo-tab.ativo{color:var(--white);border-color:transparent}
+.tipo-tab.ativo .tipo-dot{background:rgba(255,255,255,.7)}
+/* Cores por tipo quando ativo */
 .tipo-tab[data-tipo="todos"].ativo{background:var(--ink)}
 .tipo-tab[data-tipo="tese"].ativo{background:var(--tese-c)}
 .tipo-tab[data-tipo="dissertacao"].ativo{background:var(--diss-c)}
 .tipo-tab[data-tipo="artigo"].ativo{background:var(--art-c)}
-/* Contador dentro da tab */
-.tipo-count{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;border-radius:20px;background:rgba(255,255,255,.2);font-size:.55rem;font-weight:700}
+/* Contador */
+.tipo-count{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;border-radius:20px;background:rgba(255,255,255,.2);font-size:.54rem;font-weight:700}
 .tipo-tab:not(.ativo) .tipo-count{background:var(--brd2);color:var(--ink3)}
 
 /* ══════ CONTEÚDO ══════ */
@@ -169,7 +168,7 @@ a.lk:hover{text-decoration:underline}
 @media(max-width:767px){
   .vr{display:none}.tw{display:none!important}.cards{display:flex}.cgrid{grid-template-columns:1fr}
   .fonte-group{flex-wrap:wrap;border-radius:var(--r-lg)}.ff{flex:1 0 auto;justify-content:center;border-right:none;border-bottom:1px solid rgba(255,255,255,.1)}
-  .tipo-tabs{flex-wrap:wrap;border-radius:var(--r-lg)}.tipo-tab{flex:1 0 auto;justify-content:center;border-right:none;border-bottom:1px solid var(--brd)}
+  .tipo-tabs{flex-wrap:wrap}
 }
 @media(min-width:768px){.cards{display:none!important}.tw{display:block}}
 
@@ -224,18 +223,15 @@ footer{margin-top:40px;border-top:1px solid var(--brd);padding:12px 24px;display
 
     <!-- Tipo — segmented tabs -->
     <div class="filter-block">
-      <span class="filter-label">Tipo de publicação</span>
+      <span class="filter-label">Tipo de publicação <span style="font-weight:400;letter-spacing:0;text-transform:none;font-family:'Source Serif 4',serif;font-size:.72rem;color:var(--ink3)">— selecione um ou mais</span></span>
       <div class="tipo-tabs" id="tipoTabs">
-        <button class="tipo-tab ativo" data-tipo="todos" onclick="setTipo(this)">
-          <span class="tipo-dot"></span>Todos <span class="tipo-count" id="cnt-todos">—</span>
-        </button>
-        <button class="tipo-tab" data-tipo="tese" onclick="setTipo(this)">
+        <button class="tipo-tab" data-tipo="tese" onclick="toggleTipo(this)">
           <span class="tipo-dot"></span>Tese de Doutorado <span class="tipo-count" id="cnt-tese">—</span>
         </button>
-        <button class="tipo-tab" data-tipo="dissertacao" onclick="setTipo(this)">
+        <button class="tipo-tab" data-tipo="dissertacao" onclick="toggleTipo(this)">
           <span class="tipo-dot"></span>Dissertação de Mestrado <span class="tipo-count" id="cnt-diss">—</span>
         </button>
-        <button class="tipo-tab" data-tipo="artigo" onclick="setTipo(this)">
+        <button class="tipo-tab" data-tipo="artigo" onclick="toggleTipo(this)">
           <span class="tipo-dot"></span>Artigo Científico <span class="tipo-count" id="cnt-art">—</span>
         </button>
       </div>
@@ -361,7 +357,7 @@ function atualizarContadores(){
     else if(t.includes('dissertação de mestrado')||t.includes('dissertacao de mestrado')) cnts.dissertacao++;
     else if(t.includes('artigo')) cnts.artigo++;
   });
-  document.getElementById('cnt-todos').textContent=TODOS.length;
+
   document.getElementById('cnt-tese').textContent=cnts.tese;
   document.getElementById('cnt-diss').textContent=cnts.dissertacao;
   document.getElementById('cnt-art').textContent=cnts.artigo;
@@ -385,10 +381,7 @@ async function buscar(){
     if(!r.ok) throw new Error('HTTP '+r.status);
     const j=await r.json();
     TODOS=j.resultados||[];
-    tipoAtivo='todos';
-    // Reseta tabs
-    document.querySelectorAll('.tipo-tab').forEach(t=>t.classList.remove('ativo'));
-    document.querySelector('.tipo-tab[data-tipo="todos"]').classList.add('ativo');
+    // Mantém seleção de tipos entre buscas; só atualiza contadores
     atualizarContadores();
     mostrarAlertas(j.source_errors||[],j.por_fonte||{});
     aplicarFiltro(); // aplica filtro atual (todos) e renderiza
@@ -537,7 +530,7 @@ function loading(q){
   document.getElementById('rbar').style.display='none';
   document.getElementById('cards').innerHTML='';document.getElementById('tbody').innerHTML='';
   document.getElementById('tw').style.display='none';document.getElementById('paginacao').style.display='none';
-  ['cnt-todos','cnt-tese','cnt-diss','cnt-art'].forEach(id=>{document.getElementById(id).textContent='—';});
+  ['cnt-tese','cnt-diss','cnt-art'].forEach(id=>{document.getElementById(id).textContent='—';});
   const s=document.getElementById('stArea');s.style.display='';
   s.innerHTML='<div class="state"><div class="spinner"></div><h3>Consultando bases de dados…</h3><p>Buscando <em>"'+esc(q)+'"</em></p></div>';
 }
