@@ -109,12 +109,19 @@ async function getCAPESAuth() {
 }
 
 async function searchCAPES(q, anoMin, anoMax, errors) {
+  // Estratégia 1: Dados Abertos CAPES (CKAN) — sem autenticação, confiável
+  const ckanOut = await searchCAPES_CKAN(q, anoMin, anoMax);
+  if (ckanOut.length > 0) {
+    console.log(`[CAPES] ✓ CKAN: ${ckanOut.length} registros`);
+    return ckanOut;
+  }
+
+  // Estratégia 2: Auth REST + busca (se credenciais configuradas)
   const out = [];
   const anoAtual = new Date().getFullYear();
   const BASE = 'https://catalogodeteses.capes.gov.br/catalogo-teses/rest/busca';
   const anoFiltro = anoMin ? [`anoDaDefesa:${anoMin}-${anoAtual}`] : [];
 
-  // Monta headers com autenticação (se disponível)
   const auth = await getCAPESAuth();
   const H_CAPES = {
     'Content-Type': 'application/json',
@@ -124,23 +131,17 @@ async function searchCAPES(q, anoMin, anoMax, errors) {
   if (auth?.token)  H_CAPES['Authorization'] = `Bearer ${auth.token}`;
   if (auth?.cookie) H_CAPES['Cookie']         = auth.cookie;
 
-  // Formatos de payload a testar
   const formats = [
     { filtros: anoFiltro, pesquisa: q,      pagina: 1, tamanho: 5 },
     { filtros: anoFiltro, assunto: q,       pagina: 1, tamanho: 5 },
-    { filtros: anoFiltro, titulo: q,        pagina: 1, tamanho: 5 },
     { filtros: anoFiltro, textoPesquisa: q, pagina: 1, tamanho: 5 },
     { filtros: [...anoFiltro, q],           pagina: 1, tamanho: 5 },
     { filtros: anoFiltro, q,               pagina: 1, tamanho: 5 },
-    { filtros: anoFiltro, search: q,        pagina: 1, tamanho: 5 },
-    { filtros: anoFiltro, palavraChave: q,  pagina: 1, tamanho: 5 },
     { filtros: [`titulo:"${q}"`, ...anoFiltro], pagina: 1, tamanho: 5 },
     { filtros: [`assunto:"${q}"`, ...anoFiltro], pagina: 1, tamanho: 5 },
-    { filtros: [`all:"${q}"`, ...anoFiltro], pagina: 1, tamanho: 5 },
   ];
 
   let workingFmt = null, workingData = null;
-
   for (const fmt of formats) {
     try {
       const { data, status } = await POST(BASE, fmt, H_CAPES, 12000);
@@ -148,24 +149,15 @@ async function searchCAPES(q, anoMin, anoMax, errors) {
       const total = parseInt(data?.total || 0);
       const items = data?.tesesDissertacoes || data?.teses || data?.items || [];
       if (total > 0 && total < 100000 && items.length > 0) {
-        workingFmt  = fmt;
-        workingData = data;
-        console.log(`[CAPES] ✓ total:${total} | auth:${!!auth} | fmt:${JSON.stringify(fmt).slice(0,60)}`);
+        workingFmt = fmt; workingData = data;
+        console.log(`[CAPES/REST] ✓ total:${total} auth:${!!auth}`);
         break;
       }
-      if (total >= 100000) console.log(`[CAPES] total=${total} query ignorada | auth:${!!auth}`);
-    } catch (_) { /* continua */ }
+    } catch (_) {}
   }
 
   if (!workingFmt || !workingData) {
-    // Fallback: tenta Dados Abertos CAPES (CKAN) — funciona sem autenticação
-    const ckanOut = await searchCAPES_CKAN(q, anoMin, anoMax);
-    if (ckanOut.length > 0) {
-      console.log(`[CAPES/CKAN] ✓ ${ckanOut.length} registros via Dados Abertos`);
-      return ckanOut;
-    }
-    const authMsg = auth ? 'autenticado mas query ignorada' : 'sem credenciais (defina CAPES_LOGIN e CAPES_SENHA no Vercel)';
-    errors.push({ fonte: 'CAPES', erro: `API não filtrou a query — ${authMsg}. Acesse /api/capes-auth para diagnóstico.` });
+    errors.push({ fonte: 'CAPES', erro: 'CKAN sem resultados e REST ignora query. Configure CAPES_LOGIN/CAPES_SENHA no Vercel ou acesse /api/capes-auth.' });
     return out;
   }
 
@@ -173,51 +165,43 @@ async function searchCAPES(q, anoMin, anoMax, errors) {
     const ano = anoFrom(S(it.anoDaDefesa || it.ano || it.anoProgramaDefesa));
     if (!okAno(ano, anoMin, anoMax)) return;
     let autor = '';
-    if (Array.isArray(it.autores)) {
-      autor = it.autores.map(x => typeof x === 'string' ? x.trim() : S(x.nome || x.name || x)).filter(Boolean).join('; ');
-    } else {
-      autor = S(it.nmAutor || it.nomeAutor || it.autor || it.autores);
-    }
-    const link = (it.idTese || it.id) ? `https://catalogodeteses.capes.gov.br/catalogo-teses/#!/detalhes/${it.idTese||it.id}` : '';
-    const instBase = S(it.siglaIes || it.nmIes || it.instituicao || it.nmInstituicao);
-    const prog     = S(it.nomePrograma || '');
+    if (Array.isArray(it.autores)) autor = it.autores.map(x => typeof x === 'string' ? x.trim() : S(x.nome||x.name||x)).filter(Boolean).join('; ');
+    else autor = S(it.nmAutor||it.nomeAutor||it.autor||it.autores);
+    const link = (it.idTese||it.id) ? `https://catalogodeteses.capes.gov.br/catalogo-teses/#!/detalhes/${it.idTese||it.id}` : '';
+    const instBase = S(it.siglaIes||it.nmIes||it.instituicao||it.nmInstituicao);
+    const prog = S(it.nomePrograma||'');
     const rec = norm15({
-      repositorio: 'CAPES', link_capes: link,
-      titulo_do_periodico: S(it.titulo || it.title || it.nmTitulo),
-      autor, ano_da_publicacao: ano,
-      titulacao: S(it.grau || it.nivel || it.nmGrau || it.tipoProgramaAcademico),
-      instituicao_programa: [instBase, prog].filter(Boolean).join(' — '),
-      municipio_programa: S(it.municipioPrograma || it.municipio || ''),
-      regiao: S(it.regiao || it.nmRegiao || ''),
-      resumo: S(it.resumo || it.abstract || it.dsResumo),
-      palavras_chaves: Array.isArray(it.palavrasChave) ? it.palavrasChave.join('; ') : S(it.palavrasChave || ''),
-      link_scielo: '', revista: '', volume: '',
+      repositorio:'CAPES', link_capes:link,
+      titulo_do_periodico:S(it.titulo||it.title||it.nmTitulo),
+      autor, ano_da_publicacao:ano,
+      titulacao:S(it.grau||it.nivel||it.nmGrau||it.tipoProgramaAcademico),
+      instituicao_programa:[instBase,prog].filter(Boolean).join(' — '),
+      municipio_programa:S(it.municipioPrograma||it.municipio||''),
+      regiao:S(it.regiao||it.nmRegiao||''),
+      resumo:S(it.resumo||it.abstract||it.dsResumo),
+      palavras_chaves:Array.isArray(it.palavrasChave)?it.palavrasChave.join('; '):S(it.palavrasChave||''),
+      link_scielo:'', revista:'', volume:'',
     });
     if (rec) out.push(rec);
   };
 
-  (workingData.tesesDissertacoes || workingData.teses || workingData.items || []).forEach(processItem);
-
-  // Paginação com o formato que funcionou
-  const totalDeclared = Math.min(parseInt(workingData.total || 0), MAX_PAGES * PER_REQ);
+  (workingData.tesesDissertacoes||workingData.teses||workingData.items||[]).forEach(processItem);
+  const totalDeclared = Math.min(parseInt(workingData.total||0), MAX_PAGES * PER_REQ);
   let page = 2;
   while (out.length < totalDeclared && page <= MAX_PAGES) {
     try {
-      const { data, status } = await POST(BASE, { ...workingFmt, pagina: page, tamanho: PER_REQ }, H_CAPES);
+      const { data, status } = await POST(BASE, { ...workingFmt, pagina:page, tamanho:PER_REQ }, H_CAPES);
       if (status !== 200) break;
-      const items = data?.tesesDissertacoes || data?.teses || data?.items || [];
+      const items = data?.tesesDissertacoes||data?.teses||data?.items||[];
       if (!items.length) break;
       items.forEach(processItem);
-      console.log(`[CAPES] p${page}: +${items.length} → ${out.length}`);
       if (items.length < PER_REQ) break;
       page++;
     } catch (_) { break; }
   }
-
-  console.log(`[CAPES] ✓ ${out.length} registros`);
+  console.log(`[CAPES/REST] ✓ ${out.length} registros`);
   return out;
 }
-
 // ════════════════════════════════════════════════════════
 //  REGIÕES
 // ════════════════════════════════════════════════════════
