@@ -158,6 +158,12 @@ async function searchCAPES(q, anoMin, anoMax, errors) {
   }
 
   if (!workingFmt || !workingData) {
+    // Fallback: tenta Dados Abertos CAPES (CKAN) — funciona sem autenticação
+    const ckanOut = await searchCAPES_CKAN(q, anoMin, anoMax);
+    if (ckanOut.length > 0) {
+      console.log(`[CAPES/CKAN] ✓ ${ckanOut.length} registros via Dados Abertos`);
+      return ckanOut;
+    }
     const authMsg = auth ? 'autenticado mas query ignorada' : 'sem credenciais (defina CAPES_LOGIN e CAPES_SENHA no Vercel)';
     errors.push({ fonte: 'CAPES', erro: `API não filtrou a query — ${authMsg}. Acesse /api/capes-auth para diagnóstico.` });
     return out;
@@ -326,6 +332,64 @@ function norm15(o){
   };
 }
 function okAno(a,min,max){const n=parseInt(a);if(isNaN(n))return true;if(min&&n<min)return false;if(max&&n>max)return false;return true;}
+
+// ════════════════════════════════════════════════════════
+//  CAPES via Dados Abertos CKAN (fallback sem autenticação)
+// ════════════════════════════════════════════════════════
+async function searchCAPES_CKAN(q, anoMin, anoMax) {
+  const out = [];
+  const CKAN = 'https://dadosabertos.capes.gov.br/api/3/action/datastore_search';
+  const resources = [
+    'b7003093-4fab-4b88-b0fa-b7d8df0bcb77',
+    '2ead2a90-26e9-4c38-bb14-9e01d89c1fe4',
+    '5502e8f6-db7c-4234-b3b6-b93b7bede4f7',
+    'dc2568b4-4f95-4f88-9914-e3b23e2e0e61',
+  ];
+  for (const rid of resources) {
+    try {
+      let offset=0, total=Infinity, page=0;
+      while (out.length<total && page<5) {
+        const url=`${CKAN}?resource_id=${rid}&q=${encodeURIComponent(q)}&limit=50&offset=${offset}`;
+        const {data,status}=await GET(url,{},12000);
+        if(status!==200||!data?.result)break;
+        const records=data.result.records||[];
+        if(page===0){
+          total=Math.min(parseInt(data.result.total||0),250);
+          if(total===0)break;
+          console.log(`[CAPES/CKAN] rid=${rid.slice(0,8)} total=${data.result.total}`);
+        }
+        if(!records.length)break;
+        for(const r of records){
+          const ano=String(r.AN_BASE||r.AN_DEFESA||r.ANO||'');
+          if(!okAno(ano,anoMin,anoMax))continue;
+          const tit=normTit(r.NM_GRAU_ACADEMICO||r.GRAU||'');
+          if(tit===null)continue;
+          const inst=[r.SG_IES,r.NM_IES].filter(Boolean).join(' — ');
+          const rec=norm15({
+            repositorio:'CAPES',link_capes:'',link_scielo:'',
+            titulo_do_periodico:S(r.NM_TITULO||r.DS_TITULO||r.TITULO||''),
+            autor:S(r.NM_AUTOR||r.AUTOR||''),
+            ano_da_publicacao:ano,
+            titulacao:tit||S(r.NM_GRAU_ACADEMICO||''),
+            classificacao:tit||'',
+            instituicao_programa:inst,
+            municipio_programa:S(r.NM_MUNICIPIO_IES||''),
+            regiao:S(r.NM_REGIAO_IES||r.NM_REGIAO||''),
+            resumo:S(r.DS_RESUMO||r.RESUMO||''),
+            palavras_chaves:limparKW(S(r.DS_PALAVRA_CHAVE||r.PALAVRAS_CHAVE||'')),
+            revista:'',volume:'',
+          });
+          if(rec)out.push(rec);
+        }
+        console.log(`[CAPES/CKAN] p${page+1}: ${records.length} → ${out.length}`);
+        if(records.length<50)break;
+        offset+=50;page++;
+      }
+      if(out.length>0)break;
+    }catch(e){console.warn('[CAPES/CKAN]',e.message);}
+  }
+  return out;
+}
 
 // ════════════════════════════════════════════════════════
 //  BDTD
