@@ -3,180 +3,226 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Repositório Acadêmico — Busca Integrada</title>
+<title>Acervo — Plataforma de Pesquisa Acadêmica</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,300;1,9..144,400&family=Fira+Code:wght@400;500;600&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
-/* ══════ VARIÁVEIS ══════ */
-:root{
-  --ink:#1a1714;--ink2:#4a4540;--ink3:#8a847e;
-  --bg:#f4f1ec;--cream:#fdfbf8;--white:#ffffff;
-  --brd:#d8d3ca;--brd2:#e8e4dd;
-  --gold:#b8860b;--gold2:#d4a017;--gold-lt:#fdf6e3;
-  --capes:#1b4f72;--scielo:#145a32;--bdtd:#6e2f1a;--cross:#4a235a;--oa:#0d5c4a;
-  --tese-c:#1b3a5c; --diss-c:#145a32; --art-c:#5a2d82;
-  --warn-bg:#fffbf0;--warn-brd:#e9c06e;--warn-txt:#7a5800;
-  --shadow-sm:0 1px 3px rgba(26,23,20,.08);
-  --shadow-md:0 4px 12px rgba(26,23,20,.12);
-  --shadow-lg:0 8px 32px rgba(26,23,20,.18);
-  --r:5px;--r-lg:8px;
+:root {
+  --bg:#09090b;--bg2:#111114;--bg3:#18181c;--bg4:#1f1f24;
+  --line:#2a2a30;--line2:#38383f;--muted:#52525c;--dim:#71717a;
+  --soft:#a1a1aa;--body:#d4d4d8;--head:#f4f4f5;--white:#ffffff;
+  --gold:#f59e0b;--gold2:#fbbf24;--gold-dim:rgba(245,158,11,.12);--gold-brd:rgba(245,158,11,.28);
+  --tese:#60a5fa;--diss:#34d399;--art:#c084fc;
+  --tese-dim:rgba(96,165,250,.1);--diss-dim:rgba(52,211,153,.1);--art-dim:rgba(192,132,252,.1);
+  --bdtd:#fb923c;--scielo:#34d399;--cross:#818cf8;--oa:#22d3ee;--capes:#60a5fa;
+  --r:6px;--r2:12px;--r3:20px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
-body{font-family:'Source Serif 4',Georgia,serif;background:var(--bg);color:var(--ink);min-height:100vh;font-size:14.5px;line-height:1.65}
+html{scroll-behavior:smooth;color-scheme:dark}
+body{font-family:'Libre Baskerville',Georgia,serif;background:var(--bg);color:var(--body);min-height:100vh;font-size:14px;line-height:1.65;-webkit-font-smoothing:antialiased}
 
-/* ══════ HEADER ══════ */
-header{background:var(--ink);color:#fdfbf8;position:sticky;top:0;z-index:300;box-shadow:var(--shadow-lg)}
-.hdr{padding:12px 24px 10px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
-.logo-t{font-family:'Playfair Display',serif;font-size:clamp(1rem,4vw,1.35rem);font-weight:700;line-height:1.2}
-.logo-s{font-size:.57rem;color:var(--gold2);letter-spacing:.2em;text-transform:uppercase;font-family:'JetBrains Mono',monospace;margin-top:2px}
-.vr{width:1px;height:36px;background:rgba(255,255,255,.12);flex-shrink:0}
-.fonte-group{display:flex;border:1px solid rgba(255,255,255,.15);border-radius:24px;overflow:hidden;background:rgba(0,0,0,.2)}
-.ff{display:inline-flex;align-items:center;gap:5px;padding:6px 14px;font-family:'JetBrains Mono',monospace;font-size:.59rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;border:none;border-right:1px solid rgba(255,255,255,.1);background:transparent;color:rgba(255,255,255,.42);transition:all .2s;min-height:30px;white-space:nowrap}
-.ff:last-child{border-right:none}
-.ff .dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0;transition:opacity .2s;opacity:.4}
-.ff.on{color:#fff}.ff.on .dot{opacity:1}
-.ff-capes.on{background:rgba(27,79,114,.8)}.ff-scielo.on{background:rgba(20,90,50,.8)}.ff-bdtd.on{background:rgba(110,47,26,.8)}
-.ff-cross.on{background:rgba(74,35,90,.8)}.ff-oa.on{background:rgba(13,92,74,.8)}
+/* ── HEADER ── */
+header{position:sticky;top:0;z-index:400;background:rgba(9,9,11,.93);backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}
+.hdr{display:flex;align-items:center;height:56px;padding:0 20px;gap:0}
+.brand{display:flex;align-items:center;gap:11px;padding-right:20px;border-right:1px solid var(--line);flex-shrink:0}
+.bmark{width:32px;height:32px;background:var(--gold);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.bmark svg{color:#09090b}
+.bname{font-family:'Fraunces',serif;font-size:1.1rem;font-weight:700;color:var(--white);letter-spacing:-.02em}
+.btag{font-family:'Fira Code',monospace;font-size:.52rem;color:var(--gold);letter-spacing:.15em;text-transform:uppercase;margin-top:1px}
+.fnav{display:flex;align-items:center;gap:2px;padding:0 16px;flex:1}
+.fnb{display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border:1px solid transparent;border-radius:var(--r3);background:transparent;color:var(--muted);font-family:'Fira Code',monospace;font-size:.59rem;font-weight:500;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;transition:all .18s}
+.fnb .fd{width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.45;transition:opacity .18s;flex-shrink:0}
+.fnb:hover{color:var(--body);border-color:var(--line2);background:var(--bg3)}
+.fnb.on{color:var(--white);border-color:var(--line2);background:var(--bg3)}
+.fnb.on .fd{opacity:1}
+.fn-bdtd.on{border-color:var(--bdtd);color:var(--bdtd)}
+.fn-scielo.on{border-color:var(--scielo);color:var(--scielo)}
+.fn-cross.on{border-color:var(--cross);color:var(--cross)}
+.fn-oa.on{border-color:var(--oa);color:var(--oa)}
+.fn-capes.on{border-color:var(--capes);color:var(--capes)}
+.hdr-r{display:flex;align-items:center;gap:10px;padding-left:16px;border-left:1px solid var(--line);flex-shrink:0}
+.bpro{font-family:'Fira Code',monospace;font-size:.54rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);background:var(--gold-dim);border:1px solid var(--gold-brd);padding:3px 9px;border-radius:20px}
 
-/* ══════ BUSCA ══════ */
-.sp{background:var(--cream);border-bottom:2px solid var(--brd);padding:18px 24px;box-shadow:var(--shadow-sm)}
-.sr{display:flex;gap:8px}
-.sf{position:relative;flex:1}
-.sf svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--ink3);pointer-events:none}
-#query{width:100%;padding:12px 16px 12px 42px;font-family:'Source Serif 4',serif;font-size:.97rem;border:1.5px solid var(--brd);border-radius:var(--r);background:var(--white);color:var(--ink);outline:none;transition:all .2s;min-height:46px}
-#query:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(184,134,11,.12)}
-#query::placeholder{color:var(--ink3);font-style:italic}
-.btn-p{padding:0 24px;background:var(--ink);color:#fdfbf8;border:none;border-radius:var(--r);font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap;min-height:46px}
-.btn-p:hover{background:#2c2825}.btn-p:disabled{opacity:.5;cursor:not-allowed}
-
-/* ══════ FILTROS ══════ */
-.filters-bar{display:flex;gap:20px;margin-top:16px;flex-wrap:wrap;align-items:flex-end}
-.filter-block{display:flex;flex-direction:column;gap:5px}
-.filter-label{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.13em;text-transform:uppercase;color:var(--ink3);font-weight:500}
+/* ── BUSCA ── */
+.sp{background:var(--bg2);border-bottom:1px solid var(--line);padding:16px 20px 14px}
+.sr{display:flex;gap:8px;margin-bottom:14px}
+.sw{flex:1;position:relative}
+.sw svg{position:absolute;left:15px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
+#query{width:100%;height:48px;padding:0 16px 0 44px;background:var(--bg3);border:1.5px solid var(--line2);border-radius:var(--r2);color:var(--head);font-family:'Libre Baskerville',serif;font-size:.97rem;outline:none;transition:border-color .2s,box-shadow .2s;caret-color:var(--gold)}
+#query::placeholder{color:var(--muted);font-style:italic}
+#query:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(245,158,11,.07)}
+.btn-s{height:48px;padding:0 26px;background:var(--gold);color:#09090b;border:none;border-radius:var(--r2);font-family:'Fira Code',monospace;font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .18s;display:flex;align-items:center;gap:7px;white-space:nowrap;flex-shrink:0}
+.btn-s:hover{background:var(--gold2);transform:translateY(-1px);box-shadow:0 4px 16px rgba(245,158,11,.22)}
+.btn-s:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
+.fr{display:flex;gap:18px;align-items:flex-end;flex-wrap:wrap}
+.fg{display:flex;flex-direction:column;gap:5px}
+.fl{font-family:'Fira Code',monospace;font-size:.56rem;font-weight:500;letter-spacing:.13em;text-transform:uppercase;color:var(--muted)}
 .period-row{display:flex;gap:6px;align-items:center}
-.period-row span{font-size:.8rem;color:var(--ink3)}
-input[type=number]{font-family:'Source Serif 4',serif;font-size:.84rem;padding:7px 10px;border:1.5px solid var(--brd);border-radius:var(--r);background:var(--white);color:var(--ink);outline:none;min-height:38px;-webkit-appearance:none;width:84px;transition:border-color .2s}
-input[type=number]:focus{border-color:var(--gold)}
-select{font-family:'Source Serif 4',serif;font-size:.84rem;padding:7px 10px;border:1.5px solid var(--brd);border-radius:var(--r);background:var(--white);color:var(--ink);outline:none;min-height:38px;-webkit-appearance:none;cursor:pointer}
-select:focus{border-color:var(--gold)}
+.period-row span{color:var(--muted);font-size:.8rem}
+.iyr{width:78px;height:34px;background:var(--bg3);border:1.5px solid var(--line2);border-radius:var(--r);color:var(--head);font-family:'Fira Code',monospace;font-size:.8rem;padding:0 9px;outline:none;-webkit-appearance:none;transition:border-color .2s}
+.iyr:focus{border-color:var(--gold)}
+.tipo-pills{display:flex;gap:5px;flex-wrap:wrap}
+.tp{display:inline-flex;align-items:center;gap:5px;height:34px;padding:0 13px;border:1.5px solid var(--line2);border-radius:var(--r3);background:transparent;color:var(--dim);cursor:pointer;font-family:'Fira Code',monospace;font-size:.61rem;font-weight:500;letter-spacing:.05em;text-transform:uppercase;transition:all .18s;user-select:none;white-space:nowrap}
+.tp .tpd{width:7px;height:7px;border-radius:50%;background:currentColor;opacity:.35;transition:opacity .18s;flex-shrink:0}
+.tp:hover{border-color:var(--soft);color:var(--body)}
+.tp[data-tipo="tese"].on{border-color:var(--tese);color:var(--tese);background:var(--tese-dim)}
+.tp[data-tipo="tese"].on .tpd{opacity:1}
+.tp[data-tipo="dissertacao"].on{border-color:var(--diss);color:var(--diss);background:var(--diss-dim)}
+.tp[data-tipo="dissertacao"].on .tpd{opacity:1}
+.tp[data-tipo="artigo"].on{border-color:var(--art);color:var(--art);background:var(--art-dim)}
+.tp[data-tipo="artigo"].on .tpd{opacity:1}
+.tpc{font-size:.57rem;opacity:.6}
+.spp{height:34px;padding:0 10px;background:var(--bg3);border:1.5px solid var(--line2);border-radius:var(--r);color:var(--body);font-family:'Fira Code',monospace;font-size:.78rem;outline:none;cursor:pointer;-webkit-appearance:none;transition:border-color .2s}
+.spp:focus{border-color:var(--gold)}
 
-/* ══ FILTRO DE TIPO — segmented tabs ══ */
-.tipo-tabs{display:flex;gap:6px;flex-wrap:wrap}
-.tipo-tab{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;font-family:'JetBrains Mono',monospace;font-size:.62rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;border:1.5px solid var(--brd);border-radius:20px;background:var(--white);color:var(--ink3);transition:all .2s;min-height:36px;white-space:nowrap;user-select:none}
-.tipo-tab .tipo-dot{width:7px;height:7px;border-radius:50%;background:var(--brd);flex-shrink:0;transition:all .2s}
-.tipo-tab:hover{border-color:var(--ink);color:var(--ink)}
-.tipo-tab.ativo{color:var(--white);border-color:transparent}
-.tipo-tab.ativo .tipo-dot{background:rgba(255,255,255,.7)}
-/* Cores por tipo quando ativo */
-.tipo-tab[data-tipo="todos"].ativo{background:var(--ink)}
-.tipo-tab[data-tipo="tese"].ativo{background:var(--tese-c)}
-.tipo-tab[data-tipo="dissertacao"].ativo{background:var(--diss-c)}
-.tipo-tab[data-tipo="artigo"].ativo{background:var(--art-c)}
-/* Contador */
-.tipo-count{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;border-radius:20px;background:rgba(255,255,255,.2);font-size:.54rem;font-weight:700}
-.tipo-tab:not(.ativo) .tipo-count{background:var(--brd2);color:var(--ink3)}
+/* ── LAYOUT ── */
+.main{display:grid;grid-template-columns:248px 1fr;min-height:calc(100vh - 56px - 108px)}
 
-/* ══════ CONTEÚDO ══════ */
-.content{padding:14px 24px}
-.alerta{display:flex;align-items:flex-start;gap:14px;padding:12px 16px;border-radius:var(--r-lg);margin-bottom:12px;border:1px solid}
-.alerta-icon{font-size:1rem;flex-shrink:0;margin-top:1px}
-.alerta-title{font-family:'JetBrains Mono',monospace;font-size:.67rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px}
-.alerta-msg{font-size:.8rem;line-height:1.55}
-.alerta-link{display:inline-block;margin-top:5px;font-family:'JetBrains Mono',monospace;font-size:.64rem;text-decoration:underline;cursor:pointer;opacity:.8}
-.alerta-warn{background:var(--warn-bg);border-color:var(--warn-brd);color:var(--warn-txt)}
+/* ── SIDEBAR ── */
+.sb{background:var(--bg2);border-right:1px solid var(--line);padding:18px 0;position:sticky;top:56px;height:calc(100vh - 56px);overflow-y:auto}
+.sb::-webkit-scrollbar{width:3px}
+.sb::-webkit-scrollbar-thumb{background:var(--line2);border-radius:20px}
+.sbs{padding:0 16px 18px;border-bottom:1px solid var(--line);margin-bottom:16px}
+.sbs:last-child{border-bottom:none;margin-bottom:0}
+.sbt{font-family:'Fira Code',monospace;font-size:.55rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:11px}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.sc{background:var(--bg3);border:1px solid var(--line);border-radius:var(--r2);padding:11px;transition:border-color .18s}
+.sc:hover{border-color:var(--line2)}
+.sv{font-family:'Fira Code',monospace;font-weight:600;font-size:1.25rem;color:var(--head);line-height:1;margin-bottom:3px;letter-spacing:-.03em}
+.sl{font-family:'Fira Code',monospace;font-size:.54rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+.sc.st .sv{color:var(--tese)}.sc.sd .sv{color:var(--diss)}.sc.sa .sv{color:var(--art)}.sc.stot .sv{color:var(--gold)}
+.frows{display:flex;flex-direction:column;gap:8px}
+.frow{display:flex;align-items:center;gap:7px}
+.fnm{display:flex;align-items:center;gap:6px;font-family:'Fira Code',monospace;font-size:.63rem;color:var(--soft);flex-shrink:0;width:70px}
+.fdot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.fbw{flex:1;height:3px;background:var(--line);border-radius:20px;overflow:hidden}
+.fb{height:100%;border-radius:20px;transition:width .6s ease}
+.fnum{font-family:'Fira Code',monospace;font-size:.6rem;font-weight:600;color:var(--dim);min-width:26px;text-align:right}
+.ybars{display:flex;flex-direction:column;gap:5px}
+.yr{display:flex;align-items:center;gap:7px}
+.yl{font-family:'Fira Code',monospace;font-size:.58rem;color:var(--muted);width:34px;flex-shrink:0}
+.ybw{flex:1;height:13px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.yb{height:100%;background:var(--gold-dim);border-right:2px solid var(--gold);border-radius:3px;transition:width .5s ease}
+.ybw:hover .yb{background:rgba(245,158,11,.22)}
+.yc{font-family:'Fira Code',monospace;font-size:.57rem;color:var(--dim);min-width:24px;text-align:right}
+.regs{display:flex;flex-direction:column;gap:7px}
+.regrw{display:flex;align-items:center;justify-content:space-between}
+.regnm{font-family:'Fira Code',monospace;font-size:.62rem;color:var(--soft);transition:color .15s}
+.regrw:hover .regnm{color:var(--head)}
+.regp{font-family:'Fira Code',monospace;font-size:.57rem;font-weight:600;background:var(--bg4);border-radius:20px;padding:2px 8px;color:var(--dim)}
 
-.rbar{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px}
-.rc{display:flex;flex-direction:column;gap:5px}
-.rc-count{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--ink3)}
-.rc-count strong{color:var(--ink);font-weight:700;font-size:.84rem}
-.src-pills{display:flex;gap:4px;flex-wrap:wrap;margin-top:2px}
-.pill{display:inline-flex;align-items:center;gap:3px;padding:2px 9px;border-radius:20px;font-family:'JetBrains Mono',monospace;font-size:.57rem;font-weight:600;color:#fff}
-.pc{background:var(--capes)}.ps{background:var(--scielo)}.pb{background:var(--bdtd)}.px{background:var(--cross)}.po{background:var(--oa)}
+/* ── RESULTADOS ── */
+.ra{padding:18px 20px}
+.rbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px}
+.rbl{display:flex;flex-direction:column;gap:3px}
+.rct{font-family:'Fira Code',monospace;font-size:.68rem;color:var(--dim);display:flex;align-items:center;gap:5px}
+.rct strong{color:var(--head);font-size:.85rem;font-weight:600}
+.rq{font-family:'Fraunces',serif;font-size:.88rem;font-style:italic;color:var(--soft)}
+.rpills{display:flex;gap:5px;flex-wrap:wrap;margin-top:2px}
+.rpill{font-family:'Fira Code',monospace;font-size:.56rem;font-weight:600;padding:2px 9px;border-radius:20px;color:var(--white);white-space:nowrap}
+.rbr{display:flex;gap:7px;align-items:center}
+.bexp{display:inline-flex;align-items:center;gap:5px;height:32px;padding:0 13px;background:var(--bg3);border:1px solid var(--line2);border-radius:var(--r);color:var(--soft);font-family:'Fira Code',monospace;font-size:.6rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:all .18s}
+.bexp:hover{border-color:var(--gold);color:var(--gold);background:var(--gold-dim)}
+.bexp.bxl:hover{border-color:#22c55e;color:#22c55e;background:rgba(34,197,94,.08)}
+.vt{display:flex;background:var(--bg3);border:1px solid var(--line2);border-radius:var(--r);overflow:hidden}
+.vtb{width:32px;height:32px;display:flex;align-items:center;justify-content:center;border:none;background:transparent;color:var(--muted);cursor:pointer;transition:all .18s}
+.vtb.on{background:var(--bg4);color:var(--gold)}
+.vtb:hover:not(.on){color:var(--body)}
 
-.exg{display:flex;gap:6px;flex-wrap:wrap;align-items:flex-start}
-.be{display:inline-flex;align-items:center;gap:5px;padding:8px 15px;border:1.5px solid var(--brd);border-radius:var(--r);background:var(--white);color:var(--ink2);font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;transition:all .2s;min-height:36px;font-weight:500}
-.be:hover{background:var(--ink);color:var(--white);border-color:var(--ink)}
-.be-excel:hover{background:#1d6f42;border-color:#1d6f42}
-.be-pdf:hover{background:#c0392b;border-color:#c0392b}
+/* ── CARDS ── */
+#rg{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.card{background:var(--bg2);border:1px solid var(--line);border-radius:var(--r2);padding:16px;display:flex;flex-direction:column;gap:10px;transition:border-color .18s,transform .18s,box-shadow .18s;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;opacity:0;transition:opacity .18s}
+.card.ctese::before{background:var(--tese)}.card.cdiss::before{background:var(--diss)}.card.cart::before{background:var(--art)}
+.card:hover{border-color:var(--line2);transform:translateY(-1px);box-shadow:0 8px 28px rgba(0,0,0,.38)}
+.card:hover::before{opacity:1}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.card{animation:fadeUp .28s ease both}
+.card:nth-child(1){animation-delay:.03s}.card:nth-child(2){animation-delay:.06s}.card:nth-child(3){animation-delay:.09s}
+.card:nth-child(4){animation-delay:.12s}.card:nth-child(5){animation-delay:.15s}.card:nth-child(6){animation-delay:.18s}
+.card:nth-child(7){animation-delay:.21s}.card:nth-child(8){animation-delay:.24s}
+.ctop{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.cbadges{display:flex;gap:4px;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end}
+.bx{font-family:'Fira Code',monospace;font-size:.53rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;padding:2px 8px;border-radius:20px;white-space:nowrap}
+.bs-bdtd{background:rgba(251,146,60,.12);color:var(--bdtd);border:1px solid rgba(251,146,60,.22)}
+.bs-scielo{background:rgba(52,211,153,.12);color:var(--scielo);border:1px solid rgba(52,211,153,.2)}
+.bs-cross{background:rgba(129,140,248,.12);color:var(--cross);border:1px solid rgba(129,140,248,.2)}
+.bs-oa{background:rgba(34,211,238,.12);color:var(--oa);border:1px solid rgba(34,211,238,.2)}
+.bs-capes{background:rgba(96,165,250,.12);color:var(--capes);border:1px solid rgba(96,165,250,.2)}
+.bt-tese{background:var(--tese-dim);color:var(--tese);border:1px solid rgba(96,165,250,.2)}
+.bt-diss{background:var(--diss-dim);color:var(--diss);border:1px solid rgba(52,211,153,.2)}
+.bt-art{background:var(--art-dim);color:var(--art);border:1px solid rgba(192,132,252,.2)}
+.ctit{font-family:'Fraunces',serif;font-size:.93rem;font-weight:400;font-style:italic;color:var(--head);line-height:1.42;flex:1}
+.cmeta{display:grid;grid-template-columns:1fr 1fr;gap:5px 14px}
+.cm{display:flex;flex-direction:column;gap:1px}
+.cmk{font-family:'Fira Code',monospace;font-size:.51rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.cmv{font-size:.79rem;color:var(--soft);line-height:1.4;word-break:break-word}
+.cm.full{grid-column:1/-1}
+.cabs{font-size:.77rem;color:var(--dim);line-height:1.65;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;cursor:pointer;transition:color .15s}
+.cabs.open{-webkit-line-clamp:unset;display:block;color:var(--soft)}
+.cabs:hover{color:var(--soft)}
+.ckws{display:flex;flex-wrap:wrap;gap:4px}
+.kw{font-family:'Fira Code',monospace;font-size:.56rem;background:var(--bg4);border:1px solid var(--line2);border-radius:20px;padding:2px 8px;color:var(--dim);transition:border-color .15s,color .15s}
+.kw:hover{border-color:var(--gold-brd);color:var(--gold)}
+.cft{display:flex;align-items:center;justify-content:space-between;padding-top:9px;border-top:1px solid var(--line)}
+.creg{display:flex;align-items:center;gap:5px;font-family:'Fira Code',monospace;font-size:.59rem;color:var(--muted)}
+.rdot{width:6px;height:6px;border-radius:50%;background:var(--gold)}
+.aitag{font-family:'Fira Code',monospace;font-size:.53rem;background:rgba(99,102,241,.1);color:#818cf8;border:1px solid rgba(99,102,241,.2);padding:1px 7px;border-radius:20px}
+.clinks{display:flex;gap:8px}
+.clinks a{font-family:'Fira Code',monospace;font-size:.59rem;font-weight:600;color:var(--gold);text-decoration:none;letter-spacing:.05em;transition:color .15s;display:flex;align-items:center;gap:3px}
+.clinks a:hover{color:var(--gold2)}
 
-/* ══════ PAGINAÇÃO ══════ */
-.paginacao{display:flex;align-items:center;justify-content:center;gap:4px;margin-top:20px;flex-wrap:wrap}
-.pg-btn{display:inline-flex;align-items:center;justify-content:center;min-width:36px;height:36px;padding:0 10px;border:1.5px solid var(--brd);border-radius:var(--r);background:var(--white);color:var(--ink2);font-family:'JetBrains Mono',monospace;font-size:.72rem;cursor:pointer;transition:all .2s;user-select:none}
-.pg-btn:hover:not(.ativo):not(.desab){border-color:var(--gold);color:var(--gold)}
-.pg-btn.ativo{background:var(--ink);color:var(--white);border-color:var(--ink);font-weight:700;cursor:default}
-.pg-btn.desab{opacity:.28;cursor:not-allowed}
-.pg-sep{font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--ink3);padding:0 4px}
-
-/* ══════ ESTADO ══════ */
-.state{text-align:center;padding:60px 24px;color:var(--ink3)}
-.si{font-size:2.6rem;margin-bottom:14px;opacity:.35}
-.state h3{font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--ink2);margin-bottom:8px;font-weight:600;font-style:italic}
-.state p{font-size:.84rem;max-width:440px;margin:0 auto;line-height:1.7}
-.spinner{width:32px;height:32px;border:3px solid var(--brd);border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 16px}
-@keyframes spin{to{transform:rotate(360deg)}}
-
-/* ══════ TAGS / CHIPS ══════ */
-.tag{display:inline-block;padding:2px 9px;border-radius:20px;font-family:'JetBrains Mono',monospace;font-size:.55rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#fff;white-space:nowrap}
-.tc{background:var(--capes)}.ts{background:var(--scielo)}.tb{background:var(--bdtd)}.tx{background:var(--cross)}.to{background:var(--oa)}
-.chips{display:flex;flex-wrap:wrap;gap:3px;margin-top:4px}
-.chip{background:var(--gold-lt);border:1px solid rgba(184,134,11,.22);border-radius:20px;padding:1px 8px;font-family:'JetBrains Mono',monospace;font-size:.57rem;color:var(--gold);font-weight:500}
-.ai-badge{display:inline-flex;align-items:center;gap:4px;background:#eef2ff;border:1px solid #c7d0f8;border-radius:20px;padding:2px 9px;font-family:'JetBrains Mono',monospace;font-size:.57rem;color:#3350aa;font-weight:500}
-.ai-badge::before{content:'⚙';font-size:.58rem;opacity:.7}
-
-/* ══════ CARDS mobile ══════ */
-.cards{display:flex;flex-direction:column;gap:12px}
-.card{background:var(--white);border:1px solid var(--brd);border-radius:var(--r-lg);padding:14px;box-shadow:var(--shadow-sm);transition:box-shadow .2s}
-.card:hover{box-shadow:var(--shadow-md)}
-.card-hdr{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}
-.card-tit{font-family:'Source Serif 4',serif;font-size:.93rem;font-weight:500;font-style:italic;color:var(--ink);line-height:1.45;flex:1}
-.cgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px 16px;margin-bottom:8px}
-.cf label{display:block;font-family:'JetBrains Mono',monospace;font-size:.52rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);margin-bottom:1px}
-.cf .cv{font-size:.8rem;color:var(--ink2);line-height:1.4;word-break:break-word}
-.cf.full{grid-column:1/-1}
-.cresum{font-size:.8rem;color:var(--ink2);line-height:1.6}
-.cresum.tr{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-.cvm{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--gold);cursor:pointer;margin-top:4px;display:inline-block;font-weight:500}
-.clinks{display:flex;gap:10px;margin-top:10px;padding-top:8px;border-top:1px solid var(--brd2);flex-wrap:wrap}
-.clinks a{color:var(--gold);text-decoration:none;font-family:'JetBrains Mono',monospace;font-size:.62rem;font-weight:500}
-.clinks a:hover{text-decoration:underline}
-
-/* ══════ TABELA desktop ══════ */
-.tw{width:100%;border:1px solid var(--brd);border-radius:var(--r-lg);background:var(--white);box-shadow:var(--shadow-md);overflow:hidden}
+/* ── TABELA ── */
+.tw{border:1px solid var(--line);border-radius:var(--r2);overflow:hidden;display:none}
 table{width:100%;border-collapse:collapse;table-layout:fixed}
-col.c1{width:6%}col.c2{width:5%}col.c3{width:5%}col.c4{width:6%}col.c5{width:6%}
-col.c6{width:4%}col.c7{width:3%}col.c8{width:13%}col.c9{width:9%}col.c10{width:8%}
-col.c11{width:6%}col.c12{width:9%}col.c13{width:7%}col.c14{width:9%}col.c15{width:5%}
-thead{background:var(--ink)}
-thead th{padding:10px 8px;text-align:left;font-family:'JetBrains Mono',monospace;font-size:.51rem;letter-spacing:.11em;text-transform:uppercase;font-weight:600;border-right:1px solid rgba(255,255,255,.07);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;vertical-align:bottom;color:#e8e4dc}
+thead{background:var(--bg3)}
+thead th{padding:9px 11px;text-align:left;font-family:'Fira Code',monospace;font-size:.53rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:500;border-right:1px solid var(--line);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 thead th:last-child{border-right:none}
-tbody tr{border-bottom:1px solid var(--brd2);transition:background .12s}
-tbody tr:nth-child(even){background:#faf8f5}
+tbody tr{border-bottom:1px solid var(--line);transition:background .12s}
 tbody tr:last-child{border-bottom:none}
-tbody tr:hover{background:var(--gold-lt)}
-tbody td{padding:8px 8px;vertical-align:top;border-right:1px solid var(--brd2);font-size:.75rem;color:var(--ink2);overflow:hidden;word-break:break-word}
+tbody tr:hover{background:var(--bg3)}
+tbody td{padding:9px 11px;vertical-align:top;border-right:1px solid var(--line);font-size:.76rem;color:var(--soft);overflow:hidden;word-break:break-word}
 tbody td:last-child{border-right:none}
-.ct{color:var(--ink)!important;font-weight:500;font-style:italic;line-height:1.4}
-a.lk{color:var(--gold);text-decoration:none;font-family:'JetBrains Mono',monospace;font-size:.6rem;display:block;font-weight:500}
-a.lk:hover{text-decoration:underline}
-.resum{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;font-size:.74rem;line-height:1.55;cursor:pointer}
-.resum.open{-webkit-line-clamp:unset;display:block}
-.rbtn2{font-family:'JetBrains Mono',monospace;font-size:.56rem;color:var(--gold);cursor:pointer;margin-top:2px;font-weight:500}
-.sel span{display:inline-block;background:var(--gold-lt);border:1px solid rgba(184,134,11,.2);border-radius:20px;padding:1px 6px;margin:1px;color:var(--gold);font-family:'JetBrains Mono',monospace;font-size:.55rem}
+.ttit{font-style:italic;color:var(--head)}
+a.tlk{color:var(--gold);text-decoration:none;font-family:'Fira Code',monospace;font-size:.59rem;font-weight:500}
+a.tlk:hover{text-decoration:underline}
+.tres{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;font-size:.73rem;line-height:1.55;cursor:pointer}
+.tres.open{-webkit-line-clamp:unset;display:block}
 
-@media(max-width:767px){
-  .vr{display:none}.tw{display:none!important}.cards{display:flex}.cgrid{grid-template-columns:1fr}
-  .fonte-group{flex-wrap:wrap;border-radius:var(--r-lg)}.ff{flex:1 0 auto;justify-content:center;border-right:none;border-bottom:1px solid rgba(255,255,255,.1)}
-  .tipo-tabs{flex-wrap:wrap}
-}
-@media(min-width:768px){.cards{display:none!important}.tw{display:block}}
+/* ── PAGINAÇÃO ── */
+.pag{display:flex;align-items:center;justify-content:center;gap:4px;margin-top:20px;flex-wrap:wrap}
+.pg{display:inline-flex;align-items:center;justify-content:center;min-width:34px;height:34px;padding:0 9px;border:1px solid var(--line2);border-radius:var(--r);background:var(--bg2);color:var(--dim);font-family:'Fira Code',monospace;font-size:.7rem;cursor:pointer;transition:all .18s;user-select:none}
+.pg:hover:not(.pgo):not(.pgd){border-color:var(--gold);color:var(--gold)}
+.pg.pgo{background:var(--gold);color:#09090b;border-color:var(--gold);font-weight:700;cursor:default}
+.pg.pgd{opacity:.22;cursor:not-allowed}
+.pgsep{font-family:'Fira Code',monospace;font-size:.7rem;color:var(--muted);padding:0 4px}
 
-/* ══════ RODAPÉ ══════ */
-footer{margin-top:40px;border-top:1px solid var(--brd);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;background:var(--cream)}
-.footer-txt{font-family:'JetBrains Mono',monospace;font-size:.57rem;color:var(--ink3)}
-.btn-diag{padding:5px 13px;border:1.5px solid var(--brd);border-radius:20px;background:transparent;color:var(--ink3);font-family:'JetBrains Mono',monospace;font-size:.59rem;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:4px}
-.btn-diag:hover{background:var(--ink);color:#fff;border-color:var(--ink)}
+/* ── ESTADO ── */
+.state{grid-column:1/-1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 24px;text-align:center;gap:14px}
+.si{font-size:3rem;opacity:.18}
+.stit{font-family:'Fraunces',serif;font-size:1.5rem;font-style:italic;color:var(--head);font-weight:300}
+.ssub{font-size:.84rem;color:var(--dim);max-width:420px;line-height:1.7}
+.spinner{width:34px;height:34px;border:2.5px solid var(--line2);border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.alerta{display:flex;align-items:flex-start;gap:11px;padding:11px 14px;border-radius:var(--r2);margin-bottom:12px;background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.2);color:#fcd34d}
+.al-body{font-size:.8rem;line-height:1.55;flex:1}
+.al-tit{font-family:'Fira Code',monospace;font-size:.61rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-bottom:3px}
+.al-lnk{font-family:'Fira Code',monospace;font-size:.62rem;text-decoration:underline;cursor:pointer;opacity:.8;margin-top:5px;display:inline-block}
+
+/* ── RODAPÉ ── */
+footer{border-top:1px solid var(--line);background:var(--bg2);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.ftl{display:flex;align-items:center;gap:14px}
+.ftbr{font-family:'Fira Code',monospace;font-size:.58rem;color:var(--muted);letter-spacing:.07em}
+.ftps{display:flex;gap:5px;flex-wrap:wrap}
+.ftp{font-family:'Fira Code',monospace;font-size:.53rem;color:var(--muted);background:var(--bg3);border:1px solid var(--line);border-radius:20px;padding:2px 8px}
+.bft{display:inline-flex;align-items:center;gap:5px;height:28px;padding:0 11px;background:var(--bg3);border:1px solid var(--line2);border-radius:20px;color:var(--muted);font-family:'Fira Code',monospace;font-size:.57rem;cursor:pointer;transition:all .18s}
+.bft:hover{border-color:var(--gold);color:var(--gold);background:var(--gold-dim)}
+
+/* ── RESPONSIVO ── */
+@media(max-width:1050px){.main{grid-template-columns:210px 1fr}#rg{grid-template-columns:1fr}}
+@media(max-width:800px){.main{grid-template-columns:1fr}.sb{position:static;height:auto;border-right:none;border-bottom:1px solid var(--line)}.fnav{display:none}}
+@media(max-width:600px){.hdr-r{display:none}#rg{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -184,188 +230,192 @@ footer{margin-top:40px;border-top:1px solid var(--brd);padding:12px 24px;display
 <!-- HEADER -->
 <header>
   <div class="hdr">
-    <div>
-      <div class="logo-t">Repositório Acadêmico</div>
-      <div class="logo-s">Busca Integrada · v19</div>
+    <div class="brand">
+      <div class="bmark">
+        <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      </div>
+      <div><div class="bname">Acervo</div><div class="btag">Pesquisa Acadêmica · BR</div></div>
     </div>
-    <div class="vr"></div>
-    <div class="fonte-group">
-      <button class="ff ff-capes on"  data-fonte="capes"    onclick="toggleFonte(this)"><span class="dot"></span>CAPES</button>
-      <button class="ff ff-scielo on" data-fonte="scielo"   onclick="toggleFonte(this)"><span class="dot"></span>SciELO</button>
-      <button class="ff ff-bdtd on"   data-fonte="bdtd"     onclick="toggleFonte(this)"><span class="dot"></span>BDTD</button>
-      <button class="ff ff-cross on"  data-fonte="crossref" onclick="toggleFonte(this)"><span class="dot"></span>Crossref</button>
-      <button class="ff ff-oa on"     data-fonte="openalex" onclick="toggleFonte(this)"><span class="dot"></span>OpenAlex</button>
-    </div>
+    <nav class="fnav">
+      <button class="fnb fn-capes on"  data-fonte="capes"    onclick="toggleFonte(this)"><span class="fd"></span>CAPES</button>
+      <button class="fnb fn-scielo on" data-fonte="scielo"   onclick="toggleFonte(this)"><span class="fd"></span>SciELO</button>
+      <button class="fnb fn-bdtd on"   data-fonte="bdtd"     onclick="toggleFonte(this)"><span class="fd"></span>BDTD</button>
+      <button class="fnb fn-cross on"  data-fonte="crossref" onclick="toggleFonte(this)"><span class="fd"></span>Crossref</button>
+      <button class="fnb fn-oa on"     data-fonte="openalex" onclick="toggleFonte(this)"><span class="fd"></span>OpenAlex</button>
+    </nav>
+    <div class="hdr-r"><span class="bpro">PRO</span></div>
   </div>
 </header>
 
 <!-- BUSCA -->
 <div class="sp">
   <div class="sr">
-    <div class="sf">
-      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-      <input type="text" id="query" placeholder="Tema, autor, palavra-chave ou instituição…" autocomplete="off" spellcheck="false"/>
+    <div class="sw">
+      <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" id="query" placeholder="Tema, autor, palavra-chave, instituição…" autocomplete="off" spellcheck="false"/>
     </div>
-    <button class="btn-p" id="btnB" onclick="buscar()">Pesquisar</button>
+    <button class="btn-s" id="btnB" onclick="buscar()">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      Pesquisar
+    </button>
   </div>
-
-  <div class="filters-bar">
-
-    <!-- Período -->
-    <div class="filter-block">
-      <span class="filter-label">Período</span>
+  <div class="fr">
+    <div class="fg">
+      <span class="fl">Período</span>
       <div class="period-row">
-        <input type="number" id="am" value="2016" min="1900" max="2099"/>
+        <input type="number" class="iyr" id="am" value="2016" min="1900" max="2099"/>
         <span>–</span>
-        <input type="number" id="ax" placeholder="atual" min="1900" max="2099"/>
+        <input type="number" class="iyr" id="ax" placeholder="atual" min="1900" max="2099"/>
       </div>
     </div>
-
-    <!-- Tipo — segmented tabs -->
-    <div class="filter-block">
-      <span class="filter-label">Tipo de publicação <span style="font-weight:400;letter-spacing:0;text-transform:none;font-family:'Source Serif 4',serif;font-size:.72rem;color:var(--ink3)">— selecione um ou mais</span></span>
-      <div class="tipo-tabs" id="tipoTabs">
-        <button class="tipo-tab" data-tipo="tese" onclick="toggleTipo(this)">
-          <span class="tipo-dot"></span>Tese de Doutorado <span class="tipo-count" id="cnt-tese">—</span>
-        </button>
-        <button class="tipo-tab" data-tipo="dissertacao" onclick="toggleTipo(this)">
-          <span class="tipo-dot"></span>Dissertação de Mestrado <span class="tipo-count" id="cnt-diss">—</span>
-        </button>
-        <button class="tipo-tab" data-tipo="artigo" onclick="toggleTipo(this)">
-          <span class="tipo-dot"></span>Artigo Científico <span class="tipo-count" id="cnt-art">—</span>
-        </button>
+    <div class="fg">
+      <span class="fl">Tipo — múltipla seleção</span>
+      <div class="tipo-pills">
+        <button class="tp" data-tipo="tese" onclick="toggleTipo(this)"><span class="tpd"></span>Tese de Doutorado <span class="tpc" id="cnt-tese">—</span></button>
+        <button class="tp" data-tipo="dissertacao" onclick="toggleTipo(this)"><span class="tpd"></span>Dissertação <span class="tpc" id="cnt-diss">—</span></button>
+        <button class="tp" data-tipo="artigo" onclick="toggleTipo(this)"><span class="tpd"></span>Artigo Científico <span class="tpc" id="cnt-art">—</span></button>
       </div>
     </div>
-
-    <!-- Por página -->
-    <div class="filter-block">
-      <span class="filter-label">Por página</span>
-      <select id="porPag" onchange="renderPagina(1)">
-        <option value="10">10</option>
-        <option value="20" selected>20</option>
-        <option value="50">50</option>
-        <option value="100">100</option>
+    <div class="fg">
+      <span class="fl">Por página</span>
+      <select class="spp" id="porPag" onchange="renderPagina(1)">
+        <option value="10">10</option><option value="20" selected>20</option><option value="50">50</option><option value="100">100</option>
       </select>
     </div>
-
   </div>
 </div>
 
-<!-- CONTEÚDO -->
-<div class="content">
+<!-- LAYOUT PRINCIPAL -->
+<div class="main">
 
-  <div id="alertaArea"></div>
-
-  <div class="rbar" id="rbar" style="display:none">
-    <div class="rc">
-      <div class="rc-count">
-        <strong id="tot">0</strong> publicações · pág. <strong id="pAtual">1</strong>/<strong id="pTotal">1</strong>
-        <span id="ql" style="color:var(--ink3);margin-left:5px"></span>
+  <!-- SIDEBAR -->
+  <aside class="sb">
+    <div class="sbs">
+      <div class="sbt">Visão geral</div>
+      <div class="stat-grid">
+        <div class="sc stot"><div class="sv" id="sb-total">—</div><div class="sl">Total</div></div>
+        <div class="sc st"><div class="sv" id="sb-tese">—</div><div class="sl">Teses</div></div>
+        <div class="sc sd"><div class="sv" id="sb-diss">—</div><div class="sl">Dissertações</div></div>
+        <div class="sc sa"><div class="sv" id="sb-art">—</div><div class="sl">Artigos</div></div>
       </div>
-      <div class="src-pills" id="srcPills"></div>
-      <div id="capesStatus"></div>
     </div>
-    <div class="exg">
-      <button class="be" onclick="xCSV()">
-        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>CSV
-      </button>
-      <button class="be be-excel" onclick="xExcel()">
-        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Excel
-      </button>
-      <button class="be be-pdf" onclick="xPDF()">
-        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>PDF
-      </button>
+    <div class="sbs" id="sb-fontes-sec" style="display:none">
+      <div class="sbt">Por fonte</div>
+      <div class="frows" id="sb-fontes"></div>
     </div>
-  </div>
-
-  <div id="stArea">
-    <div class="state">
-      <div class="si">📚</div>
-      <h3>Pesquise publicações acadêmicas</h3>
-      <p>Busca simultânea em SciELO, BDTD, Crossref e OpenAlex. Filtre por tipo de publicação e período.</p>
+    <div class="sbs" id="sb-anos-sec" style="display:none">
+      <div class="sbt">Por ano</div>
+      <div class="ybars" id="sb-anos"></div>
     </div>
-  </div>
+    <div class="sbs" id="sb-regs-sec" style="display:none">
+      <div class="sbt">Por região</div>
+      <div class="regs" id="sb-regs"></div>
+    </div>
+    <div class="sbs" style="padding-top:14px">
+      <div class="sbt">Estado</div>
+      <div id="sb-state" style="font-family:'Fira Code',monospace;font-size:.62rem;color:var(--muted)">Aguardando busca…</div>
+    </div>
+  </aside>
 
-  <div class="cards" id="cards"></div>
-  <div class="tw" id="tw" style="display:none">
-    <table>
-      <colgroup><col class="c1"/><col class="c2"/><col class="c3"/><col class="c4"/><col class="c5"/><col class="c6"/><col class="c7"/><col class="c8"/><col class="c9"/><col class="c10"/><col class="c11"/><col class="c12"/><col class="c13"/><col class="c14"/><col class="c15"/></colgroup>
-      <thead><tr>
-        <th>Fonte</th><th>Link CAPES</th><th>Link / DOI</th><th>Revista</th><th>Classificação</th>
-        <th>Ano</th><th>Vol.</th><th>Título do Periódico</th><th>Resumo</th><th>Palavras-chave</th>
-        <th>Seletor KW</th><th>Autor(es)</th><th>Titulação</th><th>Instituição / Programa</th><th>Região</th>
-      </tr></thead>
-      <tbody id="tbody"></tbody>
-    </table>
-  </div>
+  <!-- RESULTADOS -->
+  <div class="ra">
+    <div id="alertaArea"></div>
 
-  <div class="paginacao" id="paginacao" style="display:none"></div>
+    <div class="rbar" id="rbar" style="display:none">
+      <div class="rbl">
+        <div class="rct"><strong id="r-tot">0</strong> publicações · pág. <strong id="r-p">1</strong>/<strong id="r-tp">1</strong></div>
+        <div class="rq" id="r-q"></div>
+        <div class="rpills" id="r-pills"></div>
+      </div>
+      <div class="rbr">
+        <button class="bexp bxl" onclick="xExcel()">
+          <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Excel
+        </button>
+        <button class="bexp" onclick="xCSV()">
+          <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>CSV
+        </button>
+        <button class="bexp" onclick="xPDF()">
+          <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>PDF
+        </button>
+        <div class="vt">
+          <button class="vtb on" id="vt-g" onclick="setView('grid')" title="Grid">
+            <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          </button>
+          <button class="vtb" id="vt-l" onclick="setView('list')" title="Tabela">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Grid de cards -->
+    <div id="rg">
+      <div class="state">
+        <div class="si">📚</div>
+        <div class="stit">Pesquise publicações acadêmicas</div>
+        <div class="ssub">Busca simultânea em CAPES, SciELO, BDTD, Crossref e OpenAlex. Use os filtros para refinar por tipo e período.</div>
+      </div>
+    </div>
+
+    <!-- Tabela (view alternativo) -->
+    <div class="tw" id="tw">
+      <table>
+        <colgroup><col style="width:6%"/><col style="width:5%"/><col style="width:5%"/><col style="width:6%"/><col style="width:6%"/><col style="width:4%"/><col style="width:3%"/><col style="width:13%"/><col style="width:9%"/><col style="width:8%"/><col style="width:6%"/><col style="width:9%"/><col style="width:7%"/><col style="width:9%"/><col style="width:5%"/></colgroup>
+        <thead><tr>
+          <th>Fonte</th><th>Link CAPES</th><th>Link/DOI</th><th>Revista</th><th>Classificação</th>
+          <th>Ano</th><th>Vol.</th><th>Título</th><th>Resumo</th><th>Palavras-chave</th>
+          <th>Seletor KW</th><th>Autor(es)</th><th>Titulação</th><th>Instituição</th><th>Região</th>
+        </tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+
+    <div class="pag" id="pag" style="display:none"></div>
+  </div>
 </div>
 
+<!-- RODAPÉ -->
 <footer>
-  <span class="footer-txt">Repositório Acadêmico v19 · CAPES · SciELO · BDTD · Crossref · OpenAlex</span>
-  <button class="btn-diag" onclick="capesAuth()" title="Testa autenticação CAPES">🔑 CAPES Auth</button>
-  <button class="btn-diag" onclick="diagnosticar()">
-    <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-    Diagnosticar fontes
-  </button>
+  <div class="ftl">
+    <span class="ftbr">ACERVO — Pesquisa Acadêmica BR · v20</span>
+    <div class="ftps">
+      <span class="ftp">CAPES</span><span class="ftp">SciELO</span><span class="ftp">BDTD</span><span class="ftp">Crossref</span><span class="ftp">OpenAlex</span>
+    </div>
+  </div>
+  <div style="display:flex;gap:7px">
+    <button class="bft" onclick="capesAuth()">🔑 CAPES Auth</button>
+    <button class="bft" onclick="diagnosticar()">
+      <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      Diagnosticar
+    </button>
+  </div>
 </footer>
 
 <script>
 'use strict';
+
 const COLS=['repositorio','link_capes','link_scielo','revista','classificacao','ano_da_publicacao','volume','titulo_do_periodico','resumo','palavras_chaves','seletor_palavras_chaves','autor','titulacao','instituicao_programa','regiao'];
-const LABELS=['REPOSITÓRIO','LINK/CAPES','LINK/SCIELO','REVISTA','CLASSIFICAÇÃO','ANO DA PUBLICAÇÃO','VOLUME','TÍTULO DO PERIÓDICO','RESUMO','PALAVRAS-CHAVES','SELETOR PALAVRAS-CHAVES','AUTOR','TITULAÇÃO','INSTITUIÇÃO / PROGRAMA','REGIÃO'];
-const PILLCLS={CAPES:'pc',SciELO:'ps',BDTD:'pb',Crossref:'px',OpenAlex:'po'};
+const LABELS=['REPOSITÓRIO','LINK/CAPES','LINK/SCIELO','REVISTA','CLASSIFICAÇÃO','ANO','VOLUME','TÍTULO','RESUMO','PALAVRAS-CHAVES','SELETOR KW','AUTOR','TITULAÇÃO','INSTITUIÇÃO/PROGRAMA','REGIÃO'];
+const FONTE_CORES = {CAPES:'#60a5fa',SciELO:'#34d399',BDTD:'#fb923c',Crossref:'#818cf8',OpenAlex:'#22d3ee'};
 
-// Estado global — servidor retorna TUDO, frontend filtra+pagina
-let TODOS = [];     // todos os registros da busca atual
-let FILTRADOS = []; // após filtro de tipo
-let paginaAtual = 1;
+let TODOS=[], FILTRADOS=[], pAtual=1;
+let viewMode='grid';
 
-// ── Fonte toggles ──
+// ── Fontes ──
 function toggleFonte(btn){btn.classList.toggle('on');}
-function fontesAtivas(){return[...document.querySelectorAll('.ff.on')].map(b=>b.dataset.fonte).join(',');}
+function fontesAtivas(){return[...document.querySelectorAll('.fnb.on')].map(b=>b.dataset.fonte).join(',');}
 
-// ── Tipo — multi-select independente ──
+// ── Tipo ──
 function normCmp(s){return String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');}
-
-function toggleTipo(btn){
-  btn.classList.toggle('ativo');
-  aplicarFiltro();
-}
+function toggleTipo(btn){btn.classList.toggle('on');aplicarFiltro();}
 
 function aplicarFiltro(){
-  const mapTipo={
-    'tese'       :'tese de doutorado',
-    'dissertacao':'dissertação de mestrado',
-    'artigo'     :'artigo científico'
-  };
-  const ativos=[...document.querySelectorAll('.tipo-tab.ativo')].map(b=>b.dataset.tipo);
-
-  if(!ativos.length){
-    // Nenhum pill ativo = mostra todos
-    FILTRADOS=[...TODOS];
-  } else {
-    FILTRADOS=TODOS.filter(d=>{
-      const t=normCmp(d.titulacao||d.classificacao||'');
-      return ativos.some(a=>t.includes(normCmp(mapTipo[a]||a)));
-    });
-  }
+  const mapTipo={tese:'tese de doutorado',dissertacao:'dissertação de mestrado',artigo:'artigo científico'};
+  const ativos=[...document.querySelectorAll('.tp.on')].map(b=>b.dataset.tipo);
+  FILTRADOS = ativos.length
+    ? TODOS.filter(d=>{const t=normCmp(d.titulacao||d.classificacao||'');return ativos.some(a=>t.includes(normCmp(mapTipo[a]||a)));})
+    : [...TODOS];
   renderPagina(1);
-}
-
-function atualizarContadores(){
-  const cnts={tese:0,dissertacao:0,artigo:0};
-  TODOS.forEach(d=>{
-    const t=normCmp(d.titulacao||'');
-    if(t.includes('tese de doutorado')) cnts.tese++;
-    else if(t.includes('dissertação de mestrado')||t.includes('dissertacao de mestrado')) cnts.dissertacao++;
-    else if(t.includes('artigo')) cnts.artigo++;
-  });
-
-  document.getElementById('cnt-tese').textContent=cnts.tese;
-  document.getElementById('cnt-diss').textContent=cnts.dissertacao;
-  document.getElementById('cnt-art').textContent=cnts.artigo;
 }
 
 // ── Busca ──
@@ -382,41 +432,130 @@ async function buscar(){
     const url='/api/search?q='+encodeURIComponent(q)+'&fontes='+ativas+'&anoMin='+am+(ax?'&anoMax='+ax:'');
     const r=await fetch(url);
     const ct=r.headers.get('content-type')||'';
-    if(!ct.includes('json')){const txt=await r.text();throw new Error('API retornou HTML. Prévia: '+txt.slice(0,100));}
-    if(!r.ok) throw new Error('HTTP '+r.status);
+    if(!ct.includes('json')){const txt=await r.text();throw new Error('API retornou HTML: '+txt.slice(0,100));}
+    if(!r.ok)throw new Error('HTTP '+r.status);
     const j=await r.json();
-    window._lastJ=j;
     TODOS=j.resultados||[];
-    // Mantém seleção de tipos entre buscas; só atualiza contadores
     atualizarContadores();
+    atualizarSidebar(j);
     mostrarAlertas(j.source_errors||[],j.por_fonte||{});
-    aplicarFiltro(); // aplica filtro atual (todos) e renderiza
-    document.getElementById('ql').textContent=TODOS.length?'· "'+q+'"':'';
-  }catch(e){erro(e.message);}
+    document.getElementById('r-q').textContent='"'+q+'"';
+    aplicarFiltro();
+  }catch(e){erroState(e.message);}
   finally{document.getElementById('btnB').disabled=false;}
 }
 
-// ── Paginação local ──
-function renderPagina(pagina){
-  paginaAtual=Math.max(1,pagina);
+// ── Contadores ──
+function atualizarContadores(){
+  const c={tese:0,diss:0,art:0};
+  TODOS.forEach(d=>{
+    const t=normCmp(d.titulacao||'');
+    if(t.includes('tese'))c.tese++;
+    else if(t.includes('dissertacao')||t.includes('mestrado'))c.diss++;
+    else if(t.includes('artigo')||t.includes('article'))c.art++;
+  });
+  document.getElementById('cnt-tese').textContent=c.tese||'—';
+  document.getElementById('cnt-diss').textContent=c.diss||'—';
+  document.getElementById('cnt-art').textContent=c.art||'—';
+  document.getElementById('sb-total').textContent=TODOS.length;
+  document.getElementById('sb-tese').textContent=c.tese;
+  document.getElementById('sb-diss').textContent=c.diss;
+  document.getElementById('sb-art').textContent=c.art;
+}
+
+// ── Sidebar analytics ──
+function atualizarSidebar(j){
+  const porFonte=j.por_fonte||{};
+  const maxF=Math.max(1,...Object.values(porFonte));
+
+  // Fontes
+  const fsec=document.getElementById('sb-fontes-sec');
+  const frows=document.getElementById('sb-fontes');
+  const fontesEntries=Object.entries(porFonte).filter(([,n])=>n>0).sort(([,a],[,b])=>b-a);
+  if(fontesEntries.length){
+    fsec.style.display='';
+    frows.innerHTML=fontesEntries.map(([f,n])=>{
+      const c=FONTE_CORES[f]||'#71717a';
+      const pct=Math.round(n/maxF*100);
+      return '<div class="frow"><span class="fnm"><span class="fdot" style="background:'+c+'"></span>'+esc(f)+'</span><div class="fbw"><div class="fb" style="width:'+pct+'%;background:'+c+'"></div></div><span class="fnum">'+n+'</span></div>';
+    }).join('');
+    // Anima as barras
+    setTimeout(()=>{
+      frows.querySelectorAll('.fb').forEach((b,i)=>{
+        const w=b.style.width;b.style.width='0';
+        setTimeout(()=>{b.style.width=w;},80+i*40);
+      });
+    },50);
+  }
+
+  // Por ano
+  const porAno={};
+  TODOS.forEach(d=>{const a=d.ano_da_publicacao;if(a&&/^\d{4}$/.test(a))porAno[a]=(porAno[a]||0)+1;});
+  const anosOrdenados=Object.entries(porAno).sort(([a],[b])=>b-a).slice(0,9);
+  const maxA=Math.max(1,...anosOrdenados.map(([,n])=>n));
+  if(anosOrdenados.length){
+    document.getElementById('sb-anos-sec').style.display='';
+    document.getElementById('sb-anos').innerHTML=anosOrdenados.map(([a,n])=>{
+      const pct=Math.round(n/maxA*100);
+      return '<div class="yr"><span class="yl">'+a+'</span><div class="ybw"><div class="yb" style="width:'+pct+'%"></div></div><span class="yc">'+n+'</span></div>';
+    }).join('');
+    setTimeout(()=>{
+      document.querySelectorAll('.yb').forEach((b,i)=>{
+        const w=b.style.width;b.style.width='0';
+        setTimeout(()=>{b.style.width=w;},60+i*30);
+      });
+    },80);
+  }
+
+  // Por região
+  const porReg={};
+  TODOS.forEach(d=>{if(d.regiao){const k=d.regiao.startsWith('AI - ')?'AI - inferido':d.regiao;porReg[k]=(porReg[k]||0)+1;}});
+  const regs=Object.entries(porReg).sort(([,a],[,b])=>b-a);
+  if(regs.length){
+    document.getElementById('sb-regs-sec').style.display='';
+    document.getElementById('sb-regs').innerHTML=regs.map(([r,n])=>{
+      const label=r==='AI - inferido'?'<span class="aitag">'+esc(r)+'</span>':'<span class="regnm">'+esc(r)+'</span>';
+      return '<div class="regrw">'+label+'<span class="regp">'+n+'</span></div>';
+    }).join('');
+  }
+
+  // Estado CAPES
+  const sbState=document.getElementById('sb-state');
+  if(sbState){
+    const authOk=j.capes_autenticado;
+    sbState.innerHTML='<span style="color:var(--dim)">CAPES: </span>'
+      +(authOk?'<span style="color:#34d399">Autenticado ✓</span>':'<span style="color:var(--muted)">Sem autenticação</span>');
+  }
+}
+
+// ── Renderização ──
+function renderPagina(p){
+  pAtual=Math.max(1,p);
   const pp=parseInt(document.getElementById('porPag').value)||20;
   const total=FILTRADOS.length;
-  const totalPags=Math.ceil(total/pp)||1;
-  if(paginaAtual>totalPags) paginaAtual=totalPags;
-  const inicio=(paginaAtual-1)*pp;
-  const slice=FILTRADOS.slice(inicio,inicio+pp);
+  const tpags=Math.ceil(total/pp)||1;
+  if(pAtual>tpags)pAtual=tpags;
+  const slice=FILTRADOS.slice((pAtual-1)*pp,pAtual*pp);
 
-  document.getElementById('tot').textContent=total;
-  document.getElementById('pAtual').textContent=paginaAtual;
-  document.getElementById('pTotal').textContent=totalPags;
+  document.getElementById('r-tot').textContent=total;
+  document.getElementById('r-p').textContent=pAtual;
+  document.getElementById('r-tp').textContent=tpags;
 
-  renderTabela(slice);
-  renderPaginacao(paginaAtual,totalPags);
+  // Pills de fonte com base em FILTRADOS
+  const pf={};FILTRADOS.forEach(r=>{pf[r.repositorio]=(pf[r.repositorio]||0)+1;});
+  document.getElementById('r-pills').innerHTML=Object.entries(pf).filter(([,n])=>n>0)
+    .map(([f,n])=>'<span class="rpill" style="background:'+(FONTE_CORES[f]||'#71717a')+'">'+esc(f)+' · '+n+'</span>').join('');
+
+  if(viewMode==='grid')renderCards(slice);
+  else renderTabela(slice);
+  renderPag(pAtual,tpags);
+
+  if(TODOS.length)document.getElementById('rbar').style.display='flex';
   window.scrollTo({top:document.querySelector('.sp').offsetHeight+56,behavior:'smooth'});
 }
 
-function renderPaginacao(pAtual,pTotal){
-  const el=document.getElementById('paginacao');
+function renderPag(pAtual,pTotal){
+  const el=document.getElementById('pag');
   if(pTotal<=1){el.style.display='none';return;}
   el.style.display='flex';
   const pages=[];
@@ -428,94 +567,111 @@ function renderPaginacao(pAtual,pTotal){
     if(pAtual<pTotal-2)pages.push('…');
     pages.push(pTotal);
   }
-  let h='<button class="pg-btn'+(pAtual===1?' desab':'')+'" onclick="'+(pAtual>1?'renderPagina('+(pAtual-1)+')':'void 0')+'">‹</button>';
+  let h='<button class="pg'+(pAtual===1?' pgd':'')+'" onclick="'+(pAtual>1?'renderPagina('+(pAtual-1)+')':'void 0')+'">‹</button>';
   pages.forEach(p=>{
-    if(p==='…')h+='<span class="pg-sep">…</span>';
-    else h+='<button class="pg-btn'+(p===pAtual?' ativo':'')+'" onclick="'+(p!==pAtual?'renderPagina('+p+')':'void 0')+'">'+p+'</button>';
+    if(p==='…')h+='<span class="pgsep">…</span>';
+    else h+='<button class="pg'+(p===pAtual?' pgo':'')+'" onclick="'+(p!==pAtual?'renderPagina('+p+')':'void 0')+'">'+p+'</button>';
   });
-  h+='<button class="pg-btn'+(pAtual===pTotal?' desab':'')+'" onclick="'+(pAtual<pTotal?'renderPagina('+(pAtual+1)+')':'void 0')+'">›</button>';
+  h+='<button class="pg'+(pAtual===pTotal?' pgd':'')+'" onclick="'+(pAtual<pTotal?'renderPagina('+(pAtual+1)+')':'void 0')+'">›</button>';
   el.innerHTML=h;
 }
 
-// ── Render tabela e cards ──
-function tagH(n){const lc=(n||'').toLowerCase();const c=lc.includes('capes')?'tc':lc.includes('scielo')?'ts':lc.includes('bdtd')?'tb':lc.includes('cross')?'tx':lc.includes('openalex')?'to':'to';return'<span class="tag '+c+'">'+esc(n)+'</span>';}
-function chipsH(kw){if(!kw)return'<span style="opacity:.28;font-size:.78rem">—</span>';return'<div class="chips">'+kw.split(';').map(k=>k.trim()).filter(Boolean).map(k=>'<span class="chip">'+esc(k)+'</span>').join('')+'</div>';}
-function selH(s){if(!s)return'<span style="opacity:.28">—</span>';return'<span class="sel">'+s.split(';').map(t=>'<span>'+esc(t.trim())+'</span>').join('')+'</span>';}
-function regH(r){if(!r)return'<span style="opacity:.28">—</span>';if(r.startsWith('AI - ')){return'<span class="ai-badge" title="Inferido do documento">'+esc(r.slice(5))+'</span>';}return'<strong>'+esc(r)+'</strong>';}
-function v(x){return esc(x)||'<span style="opacity:.28">—</span>';}
+// ── View ──
+function setView(v){
+  viewMode=v;
+  document.getElementById('vt-g').classList.toggle('on',v==='grid');
+  document.getElementById('vt-l').classList.toggle('on',v==='list');
+  document.getElementById('rg').style.display=v==='grid'?'grid':'none';
+  document.getElementById('tw').style.display=v==='list'?'block':'none';
+  document.getElementById('pag').style.display=v==='list'?'none':'flex';
+  if(FILTRADOS.length)renderPagina(pAtual);
+}
 
-function renderTabela(lst){
-  const rbar=document.getElementById('rbar'),st=document.getElementById('stArea');
-  const cards=document.getElementById('cards'),tbody=document.getElementById('tbody'),tw=document.getElementById('tw');
+// ── Tags de fonte/tipo ──
+function srcTag(rep){
+  const lc=(rep||'').toLowerCase();
+  const cls=lc.includes('scielo')?'bs-scielo':lc.includes('bdtd')?'bs-bdtd':lc.includes('cross')?'bs-cross':lc.includes('openalex')?'bs-oa':'bs-capes';
+  return '<span class="bx '+cls+'">'+esc(rep)+'</span>';
+}
+function tipTag(tit){
+  const t=normCmp(tit||'');
+  if(t.includes('tese'))return'<span class="bx bt-tese">Tese</span>';
+  if(t.includes('dissertacao')||t.includes('mestrado'))return'<span class="bx bt-diss">Dissertação</span>';
+  if(t.includes('artigo')||t.includes('article'))return'<span class="bx bt-art">Artigo</span>';
+  return tit?'<span class="bx" style="background:var(--bg4);color:var(--dim);border:1px solid var(--line2)">'+esc(tit)+'</span>':'';
+}
+function cardCls(tit){
+  const t=normCmp(tit||'');
+  if(t.includes('tese'))return'ctese';
+  if(t.includes('dissertacao')||t.includes('mestrado'))return'cdiss';
+  if(t.includes('artigo')||t.includes('article'))return'cart';
+  return'';
+}
+function regH(r){
+  if(!r)return'—';
+  if(r.startsWith('AI - '))return'<span class="aitag">'+esc(r)+'</span>';
+  return'<span class="creg"><span class="rdot"></span>'+esc(r)+'</span>';
+}
+function kwH(kw){
+  if(!kw)return'';
+  return'<div class="ckws">'+kw.split(';').map(k=>k.trim()).filter(Boolean).slice(0,5).map(k=>'<span class="kw">'+esc(k)+'</span>').join('')+'</div>';
+}
+function v(x){return esc(x)||'<span style="opacity:.25">—</span>';}
+
+// ── Render cards ──
+function renderCards(lst){
+  const rg=document.getElementById('rg');
+  rg.style.display='grid';
+  document.getElementById('tw').style.display='none';
 
   if(!TODOS.length){
-    st.style.display='';
-    st.innerHTML='<div class="state"><div class="si">🔍</div><h3>Nenhum resultado</h3><p>Tente outros termos ou ative mais fontes.</p></div>';
-    rbar.style.display='none';cards.innerHTML='';tbody.innerHTML='';tw.style.display='none';
-    document.getElementById('paginacao').style.display='none';return;
+    rg.innerHTML='<div class="state"><div class="si">🔍</div><div class="stit">Nenhum resultado</div><div class="ssub">Tente outros termos ou ative mais fontes.</div></div>';
+    return;
+  }
+  if(!lst.length){
+    rg.innerHTML='<div class="state"><div class="si">⚗️</div><div class="stit">Nenhum resultado para este filtro</div><div class="ssub">Selecione outros tipos ou remova o filtro.</div></div>';
+    return;
   }
 
-  if(!lst.length && FILTRADOS.length===0){
-    // Filtro de tipo retornou zero para essa combinação
-    st.style.display='';
-    st.innerHTML='<div class="state"><div class="si">🔍</div><h3>Nenhum resultado para este filtro</h3><p>Selecione "Todos" ou outro tipo de publicação.</p></div>';
-    rbar.style.display='flex';cards.innerHTML='';tbody.innerHTML='';tw.style.display='none';
-    document.getElementById('paginacao').style.display='none';return;
-  }
-
-  st.style.display='none';rbar.style.display='flex';tw.style.display='block';
-
-  // Atualiza pills de fonte com base nos FILTRADOS (não só na página)
-  const porFonte={};
-  FILTRADOS.forEach(r=>{porFonte[r.repositorio]=(porFonte[r.repositorio]||0)+1;});
-  // Status autenticação CAPES
-  const capesStatusEl=document.getElementById('capesStatus');
-  const j=window._lastJ||{};
-  if(capesStatusEl&&j){
-    if(j.capes_autenticado) capesStatusEl.innerHTML='<span style="font-family:'JetBrains Mono',monospace;font-size:.58rem;color:#145a32;background:#f0fff4;border:1px solid #86efac;padding:2px 8px;border-radius:20px">🔒 CAPES autenticado</span>';
-    else capesStatusEl.innerHTML='';
-  }
-
-  document.getElementById('srcPills').innerHTML=Object.entries(porFonte).filter(([,n])=>n>0)
-    .map(([f,n])=>'<span class="pill '+(PILLCLS[f]||'po')+'">'+esc(f)+' · '+n+'</span>').join('');
-
-  // CARDS
-  cards.innerHTML=lst.map((d,i)=>{
-    const rid='cr'+i;
+  rg.innerHTML=lst.map((d,i)=>{
     const lc=d.link_capes?'<a href="'+esc(d.link_capes)+'" target="_blank" rel="noopener">CAPES ↗</a>':'';
-    const ls=d.link_scielo?'<a href="'+esc(d.link_scielo)+'" target="_blank" rel="noopener">DOI / Link ↗</a>':'';
-    return '<div class="card">'+
-      '<div class="card-hdr"><div class="card-tit">'+(esc(d.titulo_do_periodico)||'<em style="opacity:.4">Sem título</em>')+'</div>'+tagH(d.repositorio)+'</div>'+
-      '<div class="cgrid">'+
-        '<div class="cf"><label>Autor(es)</label><div class="cv">'+(esc(d.autor)||'—')+'</div></div>'+
-        '<div class="cf"><label>Ano</label><div class="cv">'+(esc(d.ano_da_publicacao)||'—')+'</div></div>'+
-        '<div class="cf"><label>Titulação</label><div class="cv">'+(esc(d.titulacao)||'—')+'</div></div>'+
-        '<div class="cf"><label>Região</label><div class="cv">'+regH(d.regiao)+'</div></div>'+
-        '<div class="cf full"><label>Instituição / Programa</label><div class="cv">'+(esc(d.instituicao_programa)||'—')+'</div></div>'+
-        (d.revista?'<div class="cf full"><label>Revista / Periódico</label><div class="cv">'+esc(d.revista)+'</div></div>':'')+
-        (d.palavras_chaves?'<div class="cf full"><label>Palavras-chave</label>'+chipsH(d.palavras_chaves)+'</div>':'')+
-        (d.seletor_palavras_chaves?'<div class="cf full"><label>Seletor KW</label>'+chipsH(d.seletor_palavras_chaves)+'</div>':'')+
+    const ls=d.link_scielo?'<a href="'+esc(d.link_scielo)+'" target="_blank" rel="noopener">DOI ↗</a>':'';
+    return '<div class="card '+cardCls(d.titulacao)+'">'+
+      '<div class="ctop"><div class="ctit">'+(esc(d.titulo_do_periodico)||'<em style="opacity:.35">Sem título</em>')+'</div>'+
+      '<div class="cbadges">'+srcTag(d.repositorio)+tipTag(d.titulacao)+'</div></div>'+
+      '<div class="cmeta">'+
+        '<div class="cm"><span class="cmk">Autor</span><span class="cmv">'+(esc(d.autor)||'—')+'</span></div>'+
+        '<div class="cm"><span class="cmk">Ano</span><span class="cmv">'+(esc(d.ano_da_publicacao)||'—')+'</span></div>'+
+        (d.revista?'<div class="cm full"><span class="cmk">Revista</span><span class="cmv">'+esc(d.revista)+'</span></div>':'')+
+        '<div class="cm full"><span class="cmk">Instituição</span><span class="cmv">'+(esc(d.instituicao_programa)||'—')+'</span></div>'+
       '</div>'+
-      (d.resumo?'<div class="cf full" style="margin-top:5px"><label style="font-family:\'JetBrains Mono\',monospace;font-size:.52rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3)">Resumo</label><div class="cresum tr" id="'+rid+'">'+esc(d.resumo)+'</div><span class="cvm" onclick="expC(\''+rid+'\',this)">↕ ver mais</span></div>':'')+
-      ((lc||ls)?'<div class="clinks">'+lc+ls+'</div>':'')+
+      (d.resumo?'<div class="cabs" onclick="this.classList.toggle(\'open\')">'+esc(d.resumo)+'</div>':'')+
+      kwH(d.palavras_chaves)+
+      '<div class="cft">'+regH(d.regiao)+'<div class="clinks">'+lc+ls+'</div></div>'+
     '</div>';
   }).join('');
+}
 
-  // TABELA
+// ── Render tabela ──
+function renderTabela(lst){
+  document.getElementById('rg').style.display='none';
+  const tw=document.getElementById('tw');tw.style.display='block';
+  const tbody=document.getElementById('tbody');
+  if(!lst.length){tbody.innerHTML='<tr><td colspan="15" style="text-align:center;padding:40px;color:var(--dim)">Nenhum resultado</td></tr>';return;}
   tbody.innerHTML=lst.map((d,i)=>{
     const rid='tr'+i;
-    const lc=d.link_capes?'<a class="lk" href="'+esc(d.link_capes)+'" target="_blank">CAPES↗</a>':'—';
-    const ls=d.link_scielo?'<a class="lk" href="'+esc(d.link_scielo)+'" target="_blank">DOI↗</a>':'—';
+    const lc=d.link_capes?'<a class="tlk" href="'+esc(d.link_capes)+'" target="_blank">CAPES↗</a>':'—';
+    const ls=d.link_scielo?'<a class="tlk" href="'+esc(d.link_scielo)+'" target="_blank">DOI↗</a>':'—';
     return '<tr>'+
-      '<td>'+tagH(d.repositorio)+'</td><td>'+lc+'</td><td>'+ls+'</td>'+
+      '<td>'+srcTag(d.repositorio)+'</td><td>'+lc+'</td><td>'+ls+'</td>'+
       '<td title="'+esc(d.revista)+'">'+v(d.revista)+'</td>'+
       '<td>'+v(d.classificacao)+'</td>'+
-      '<td style="font-family:\'JetBrains Mono\',monospace;font-size:.7rem;text-align:center;color:var(--ink)">'+v(d.ano_da_publicacao)+'</td>'+
-      '<td style="font-family:\'JetBrains Mono\',monospace;font-size:.7rem;text-align:center">'+v(d.volume)+'</td>'+
-      '<td class="ct" title="'+esc(d.titulo_do_periodico)+'">'+v(d.titulo_do_periodico)+'</td>'+
-      '<td><div class="resum" id="'+rid+'">'+(d.resumo?esc(d.resumo):'<em style="opacity:.28">—</em>')+'</div>'+(d.resumo?'<div class="rbtn2" onclick="expT(\''+rid+'\')">↕ mais</div>':'')+'</td>'+
-      '<td style="font-size:.72rem;line-height:1.55" title="'+esc(d.palavras_chaves)+'">'+v(d.palavras_chaves)+'</td>'+
-      '<td>'+selH(d.seletor_palavras_chaves)+'</td>'+
+      '<td style="font-family:\'Fira Code\',monospace;font-size:.7rem;text-align:center">'+v(d.ano_da_publicacao)+'</td>'+
+      '<td style="font-family:\'Fira Code\',monospace;font-size:.7rem;text-align:center">'+v(d.volume)+'</td>'+
+      '<td class="ttit" title="'+esc(d.titulo_do_periodico)+'">'+v(d.titulo_do_periodico)+'</td>'+
+      '<td><div class="tres" id="'+rid+'" onclick="this.classList.toggle(\'open\')">'+(d.resumo?esc(d.resumo):'<span style="opacity:.25">—</span>')+'</div></td>'+
+      '<td style="font-size:.71rem">'+v(d.palavras_chaves)+'</td>'+
+      '<td style="font-size:.71rem">'+v(d.seletor_palavras_chaves)+'</td>'+
       '<td title="'+esc(d.autor)+'">'+v(d.autor)+'</td>'+
       '<td>'+v(d.titulacao)+'</td>'+
       '<td title="'+esc(d.instituicao_programa)+'">'+v(d.instituicao_programa)+'</td>'+
@@ -524,67 +680,66 @@ function renderTabela(lst){
   }).join('');
 }
 
+// ── Estados de UI ──
+function loading(q){
+  document.getElementById('alertaArea').innerHTML='';
+  document.getElementById('rbar').style.display='none';
+  document.getElementById('pag').style.display='none';
+  document.getElementById('tw').style.display='none';
+  document.getElementById('rg').style.display='grid';
+  document.getElementById('rg').innerHTML='<div class="state"><div class="spinner"></div><div class="stit">Consultando bases…</div><div class="ssub">Buscando <em>"'+esc(q)+'"</em></div></div>';
+  ['sb-fontes-sec','sb-anos-sec','sb-regs-sec'].forEach(id=>{document.getElementById(id).style.display='none';});
+  ['cnt-tese','cnt-diss','cnt-art','sb-total','sb-tese','sb-diss','sb-art'].forEach(id=>{document.getElementById(id).textContent='—';});
+}
+function erroState(msg){
+  document.getElementById('rg').style.display='grid';
+  document.getElementById('rg').innerHTML='<div class="state"><div class="si">⚠️</div><div class="stit">Erro na busca</div><div class="ssub" style="font-family:\'Fira Code\',monospace;font-size:.75rem;word-break:break-all">'+esc(msg)+'</div></div>';
+}
 function mostrarAlertas(erros,porFonte){
   const area=document.getElementById('alertaArea');
   if(!erros||!erros.length){area.innerHTML='';return;}
   const fail=[...new Set(erros.map(e=>e.fonte.split('/')[0]))];
   const ok=Object.keys(porFonte).filter(f=>(porFonte[f]||0)>0);
-  area.innerHTML='<div class="alerta alerta-warn"><span class="alerta-icon">⚠️</span><div>'+
-    '<div class="alerta-title">Fontes parcialmente indisponíveis</div>'+
-    '<div class="alerta-msg">'+fail.map(f=>'<strong>'+esc(f)+'</strong>').join(', ')+' não responderam.'+
+  area.innerHTML='<div class="alerta"><span style="font-size:1rem;flex-shrink:0">⚠</span><div class="al-body"><div class="al-tit">Fontes parcialmente indisponíveis</div>'+
+    fail.map(f=>'<strong>'+esc(f)+'</strong>').join(', ')+' não responderam.'+
     (ok.length?' Dados de: '+ok.map(f=>'<strong>'+esc(f)+'</strong>').join(', ')+'.':'')+
-    '</div><span class="alerta-link" onclick="diagnosticar()">→ Executar diagnóstico</span></div></div>';
+    '<div><a class="al-lnk" onclick="diagnosticar()">→ Diagnosticar fontes</a></div></div></div>';
 }
-
-function expC(id,btn){const el=document.getElementById(id);if(!el)return;el.classList.toggle('tr');btn.textContent=el.classList.contains('tr')?'↕ ver mais':'↕ ver menos';}
-function expT(id){document.getElementById(id)?.classList.toggle('open');}
-
-function loading(q){
-  document.getElementById('alertaArea').innerHTML='';
-  document.getElementById('rbar').style.display='none';
-  document.getElementById('cards').innerHTML='';document.getElementById('tbody').innerHTML='';
-  document.getElementById('tw').style.display='none';document.getElementById('paginacao').style.display='none';
-  ['cnt-tese','cnt-diss','cnt-art'].forEach(id=>{document.getElementById(id).textContent='—';});
-  const s=document.getElementById('stArea');s.style.display='';
-  s.innerHTML='<div class="state"><div class="spinner"></div><h3>Consultando bases de dados…</h3><p>Buscando <em>"'+esc(q)+'"</em></p></div>';
-}
-function erro(msg){const s=document.getElementById('stArea');s.style.display='';s.innerHTML='<div class="state"><div class="si">⚠️</div><h3>Erro na busca</h3><p style="font-size:.78rem;font-family:monospace;color:var(--ink2);margin-top:8px;word-break:break-all">'+esc(msg)+'</p></div>';}
 function esc(v){return String(v||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-function capesAuth(){
-  const q=document.getElementById('query').value||'educação';
-  window.open('/api/capes-auth?q='+encodeURIComponent(q),'_blank');
-}
+function capesAuth(){const q=document.getElementById('query').value||'educação';window.open('/api/capes-auth?q='+encodeURIComponent(q),'_blank');}
 async function diagnosticar(){const q=document.getElementById('query').value||'educação';window.open('/api/debug?q='+encodeURIComponent(q),'_blank');}
 
-// ── Exportações — usa FILTRADOS (todos, não só a página) ──
+// ── Exportações ──
+const COLS_EXP=['repositorio','link_capes','link_scielo','revista','classificacao','ano_da_publicacao','volume','titulo_do_periodico','resumo','palavras_chaves','seletor_palavras_chaves','autor','titulacao','instituicao_programa','regiao'];
+const LBLS_EXP=['REPOSITÓRIO','LINK/CAPES','LINK/SCIELO','REVISTA','CLASSIFICAÇÃO','ANO','VOLUME','TÍTULO','RESUMO','PALAVRAS-CHAVES','SELETOR KW','AUTOR','TITULAÇÃO','INSTITUIÇÃO/PROGRAMA','REGIÃO'];
+
 function xCSV(){
   if(!FILTRADOS.length){alert('Faça uma busca primeiro.');return;}
-  const h=LABELS.join(';');
-  const r=FILTRADOS.map(d=>COLS.map(c=>'"'+String(d[c]||'').replace(/"/g,'""')+'"').join(';'));
-  dl('\uFEFF'+[h,...r].join('\r\n'),'repositorio_'+new Date().toISOString().slice(0,10)+'.csv','text/csv;charset=utf-8');
+  const h=LBLS_EXP.join(';');
+  const r=FILTRADOS.map(d=>COLS_EXP.map(c=>'"'+String(d[c]||'').replace(/"/g,'""')+'"').join(';'));
+  dl('\uFEFF'+[h,...r].join('\r\n'),'acervo_'+new Date().toISOString().slice(0,10)+'.csv','text/csv;charset=utf-8');
 }
 function xExcel(){
   if(!FILTRADOS.length){alert('Faça uma busca primeiro.');return;}
   if(typeof XLSX==='undefined'){alert('Biblioteca XLSX não carregada.');return;}
-  const wsData=FILTRADOS.map(d=>{const row={};COLS.forEach((c,i)=>{row[LABELS[i]]=d[c]||'';});return row;});
+  const wsData=FILTRADOS.map(d=>{const row={};COLS_EXP.forEach((c,i)=>{row[LBLS_EXP[i]]=d[c]||'';});return row;});
   const wb=XLSX.utils.book_new();
-  const ws=XLSX.utils.json_to_sheet(wsData,{header:LABELS});
+  const ws=XLSX.utils.json_to_sheet(wsData,{header:LBLS_EXP});
   ws['!cols']=[12,30,30,25,22,8,6,55,80,60,40,35,22,40,16].map(w=>({wch:w}));
   ws['!freeze']={xSplit:0,ySplit:1};
   XLSX.utils.book_append_sheet(wb,ws,'Publicações');
-  const meta=[['Campo','Descrição'],['REPOSITÓRIO','Fonte: SciELO, BDTD, Crossref, OpenAlex'],['LINK/CAPES','URL no Catálogo CAPES'],['LINK/SCIELO','URL ou DOI do artigo'],['REVISTA','Revista ou periódico'],['CLASSIFICAÇÃO','Tipo da publicação'],['ANO DA PUBLICAÇÃO','Ano de publicação ou defesa'],['VOLUME','Volume do periódico'],['TÍTULO DO PERIÓDICO','Título completo'],['RESUMO','Abstract'],['PALAVRAS-CHAVES','Descritores'],['SELETOR PALAVRAS-CHAVES','Até 3 palavras-chave principais'],['AUTOR','Autor(es)'],['TITULAÇÃO','Grau acadêmico ou tipo'],['INSTITUIÇÃO / PROGRAMA','Universidade e programa'],['REGIÃO','Região BR. "AI - X" = inferida do documento']];
-  const wsMeta=XLSX.utils.aoa_to_sheet(meta);
-  wsMeta['!cols']=[{wch:28},{wch:62}];
-  XLSX.utils.book_append_sheet(wb,wsMeta,'Metadados');
+  const meta=[['Campo','Descrição'],['REPOSITÓRIO','Fonte: CAPES, SciELO, BDTD, Crossref, OpenAlex'],['LINK/CAPES','URL no Catálogo CAPES'],['LINK/SCIELO','URL ou DOI'],['REGIÃO','Confirmada ou "AI - X" (inferida)']];
+  const wm=XLSX.utils.aoa_to_sheet(meta);wm['!cols']=[{wch:28},{wch:60}];
+  XLSX.utils.book_append_sheet(wb,wm,'Metadados');
   const q=(document.getElementById('query').value||'busca').slice(0,30).replace(/[^a-zA-Z0-9\s]/g,'').trim().replace(/\s+/g,'_');
-  XLSX.writeFile(wb,'repositorio_'+q+'_'+new Date().toISOString().slice(0,10)+'.xlsx');
+  XLSX.writeFile(wb,'acervo_'+q+'_'+new Date().toISOString().slice(0,10)+'.xlsx');
 }
 function xPDF(){
   if(!FILTRADOS.length){alert('Faça uma busca primeiro.');return;}
   const q=document.getElementById('query').value||'busca';
-  const rows=FILTRADOS.map(d=>'<tr><td>'+esc(d.repositorio)+'</td><td><em>'+esc(d.titulo_do_periodico)+'</em></td><td>'+esc(d.autor)+'</td><td>'+esc(d.ano_da_publicacao)+'</td><td>'+esc(d.titulacao)+'</td><td>'+esc(d.instituicao_programa)+'</td><td>'+esc(d.regiao)+'</td><td>'+esc(String(d.palavras_chaves||'').slice(0,80))+'</td><td>'+esc(String(d.resumo||'').slice(0,180))+(d.resumo&&d.resumo.length>180?'…':'')+'</td><td>'+(d.link_capes||d.link_scielo?'<a href="'+esc(d.link_capes||d.link_scielo)+'">Link</a>':'—')+'</td></tr>').join('');
+  const rows=FILTRADOS.map(d=>'<tr><td>'+esc(d.repositorio)+'</td><td><em>'+esc(d.titulo_do_periodico)+'</em></td><td>'+esc(d.autor)+'</td><td>'+esc(d.ano_da_publicacao)+'</td><td>'+esc(d.titulacao)+'</td><td>'+esc(d.instituicao_programa)+'</td><td>'+esc(d.regiao)+'</td><td>'+esc(String(d.palavras_chaves||'').slice(0,80))+'</td><td>'+esc(String(d.resumo||'').slice(0,180))+'</td><td>'+(d.link_capes||d.link_scielo?'<a href="'+esc(d.link_capes||d.link_scielo)+'">Link</a>':'—')+'</td></tr>').join('');
   const w=window.open('','_blank');
-  w.document.write('<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Repositório · '+esc(q)+'</title><style>@page{size:A3 landscape;margin:11mm}body{font-family:Georgia,serif;font-size:8.5px;color:#1a1714}.cover{margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid #1a1714}.cover h1{font-size:13px;font-weight:700;margin-bottom:2px}.cover p{font-size:8px;color:#666}table{width:100%;border-collapse:collapse}thead tr{background:#1a1714;color:#fff}th{padding:5px 6px;text-align:left;font-size:7px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;border-right:1px solid rgba(255,255,255,.15)}th:last-child{border-right:none}td{padding:4px 6px;border-bottom:1px solid #e8e4dc;vertical-align:top;font-size:8px;border-right:1px solid #e8e4dc}td:last-child{border-right:none}tr:nth-child(even) td{background:#fdf9f2}a{color:#b8860b;text-decoration:none}em{font-style:italic}</style></head><body><div class="cover"><h1>Repositório Acadêmico Integrado</h1><p>Busca: <strong>'+esc(q)+'</strong> · '+FILTRADOS.length+' publicação(ões) · '+new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'})+'</p></div><table><thead><tr><th>Fonte</th><th>Título</th><th>Autor(es)</th><th>Ano</th><th>Titulação</th><th>Instituição</th><th>Região</th><th>Palavras-chave</th><th>Resumo</th><th>Link</th></tr></thead><tbody>'+rows+'</tbody></table></body></html>');
+  w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Acervo - '+esc(q)+'</title><style>@page{size:A3 landscape;margin:11mm}body{font-family:Georgia,serif;font-size:8.5px;color:#111}.cover{margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid #111}.cover h1{font-size:13px;font-weight:700;margin-bottom:2px}.cover p{font-size:8px;color:#555}table{width:100%;border-collapse:collapse}thead tr{background:#111;color:#fff}th{padding:5px 6px;text-align:left;font-size:7px;font-family:monospace;letter-spacing:.07em;text-transform:uppercase;border-right:1px solid rgba(255,255,255,.15)}th:last-child{border-right:none}td{padding:4px 6px;border-bottom:1px solid #e5e5e5;font-size:8px;border-right:1px solid #eee}td:last-child{border-right:none}tr:nth-child(even){background:#fafafa}a{color:#b45309;text-decoration:none}em{font-style:italic}</style></head><body><div class="cover"><h1>Acervo — Pesquisa Acadêmica</h1><p>Busca: <strong>'+esc(q)+'</strong> · '+FILTRADOS.length+' publicação(ões) · '+new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'})+'</p></div><table><thead><tr><th>Fonte</th><th>Título</th><th>Autor</th><th>Ano</th><th>Titulação</th><th>Instituição</th><th>Região</th><th>Palavras-chave</th><th>Resumo</th><th>Link</th></tr></thead><tbody>'+rows+'</tbody></table></body></html>');
   w.document.close();setTimeout(()=>w.print(),800);
 }
 function dl(c,n,m){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([c],{type:m}));a.download=n;a.click();URL.revokeObjectURL(a.href);}
