@@ -237,7 +237,7 @@ footer{border-top:1px solid var(--line);background:var(--bg2);padding:12px 20px;
       <div><div class="bname">Acervo</div><div class="btag">Pesquisa Acadêmica · BR</div></div>
     </div>
     <nav class="fnav">
-      <button class="fnb fn-capes on"  data-fonte="capes"    onclick="toggleFonte(this)"><span class="fd"></span>CAPES</button>
+      <button class="fnb fn-capes" data-fonte="capes" onclick="toggleFonte(this)" title="CAPES requer autenticação — configure CAPES_LOGIN e CAPES_SENHA no Vercel"><span class="fd"></span>CAPES <span style="font-size:.48rem;opacity:.5">🔒</span></button>
       <button class="fnb fn-scielo on" data-fonte="scielo"   onclick="toggleFonte(this)"><span class="fd"></span>SciELO</button>
       <button class="fnb fn-bdtd on"   data-fonte="bdtd"     onclick="toggleFonte(this)"><span class="fd"></span>BDTD</button>
       <button class="fnb fn-cross on"  data-fonte="crossref" onclick="toggleFonte(this)"><span class="fd"></span>Crossref</button>

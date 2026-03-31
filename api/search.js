@@ -15,6 +15,10 @@
  */
 
 const axios = require('axios');
+// Browser session module (Puppeteer — requer plano Pro do Vercel)
+let cajesBrowser = null;
+try { cajesBrowser = require('./capes-browser'); } catch(_) {}
+
 
 function setCORS(res) {
   res.setHeader('Access-Control-Allow-Origin',  '*');
@@ -29,8 +33,8 @@ const H = {
   'Cache-Control'  : 'no-cache',
 };
 const OA_UA     = 'RepositorioAcademico/19.0 (mailto:academico@repositorio.edu.br)';
-const MAX_PAGES = 10;
-const PER_REQ   = 50;
+const MAX_PAGES = 20;
+const PER_REQ   = 100;
 
 async function GET(url, extra = {}, timeout = 18000) {
   return axios.get(url, { timeout, headers: { ...H, ...extra }, validateStatus: s => s < 500 });
@@ -109,6 +113,21 @@ async function getCAPESAuth() {
 }
 
 async function searchCAPES(q, anoMin, anoMax, errors) {
+  // Estratégia 0: Browser session via Puppeteer (Vercel Pro)
+  if (cajesBrowser && process.env.CAPES_LOGIN && process.env.CAPES_SENHA) {
+    try {
+      const out = await cajesBrowser.buscarCAPES(
+        q, anoMin, anoMax, MAX_PAGES, PER_REQ, norm15, okAno, anoFrom, S, limparKW, POST
+      );
+      if (out.length > 0) {
+        console.log(`[CAPES/browser] ✓ ${out.length} registros`);
+        return out;
+      }
+    } catch (e) {
+      console.warn('[CAPES/browser] falhou, tentando CKAN:', e.message);
+    }
+  }
+
   // Estratégia 1: Dados Abertos CAPES (CKAN) — sem autenticação, confiável
   const ckanOut = await searchCAPES_CKAN(q, anoMin, anoMax);
   if (ckanOut.length > 0) {
@@ -498,14 +517,14 @@ module.exports = async (req, res) => {
   if (req.method==='OPTIONS'){res.status(200).end();return;}
   if (req.method!=='GET'){res.status(405).json({erro:'Método não permitido.'});return;}
 
-  const{q='',fontes='capes,scielo,bdtd,crossref,openalex',anoMin='2016',anoMax=''}=req.query;
+  const{q='',fontes='scielo,bdtd,crossref,openalex',anoMin='2016',anoMax=''}=req.query;
   if(!q||q.trim().length<2){res.status(400).json({erro:'Informe ao menos 2 caracteres.'});return;}
 
   const anoMinInt=parseInt(anoMin)||2016;
   const anoMaxInt=anoMax?parseInt(anoMax):null;
   const errors=[];
 
-  console.log(`\n🔍 v19 | "${q}" | anoMin:${anoMinInt} | fontes:${fontes}`);
+  console.log(`\n🔍 v23.0 | "${q}" | anoMin:${anoMinInt} | fontes:${fontes}`);
 
   const lista=fontes.toLowerCase().split(',').map(f=>f.trim());
   const tarefas=[];
@@ -535,7 +554,7 @@ module.exports = async (req, res) => {
     const t=r.titulacao||'Outro';porTipo[t]=(porTipo[t]||0)+1;
   });
 
-  console.log(`✅ v19 | total:${resultados.length}`,porTipo,'|',porFonte);
+  console.log(`✅ v23.0 | total:${resultados.length}`,porTipo,'|',porFonte);
 
   res.status(200).json({
     versao:'19.0.0',query:q,anoMin:anoMinInt,
