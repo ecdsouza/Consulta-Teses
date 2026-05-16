@@ -84,7 +84,7 @@ header{position:sticky;top:0;z-index:400;background:rgba(9,9,11,.93);backdrop-fi
 .btn-s{height:48px;padding:0 26px;background:var(--gold);color:#09090b;border:none;border-radius:var(--r2);font-family:'Fira Code',monospace;font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .18s;display:flex;align-items:center;gap:7px;white-space:nowrap;flex-shrink:0}
 .btn-s:hover{background:var(--gold2);transform:translateY(-1px);box-shadow:0 4px 16px rgba(245,158,11,.22)}
 .btn-s:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
-.fr{display:flex;gap:18px;align-items:flex-end;flex-wrap:wrap}
+.fr{display:flex;gap:18px;align-items:flex-end;flex-wrap:wrap;margin-top:12px;padding-top:12px;border-top:1px dashed var(--line)}
 .fg{display:flex;flex-direction:column;gap:5px}
 .fl{font-family:'Fira Code',monospace;font-size:.56rem;font-weight:500;letter-spacing:.13em;text-transform:uppercase;color:var(--muted)}
 .period-row{display:flex;gap:6px;align-items:center}
@@ -106,7 +106,7 @@ header{position:sticky;top:0;z-index:400;background:rgba(9,9,11,.93);backdrop-fi
 .spp:focus{border-color:var(--gold)}
 
 /* Critérios de análise (aproximação / distanciamento) */
-.fr2{display:flex;gap:14px;margin-top:12px;padding-top:12px;border-top:1px dashed var(--line)}
+.fr2{display:flex;gap:14px;margin-top:14px}
 .fg2{flex:1;display:flex;flex-direction:column;gap:5px;min-width:0}
 .fl2{display:flex;align-items:center;gap:6px;font-family:'Fira Code',monospace;font-size:.55rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
 .fl2 .dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
@@ -326,6 +326,16 @@ footer{border-top:1px solid var(--line);background:var(--bg2);padding:12px 20px;
       Pesquisar
     </button>
   </div>
+  <div class="fr2">
+    <div class="fg2">
+      <span class="fl2 aprox"><span class="dot"></span>Aproximação <span class="hint">— termos que aproximam da sua pesquisa</span></span>
+      <input type="text" class="crit aprox" id="cr-aprox" placeholder="ex: Foucault, análise do discurso, formação discursiva" oninput="salvarCriterios()"/>
+    </div>
+    <div class="fg2">
+      <span class="fl2 dist"><span class="dot"></span>Distanciamento <span class="hint">— termos que distanciam</span></span>
+      <input type="text" class="crit dist" id="cr-dist" placeholder="ex: behaviorismo, abordagem quantitativa, positivismo" oninput="salvarCriterios()"/>
+    </div>
+  </div>
   <div class="fr">
     <div class="fg">
       <span class="fl">Período</span>
@@ -348,16 +358,6 @@ footer{border-top:1px solid var(--line);background:var(--bg2);padding:12px 20px;
       <select class="spp" id="porPag" onchange="renderPagina(1)">
         <option value="10">10</option><option value="20" selected>20</option><option value="50">50</option><option value="100">100</option>
       </select>
-    </div>
-  </div>
-  <div class="fr2">
-    <div class="fg2">
-      <span class="fl2 aprox"><span class="dot"></span>Aproximação <span class="hint">— termos que aproximam da sua pesquisa</span></span>
-      <input type="text" class="crit aprox" id="cr-aprox" placeholder="ex: Foucault, análise do discurso, formação discursiva" oninput="salvarCriterios()"/>
-    </div>
-    <div class="fg2">
-      <span class="fl2 dist"><span class="dot"></span>Distanciamento <span class="hint">— termos que distanciam</span></span>
-      <input type="text" class="crit dist" id="cr-dist" placeholder="ex: behaviorismo, abordagem quantitativa, positivismo" oninput="salvarCriterios()"/>
     </div>
   </div>
 </div>
@@ -511,7 +511,7 @@ footer{border-top:1px solid var(--line);background:var(--bg2);padding:12px 20px;
       <h3>Tecnologias</h3>
       <p>Aplicação serverless rodando na <strong>Vercel</strong>. Backend em Node.js (funções <code>/api/*</code>), frontend em HTML/CSS/JS puro sem frameworks. Exportação Excel via SheetJS.</p>
 
-      <div class="modal-foot">ACERVO · Pesquisa Acadêmica BR · v37</div>
+      <div class="modal-foot">ACERVO · Pesquisa Acadêmica BR · v38</div>
     </div>
   </div>
 </div>
@@ -519,7 +519,7 @@ footer{border-top:1px solid var(--line);background:var(--bg2);padding:12px 20px;
 <!-- RODAPÉ -->
 <footer>
   <div class="ftl">
-    <span class="ftbr">ACERVO — Pesquisa Acadêmica BR · v37</span>
+    <span class="ftbr">ACERVO — Pesquisa Acadêmica BR · v38</span>
     <div class="ftps">
       <span class="ftp">CAPES</span><span class="ftp">SciELO</span><span class="ftp">BDTD</span><span class="ftp">Crossref</span><span class="ftp">OpenAlex</span>
     </div>
