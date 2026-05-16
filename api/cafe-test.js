@@ -6,7 +6,7 @@
  * Use /api/cafe-test?force=1 pra ignorar o cache de sessão e fazer login do zero.
  */
 
-module.exports.config = { maxDuration: 60, memory: 3008 };
+module.exports.config = { maxDuration: 60 };
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', process.env.CORS_ORIGIN || '*');
