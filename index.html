@@ -486,7 +486,7 @@ footer{border-top:1px solid var(--line);background:var(--bg2);padding:12px 20px;
       <h3>Tecnologias</h3>
       <p>Aplicação serverless rodando na <strong>Vercel</strong>. Backend em Node.js (funções <code>/api/*</code>), frontend em HTML/CSS/JS puro sem frameworks. Exportação Excel via SheetJS.</p>
 
-      <div class="modal-foot">ACERVO · Pesquisa Acadêmica BR · v32</div>
+      <div class="modal-foot">ACERVO · Pesquisa Acadêmica BR · v33</div>
     </div>
   </div>
 </div>
@@ -494,12 +494,13 @@ footer{border-top:1px solid var(--line);background:var(--bg2);padding:12px 20px;
 <!-- RODAPÉ -->
 <footer>
   <div class="ftl">
-    <span class="ftbr">ACERVO — Pesquisa Acadêmica BR · v32</span>
+    <span class="ftbr">ACERVO — Pesquisa Acadêmica BR · v33</span>
     <div class="ftps">
       <span class="ftp">CAPES</span><span class="ftp">SciELO</span><span class="ftp">BDTD</span><span class="ftp">Crossref</span><span class="ftp">OpenAlex</span>
     </div>
   </div>
   <div style="display:flex;gap:7px">
+    <button class="bft" onclick="testarCAFe()" title="Testa login CAFe → CEFET-MG → Periódicos">🔑 Testar CAFe</button>
     <button class="bft" onclick="capesAuth()">🔑 CAPES Auth</button>
     <button class="bft" onclick="diagnosticar()">
       <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
@@ -839,6 +840,7 @@ function mostrarAlertas(erros,porFonte){
 function esc(v){return String(v||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function capesAuth(){const q=document.getElementById('query').value||'educação';window.open('/api/capes-auth?q='+encodeURIComponent(q),'_blank');}
 async function diagnosticar(){const q=document.getElementById('query').value||'educação';window.open('/api/debug?q='+encodeURIComponent(q),'_blank');}
+function testarCAFe(){const force=confirm('Forçar novo login (ignorar cache de 25min)? OK = sim, Cancelar = usar cache se houver');window.open('/api/cafe-test'+(force?'?force=1':''),'_blank');}
 
 // ── Exportações ──
 const COLS_EXP=['repositorio','link_capes','link_scielo','revista','classificacao','ano_da_publicacao','volume','titulo_do_periodico','resumo','palavras_chaves','seletor_palavras_chaves','autor','titulacao','instituicao_programa','regiao'];
