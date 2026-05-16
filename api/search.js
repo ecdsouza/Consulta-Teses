@@ -153,8 +153,10 @@ async function searchCAPES(q, anoMin, anoMax, errors) {
   // Payload oficial do bundle Angular do catalogodeteses.capes.gov.br:
   // o campo de busca é `termo` (não `pesquisa`/`assunto`/`textoPesquisa`).
   // A UI também sanitiza aspas desbalanceadas antes de enviar.
+  // filtros [] — o filtro de ano é aplicado no client (okAno) porque o formato
+  // `anoDaDefesa:YYYY-YYYY` que tínhamos não casa com o que o backend espera.
   const termo = q.replace(/"/g, m => (q.split('"').length - 1) % 2 ? '' : m);
-  const consulta = { termo, filtros: anoFiltro, pagina: 1, registrosPorPagina: PER_REQ };
+  const consulta = { termo, filtros: [], pagina: 1, registrosPorPagina: PER_REQ };
 
   let workingFmt = null, workingData = null;
   try {
