@@ -237,22 +237,18 @@ a.tlk:hover{text-decoration:underline}
 .spills{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:4px}
 .spills .sp-pill{font-family:'Fira Code',monospace;font-size:.55rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:20px;border:1px solid currentColor;background:transparent;opacity:.85}
 .spills .sp-capes{color:var(--capes)}.spills .sp-scielo{color:var(--scielo)}.spills .sp-bdtd{color:var(--bdtd)}.spills .sp-cross{color:var(--cross)}.spills .sp-oa{color:var(--oa)}
-/* Book loader — livro aberto com páginas de verdade virando */
-.book{position:relative;width:80px;height:58px;perspective:340px;margin:6px auto 4px}
-/* Capas (couro escuro) */
-.book::before,.book::after{content:'';position:absolute;top:0;bottom:0;width:50%;background:linear-gradient(170deg,#1c1c22 0%,#0f0f13 100%);border:1px solid #2a2a30}
-.book::before{left:0;border-radius:4px 1px 1px 4px;border-right:none;box-shadow:inset -3px 0 6px rgba(0,0,0,.6),-1px 2px 6px rgba(0,0,0,.5)}
-.book::after{right:0;border-radius:1px 4px 4px 1px;border-left:none;box-shadow:inset 3px 0 6px rgba(0,0,0,.6),1px 2px 6px rgba(0,0,0,.5)}
-/* Bloco de páginas estático (atrás das que viram) */
-.book .bk{position:absolute;top:3px;bottom:3px;left:calc(50% + 1px);right:3px;background:linear-gradient(180deg,#f8f3e3 0%,#ebe3ce 100%);background-image:repeating-linear-gradient(transparent 0,transparent 5px,rgba(82,82,92,.32) 5px,rgba(82,82,92,.32) 5.6px),linear-gradient(180deg,#f8f3e3 0%,#ebe3ce 100%);border-radius:0 2px 2px 0;box-shadow:inset 1px 0 1px rgba(0,0,0,.18)}
-.book .bk::after{content:'';position:absolute;left:2px;right:0;top:0;bottom:0;border-right:1px solid rgba(0,0,0,.15);border-top:1px solid rgba(0,0,0,.08);border-bottom:1px solid rgba(0,0,0,.08);border-radius:inherit}
-/* Páginas que viram */
-.book .pg{position:absolute;top:3px;bottom:3px;left:50%;width:calc(50% - 4px);background:linear-gradient(180deg,#fdf9eb 0%,#f1e9d3 100%);background-image:repeating-linear-gradient(transparent 0,transparent 5px,rgba(82,82,92,.34) 5px,rgba(82,82,92,.34) 5.6px),linear-gradient(180deg,#fdf9eb 0%,#f1e9d3 100%);transform-origin:left center;border-radius:0 2px 2px 0;animation:flip 1.9s cubic-bezier(.55,.05,.45,.95) infinite;box-shadow:1px 1px 4px rgba(0,0,0,.4),inset 1px 0 0 rgba(255,255,255,.4)}
-.book .pg:nth-child(3){animation-delay:.32s}
-.book .pg:nth-child(4){animation-delay:.64s}
-/* Detalhe dourado na borda da página (corte/têmpora) */
-.book .pg::before{content:'';position:absolute;right:-0.5px;top:1px;bottom:1px;width:1px;background:linear-gradient(180deg,transparent 0%,var(--gold) 50%,transparent 100%);opacity:.5}
-@keyframes flip{0%,8%{transform:rotateY(0)}50%,100%{transform:rotateY(-178deg)}}
+/* Book + magnifying glass loader */
+.book-search{display:block;margin:6px auto 4px;color:var(--gold);filter:drop-shadow(0 6px 18px rgba(245,158,11,.18))}
+.book-search .bs-book{animation:bs-pulse 2.6s ease-in-out infinite}
+.book-search .bs-lens{transform-origin:50% 50%;animation:bs-scan 2.6s cubic-bezier(.45,.05,.55,.95) infinite}
+@keyframes bs-pulse{0%,100%{opacity:.95}50%{opacity:.65}}
+@keyframes bs-scan{
+  0%   {transform:translate(-6px,-4px) rotate(-6deg)}
+  25%  {transform:translate( 5px,-5px) rotate( 4deg)}
+  50%  {transform:translate( 6px, 5px) rotate( 6deg)}
+  75%  {transform:translate(-4px, 6px) rotate(-3deg)}
+  100% {transform:translate(-6px,-4px) rotate(-6deg)}
+}
 .spinner{display:block;margin:0 auto}
 .alerta{display:flex;align-items:flex-start;gap:11px;padding:11px 14px;border-radius:var(--r2);margin-bottom:12px;background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.2);color:#fcd34d}
 .al-body{font-size:.8rem;line-height:1.55;flex:1}
@@ -486,7 +482,7 @@ footer{border-top:1px solid var(--line);background:var(--bg2);padding:12px 20px;
       <h3>Tecnologias</h3>
       <p>Aplicação serverless rodando na <strong>Vercel</strong>. Backend em Node.js (funções <code>/api/*</code>), frontend em HTML/CSS/JS puro sem frameworks. Exportação Excel via SheetJS.</p>
 
-      <div class="modal-foot">ACERVO · Pesquisa Acadêmica BR · v33</div>
+      <div class="modal-foot">ACERVO · Pesquisa Acadêmica BR · v34</div>
     </div>
   </div>
 </div>
@@ -494,7 +490,7 @@ footer{border-top:1px solid var(--line);background:var(--bg2);padding:12px 20px;
 <!-- RODAPÉ -->
 <footer>
   <div class="ftl">
-    <span class="ftbr">ACERVO — Pesquisa Acadêmica BR · v33</span>
+    <span class="ftbr">ACERVO — Pesquisa Acadêmica BR · v34</span>
     <div class="ftps">
       <span class="ftp">CAPES</span><span class="ftp">SciELO</span><span class="ftp">BDTD</span><span class="ftp">Crossref</span><span class="ftp">OpenAlex</span>
     </div>
@@ -819,7 +815,7 @@ function loading(q){
   document.getElementById('pag').style.display='none';
   document.getElementById('tw').style.display='none';
   document.getElementById('rg').style.display='grid';
-  document.getElementById('rg').innerHTML='<div class="state"><div class="book"><span class="bk"></span><span class="pg"></span><span class="pg"></span><span class="pg"></span></div><div class="stit">Consultando bases…</div><div class="ssub">Buscando <em>"'+esc(q)+'"</em></div></div>';
+  document.getElementById('rg').innerHTML='<div class="state"><svg class="book-search" width="76" height="76" viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><g class="bs-book"><path d="M18 14 Q18 11 21 11 L60 11 Q63 11 63 14 L63 64 Q63 67 60 67 L21 67 Q18 67 18 64 Z"/><path d="M21 11 L21 67"/><path d="M27 22 L52 22"/><path d="M27 30 L48 30"/><path d="M27 38 L52 38"/></g><g class="bs-lens"><circle cx="46" cy="42" r="11" fill="rgba(245,158,11,0.06)"/><line x1="54" y1="50" x2="62" y2="58"/></g></svg><div class="stit">Consultando bases…</div><div class="ssub">Buscando <em>"'+esc(q)+'"</em></div></div>';
   ['sb-fontes-sec','sb-anos-sec','sb-regs-sec'].forEach(id=>{document.getElementById(id).style.display='none';});
   ['cnt-tese','cnt-diss','cnt-art','sb-total','sb-tese','sb-diss','sb-art'].forEach(id=>{document.getElementById(id).textContent='—';});
 }
