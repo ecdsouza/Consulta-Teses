@@ -41,12 +41,14 @@ async function obterSessaoCAFe(force = false) {
   const t0 = Date.now();
   const stamp = (msg) => log.push(`[${String(Date.now() - t0).padStart(5, ' ')}ms] ${msg}`);
 
-  // chromium-min baixa o pack (com libs runtime, libnss3 etc) na primeira execução.
-  // O cold start fica ~5-10s mais lento, mas o binário traz tudo que precisa.
-  const CHROMIUM_PACK_URL = 'https://github.com/Sparticuz/chromium/releases/download/v131.0.1/chromium-v131.0.1-pack.x64.tar';
+  // chromium-min baixa o pack na primeira execução. Como o download direto
+  // do GitHub Releases é lento da rede da Vercel, preferimos uma URL hospedada
+  // em Vercel Blob (via env var CHROMIUM_PACK_URL). Fallback no GitHub.
+  const PACK_URL = process.env.CHROMIUM_PACK_URL
+    || 'https://github.com/Sparticuz/chromium/releases/download/v131.0.1/chromium-v131.0.1-pack.x64.tar';
 
-  stamp('Carregando Chromium (cold start pode levar 5-10s)');
-  const execPath = await chromium.executablePath(CHROMIUM_PACK_URL);
+  stamp(`Carregando Chromium (fonte: ${PACK_URL.includes('vercel-storage') || PACK_URL.includes('blob.vercel') ? 'Vercel Blob' : 'GitHub'})`);
+  const execPath = await chromium.executablePath(PACK_URL);
   stamp(`Chromium pronto: ${execPath}`);
 
   const browser = await puppeteer.launch({

@@ -38,8 +38,9 @@ module.exports = async (req, res) => {
     stamp('require puppeteer-core');
     const puppeteer = require('puppeteer-core');
 
-    stamp('chromium.executablePath() — baixando pack do GitHub');
-    const PACK = 'https://github.com/Sparticuz/chromium/releases/download/v131.0.1/chromium-v131.0.1-pack.x64.tar';
+    const PACK = process.env.CHROMIUM_PACK_URL
+      || 'https://github.com/Sparticuz/chromium/releases/download/v131.0.1/chromium-v131.0.1-pack.x64.tar';
+    stamp(`chromium.executablePath() — pack: ${PACK.replace(/\/[^\/]*$/, '/…')}`);
     const execPath = await chromium.executablePath(PACK);
     stamp(`exec path resolvido: ${execPath}`);
 

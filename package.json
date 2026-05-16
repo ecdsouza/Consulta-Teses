@@ -6,6 +6,12 @@
     "@sparticuz/chromium-min": "^131.0.1",
     "puppeteer-core": "^23.0.0"
   },
+  "devDependencies": {
+    "@vercel/blob": "^0.27.0"
+  },
+  "scripts": {
+    "upload:chromium": "node scripts/upload-chromium-pack.js"
+  },
   "engines": {
     "node": "18.x || 20.x"
   }
