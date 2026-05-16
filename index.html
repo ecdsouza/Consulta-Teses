@@ -43,6 +43,32 @@ header{position:sticky;top:0;z-index:400;background:rgba(9,9,11,.93);backdrop-fi
 .fn-oa.on{border-color:var(--oa);color:var(--oa)}
 .fn-capes.on{border-color:var(--capes);color:var(--capes)}
 .hdr-r{display:flex;align-items:center;gap:10px;padding-left:16px;border-left:1px solid var(--line);flex-shrink:0}
+.bham{display:inline-flex;flex-direction:column;justify-content:center;align-items:center;gap:3px;width:32px;height:32px;padding:8px 7px;border:1px solid var(--line2);border-radius:8px;background:var(--bg3);cursor:pointer;transition:all .18s}
+.bham span{display:block;width:100%;height:1.5px;background:var(--soft);border-radius:2px;transition:all .2s}
+.bham:hover{border-color:var(--gold);background:var(--gold-dim)}
+.bham:hover span{background:var(--gold)}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);z-index:1000;display:none;align-items:flex-start;justify-content:center;padding:60px 20px 20px;animation:fadeIn .2s ease}
+.modal-bg.on{display:flex}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{background:var(--bg2);border:1px solid var(--line2);border-radius:var(--r3);max-width:680px;width:100%;max-height:calc(100vh - 80px);overflow-y:auto;position:relative;animation:slideUp .25s ease;box-shadow:0 24px 60px rgba(0,0,0,.5)}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.modal-h{display:flex;align-items:center;justify-content:space-between;padding:22px 28px 16px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--bg2);z-index:1}
+.modal-tit{font-family:'Fraunces',serif;font-size:1.5rem;font-style:italic;color:var(--head);font-weight:300;letter-spacing:-.01em}
+.modal-x{width:30px;height:30px;border:1px solid var(--line2);background:var(--bg3);color:var(--soft);border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;font-size:1.1rem;line-height:1}
+.modal-x:hover{color:var(--gold);border-color:var(--gold);background:var(--gold-dim)}
+.modal-b{padding:22px 28px 26px}
+.modal-b h3{font-family:'Fira Code',monospace;font-size:.6rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin:22px 0 9px;padding-bottom:5px;border-bottom:1px solid var(--line)}
+.modal-b h3:first-child{margin-top:0}
+.modal-b p{color:var(--body);font-size:.86rem;line-height:1.75;margin-bottom:6px}
+.modal-b ul{list-style:none;margin:8px 0 0 0;padding:0}
+.modal-b li{color:var(--body);font-size:.84rem;line-height:1.8;padding-left:18px;position:relative}
+.modal-b li::before{content:'';position:absolute;left:5px;top:11px;width:5px;height:5px;background:var(--gold);border-radius:50%;opacity:.7}
+.modal-b strong{color:var(--head);font-weight:600}
+.modal-b code{font-family:'Fira Code',monospace;font-size:.78rem;background:var(--bg3);border:1px solid var(--line);padding:1px 6px;border-radius:4px;color:var(--gold)}
+.modal-fontes{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.modal-fontes .mf{font-family:'Fira Code',monospace;font-size:.55rem;font-weight:600;letter-spacing:.1em;padding:3px 9px;border-radius:20px;border:1px solid currentColor;opacity:.9}
+.modal-fontes .mf-capes{color:var(--capes)}.modal-fontes .mf-scielo{color:var(--scielo)}.modal-fontes .mf-bdtd{color:var(--bdtd)}.modal-fontes .mf-cross{color:var(--cross)}.modal-fontes .mf-oa{color:var(--oa)}
+.modal-foot{margin-top:22px;padding-top:14px;border-top:1px solid var(--line);font-family:'Fira Code',monospace;font-size:.6rem;color:var(--muted);text-align:center;letter-spacing:.05em}
 .bpro{font-family:'Fira Code',monospace;font-size:.54rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);background:var(--gold-dim);border:1px solid var(--gold-brd);padding:3px 9px;border-radius:20px;position:relative;overflow:hidden}
 .bpro::before{content:'';position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(90deg,transparent,rgba(251,191,36,.35),transparent);animation:shimmer 3.4s ease-in-out infinite}
 @keyframes shimmer{0%{left:-60%}55%,100%{left:160%}}
@@ -266,7 +292,10 @@ footer{border-top:1px solid var(--line);background:var(--bg2);padding:12px 20px;
       <button class="fnb fn-cross on"  data-fonte="crossref" onclick="toggleFonte(this)"><span class="fd"></span>Crossref</button>
       <button class="fnb fn-oa on"     data-fonte="openalex" onclick="toggleFonte(this)"><span class="fd"></span>OpenAlex</button>
     </nav>
-    <div class="hdr-r"><span class="bpro">PRO</span></div>
+    <div class="hdr-r">
+      <span class="bpro">PRO</span>
+      <button class="bham" onclick="abrirSobre()" title="Sobre o sistema" aria-label="Sobre"><span></span><span></span><span></span></button>
+    </div>
   </div>
 </header>
 
@@ -406,10 +435,63 @@ footer{border-top:1px solid var(--line);background:var(--bg2);padding:12px 20px;
   </div>
 </div>
 
+<!-- MODAL SOBRE -->
+<div class="modal-bg" id="modal-sobre" onclick="if(event.target===this)fecharSobre()">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-tit">
+    <div class="modal-h">
+      <div id="modal-tit" class="modal-tit">Sobre o Acervo</div>
+      <button class="modal-x" onclick="fecharSobre()" aria-label="Fechar">×</button>
+    </div>
+    <div class="modal-b">
+      <h3>O que é</h3>
+      <p>Plataforma de busca acadêmica brasileira que <strong>consulta cinco bases de referência ao mesmo tempo</strong> e devolve teses, dissertações e artigos científicos em uma única tabela unificada — pronta pra exportar no formato de síntese bibliográfica usado em revisões sistemáticas.</p>
+
+      <h3>Fontes consultadas</h3>
+      <div class="modal-fontes">
+        <span class="mf mf-capes">CAPES</span>
+        <span class="mf mf-scielo">SciELO</span>
+        <span class="mf mf-bdtd">BDTD</span>
+        <span class="mf mf-cross">Crossref</span>
+        <span class="mf mf-oa">OpenAlex</span>
+      </div>
+      <ul style="margin-top:14px">
+        <li><strong>CAPES</strong> — Catálogo de Teses e Dissertações (público, sem login)</li>
+        <li><strong>SciELO</strong> — via OASIS-BR (IBICT), que harvesta SciELO oficialmente</li>
+        <li><strong>BDTD</strong> — Biblioteca Digital Brasileira de Teses e Dissertações (IBICT)</li>
+        <li><strong>Crossref</strong> — base global de DOIs (cobertura ampla de revistas)</li>
+        <li><strong>OpenAlex</strong> — grafo aberto de publicações, com filtro Brasil</li>
+      </ul>
+
+      <h3>Funcionalidades</h3>
+      <ul>
+        <li>Busca simultânea em 5 bases, com deduplicação automática por título</li>
+        <li>Filtros por <strong>período</strong> (ano inicial e final) e <strong>tipo</strong> (tese, dissertação, artigo) — múltipla seleção</li>
+        <li>Sidebar analítica com totais, distribuição por fonte, ano e região</li>
+        <li>Visualização em <strong>cards</strong> ou <strong>tabela completa</strong></li>
+        <li>Identificação automática de região por sigla da instituição</li>
+        <li>Diagnóstico em tempo real do status de cada fonte</li>
+      </ul>
+
+      <h3>Exportações</h3>
+      <p>Os botões <code>Excel</code>, <code>CSV</code> e <code>PDF</code> geram arquivos no formato <strong>Síntese da pesquisa bibliográfica</strong>, agrupados por banco/fonte, com as colunas:</p>
+      <ul>
+        <li>DESCRITORES · TÍTULO · AUTOR(ES) · INSTITUIÇÃO/ÇÕES</li>
+        <li>TIPO · ANO · OBJETIVO PRINCIPAL · APROXIMAÇÕES/DISTANCIAMENTOS</li>
+      </ul>
+      <p style="margin-top:8px"><strong>APROXIMAÇÕES/DISTANCIAMENTOS</strong> fica em branco propositalmente — é onde o pesquisador anota qualitativamente como cada trabalho dialoga com sua própria pesquisa.</p>
+
+      <h3>Tecnologias</h3>
+      <p>Aplicação serverless rodando na <strong>Vercel</strong>. Backend em Node.js (funções <code>/api/*</code>), frontend em HTML/CSS/JS puro sem frameworks. Exportação Excel via SheetJS.</p>
+
+      <div class="modal-foot">ACERVO · Pesquisa Acadêmica BR · v31</div>
+    </div>
+  </div>
+</div>
+
 <!-- RODAPÉ -->
 <footer>
   <div class="ftl">
-    <span class="ftbr">ACERVO — Pesquisa Acadêmica BR · v30</span>
+    <span class="ftbr">ACERVO — Pesquisa Acadêmica BR · v31</span>
     <div class="ftps">
       <span class="ftp">CAPES</span><span class="ftp">SciELO</span><span class="ftp">BDTD</span><span class="ftp">Crossref</span><span class="ftp">OpenAlex</span>
     </div>
@@ -822,6 +904,10 @@ function xPDF(){
 function dl(c,n,m){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([c],{type:m}));a.download=n;a.click();URL.revokeObjectURL(a.href);}
 
 document.getElementById('query').addEventListener('keydown',e=>{if(e.key==='Enter')buscar();});
+
+function abrirSobre(){document.getElementById('modal-sobre').classList.add('on');document.body.style.overflow='hidden';}
+function fecharSobre(){document.getElementById('modal-sobre').classList.remove('on');document.body.style.overflow='';}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')fecharSobre();});
 </script>
 </body>
 </html>
