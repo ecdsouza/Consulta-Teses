@@ -35,19 +35,27 @@ async function obterSessaoCAFe(force = false) {
     throw new Error('CAPES_LOGIN / CAPES_SENHA não configurados na Vercel');
   }
 
-  const chromium  = require('@sparticuz/chromium');
+  const chromium  = require('@sparticuz/chromium-min');
   const puppeteer = require('puppeteer-core');
   const log = [];
   const t0 = Date.now();
   const stamp = (msg) => log.push(`[${String(Date.now() - t0).padStart(5, ' ')}ms] ${msg}`);
 
-  stamp('Abrindo Chromium');
+  // chromium-min baixa o pack (com libs runtime, libnss3 etc) na primeira execução.
+  // O cold start fica ~5-10s mais lento, mas o binário traz tudo que precisa.
+  const CHROMIUM_PACK_URL = 'https://github.com/Sparticuz/chromium/releases/download/v131.0.1/chromium-v131.0.1-pack.x64.tar';
+
+  stamp('Carregando Chromium (cold start pode levar 5-10s)');
+  const execPath = await chromium.executablePath(CHROMIUM_PACK_URL);
+  stamp(`Chromium pronto: ${execPath}`);
+
   const browser = await puppeteer.launch({
     args: chromium.args,
     defaultViewport: chromium.defaultViewport,
-    executablePath: await chromium.executablePath(),
+    executablePath: execPath,
     headless: chromium.headless,
   });
+  stamp('Browser lançado');
 
   try {
     const page = await browser.newPage();
