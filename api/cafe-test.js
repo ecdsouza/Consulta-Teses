@@ -15,9 +15,17 @@ module.exports = async (req, res) => {
 
   const force = req.query.force === '1';
   const t0 = Date.now();
+
+  // Timeout interno: garante resposta antes da Vercel matar a função.
+  const INTERNAL_TIMEOUT_MS = 55000;
+  const timeoutPromise = new Promise((_, reject) =>
+    setTimeout(() => reject(new Error(`timeout interno após ${INTERNAL_TIMEOUT_MS}ms`)),
+      INTERNAL_TIMEOUT_MS)
+  );
+
   try {
     const { obterSessaoCAFe } = require('./cafe-session');
-    const sess = await obterSessaoCAFe(force);
+    const sess = await Promise.race([obterSessaoCAFe(force), timeoutPromise]);
     res.status(200).json({
       ok: sess.isLoggedIn,
       ms: Date.now() - t0,
@@ -35,6 +43,7 @@ module.exports = async (req, res) => {
       ms: Date.now() - t0,
       error: e.message,
       stack: e.stack ? e.stack.split('\n').slice(0, 6).join('\n') : null,
+      hint: 'Tenta primeiro /api/chromium-test pra isolar se o problema é o Chromium em si',
     });
   }
 };
