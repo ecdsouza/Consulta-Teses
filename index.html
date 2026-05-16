@@ -286,7 +286,37 @@ footer{border-top:1px solid var(--line);background:var(--bg2);padding:12px 20px;
 /* ── RESPONSIVO ── */
 @media(max-width:1050px){.main{grid-template-columns:210px 1fr}#rg{grid-template-columns:1fr}}
 @media(max-width:800px){.main{grid-template-columns:1fr}.sb{position:static;height:auto;border-right:none;border-bottom:1px solid var(--line)}.fnav{display:none}}
-@media(max-width:600px){.hdr-r{display:none}#rg{grid-template-columns:1fr}}
+@media(max-width:720px){
+  .sp{padding:14px 14px 12px}
+  .fr2{flex-direction:column;gap:10px;margin-top:12px}
+  .fr{gap:12px;margin-top:10px;padding-top:10px}
+  .fl2 .hint{display:none}
+  .crit{font-size:.78rem}
+  .crit::placeholder{font-size:.72rem}
+  .tipo-pills{gap:4px}
+  .tp{padding:0 10px;font-size:.58rem;letter-spacing:.04em}
+  .sr{gap:6px}
+  .btn-s{padding:0 16px;font-size:.65rem}
+  .btn-s svg{display:none}
+}
+@media(max-width:600px){
+  .hdr-r{display:none}
+  #rg{grid-template-columns:1fr}
+  .hdr{padding:0 12px;height:52px}
+  .brand{padding-right:12px}
+  .bname{font-size:1rem}
+  .btag{font-size:.48rem}
+  #query{height:42px;font-size:.9rem;padding:0 12px 0 38px}
+  .sw svg{left:12px;width:15px;height:15px}
+  .btn-s{height:42px}
+}
+@media(max-width:420px){
+  .fr{flex-direction:column;align-items:stretch}
+  .fg{width:100%}
+  .iyr{flex:1}
+  .tipo-pills{flex-wrap:wrap}
+  .tp{flex:1;justify-content:center;min-width:0}
+}
 </style>
 </head>
 <body>
@@ -530,7 +560,7 @@ footer{border-top:1px solid var(--line);background:var(--bg2);padding:12px 20px;
       <h3>Tecnologias</h3>
       <p>Aplicação serverless rodando na <strong>Vercel</strong>. Backend em Node.js (funções <code>/api/*</code>), frontend em HTML/CSS/JS puro sem frameworks. Exportação Excel via SheetJS. Critérios salvos em <code>localStorage</code> do navegador.</p>
 
-      <div class="modal-foot">ACERVO · Pesquisa Acadêmica BR · v46</div>
+      <div class="modal-foot">ACERVO · Pesquisa Acadêmica BR · v47</div>
     </div>
   </div>
 </div>
@@ -538,7 +568,7 @@ footer{border-top:1px solid var(--line);background:var(--bg2);padding:12px 20px;
 <!-- RODAPÉ -->
 <footer>
   <div class="ftl">
-    <span class="ftbr">ACERVO — Pesquisa Acadêmica BR · v46</span>
+    <span class="ftbr">ACERVO — Pesquisa Acadêmica BR · v47</span>
     <div class="ftps">
       <span class="ftp">CAPES</span><span class="ftp">SciELO</span><span class="ftp">BDTD</span><span class="ftp">Crossref</span><span class="ftp">OpenAlex</span>
     </div>
