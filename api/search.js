@@ -21,12 +21,9 @@ try { cajesBrowser = require('./capes-browser'); } catch(_) {}
 
 
 function setCORS(res) {
-  // Restrict CORS to same origin or specific domains
-  const origin = process.env.CORS_ORIGIN || 'http://localhost:3000';
-  res.setHeader('Access-Control-Allow-Origin',  origin);
+  res.setHeader('Access-Control-Allow-Origin',  '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  res.setHeader('Access-Control-Max-Age', '3600');
 }
 
 const H = {
