@@ -150,33 +150,33 @@ async function searchCAPES(q, anoMin, anoMax, errors) {
   if (auth?.token)  H_CAPES['Authorization'] = `Bearer ${auth.token}`;
   if (auth?.cookie) H_CAPES['Cookie']         = auth.cookie;
 
-  const formats = [
-    { filtros: anoFiltro, pesquisa: q,      pagina: 1, tamanho: 5 },
-    { filtros: anoFiltro, assunto: q,       pagina: 1, tamanho: 5 },
-    { filtros: anoFiltro, textoPesquisa: q, pagina: 1, tamanho: 5 },
-    { filtros: [...anoFiltro, q],           pagina: 1, tamanho: 5 },
-    { filtros: anoFiltro, q,               pagina: 1, tamanho: 5 },
-    { filtros: [`titulo:"${q}"`, ...anoFiltro], pagina: 1, tamanho: 5 },
-    { filtros: [`assunto:"${q}"`, ...anoFiltro], pagina: 1, tamanho: 5 },
-  ];
+  // Payload oficial do bundle Angular do catalogodeteses.capes.gov.br:
+  // o campo de busca é `termo` (não `pesquisa`/`assunto`/`textoPesquisa`).
+  // A UI também sanitiza aspas desbalanceadas antes de enviar.
+  const termo = q.replace(/"/g, m => (q.split('"').length - 1) % 2 ? '' : m);
+  const consulta = { termo, filtros: anoFiltro, pagina: 1, registrosPorPagina: PER_REQ };
 
   let workingFmt = null, workingData = null;
-  for (const fmt of formats) {
-    try {
-      const { data, status } = await POST(BASE, fmt, H_CAPES, 12000);
-      if (status !== 200) continue;
+  try {
+    const { data, status } = await POST(BASE, consulta, H_CAPES, 12000);
+    if (status === 200) {
       const total = parseInt(data?.total || 0);
       const items = data?.tesesDissertacoes || data?.teses || data?.items || [];
-      if (total > 0 && total < 100000 && items.length > 0) {
-        workingFmt = fmt; workingData = data;
-        console.log(`[CAPES/REST] ✓ total:${total} auth:${!!auth}`);
-        break;
+      if (total > 0 && items.length > 0) {
+        workingFmt = consulta; workingData = data;
+        console.log(`[CAPES/REST] ✓ termo:"${termo}" total:${total} auth:${!!auth}`);
+      } else {
+        console.log(`[CAPES/REST] sem resultados para "${termo}" (total:${total})`);
       }
-    } catch (_) {}
+    } else {
+      console.warn(`[CAPES/REST] HTTP ${status}`);
+    }
+  } catch (e) {
+    console.warn('[CAPES/REST] erro:', e.message);
   }
 
   if (!workingFmt || !workingData) {
-    errors.push({ fonte: 'CAPES', erro: 'CKAN sem resultados e REST ignora query. Configure CAPES_LOGIN/CAPES_SENHA no Vercel ou acesse /api/capes-auth.' });
+    errors.push({ fonte: 'CAPES', erro: 'Sem resultados no REST público do Catálogo de Teses.' });
     return out;
   }
 
@@ -209,7 +209,7 @@ async function searchCAPES(q, anoMin, anoMax, errors) {
   let page = 2;
   while (out.length < totalDeclared && page <= MAX_PAGES) {
     try {
-      const { data, status } = await POST(BASE, { ...workingFmt, pagina:page, tamanho:PER_REQ }, H_CAPES);
+      const { data, status } = await POST(BASE, { ...workingFmt, pagina:page, registrosPorPagina:PER_REQ }, H_CAPES);
       if (status !== 200) break;
       const items = data?.tesesDissertacoes||data?.teses||data?.items||[];
       if (!items.length) break;
