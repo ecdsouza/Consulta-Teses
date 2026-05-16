@@ -23,7 +23,15 @@ module.exports = async (req, res) => {
   const t0 = Date.now();
   const stamp = (msg) => log.push(`[${String(Date.now() - t0).padStart(5, ' ')}ms] ${msg}`);
 
-  try {
+  // Timeout interno: aborta antes da Vercel matar a função no escuro,
+  // assim o cliente sempre recebe o log parcial pra diagnosticar a etapa.
+  const INTERNAL_TIMEOUT_MS = 50000;
+  const timeoutPromise = new Promise((_, reject) =>
+    setTimeout(() => reject(new Error(`timeout interno após ${INTERNAL_TIMEOUT_MS}ms — provavelmente download do Chromium não finalizou`)),
+      INTERNAL_TIMEOUT_MS)
+  );
+
+  const runFlow = async () => {
     stamp('require @sparticuz/chromium-min');
     const chromium = require('@sparticuz/chromium-min');
 
@@ -50,11 +58,15 @@ module.exports = async (req, res) => {
     await browser.close();
     stamp('browser fechado');
 
+    return { version, execPath };
+  };
+
+  try {
+    const result = await Promise.race([runFlow(), timeoutPromise]);
     return res.status(200).json({
       ok: true,
       ms: Date.now() - t0,
-      version,
-      execPath,
+      ...result,
       log,
     });
   } catch (e) {
