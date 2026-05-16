@@ -7,10 +7,5 @@
   "routes": [
     { "src": "/api/(.*)", "dest": "/api/$1.js" },
     { "src": "/(.*)", "dest": "/index.html" }
-  ],
-  "functions": {
-    "api/search.js":          { "maxDuration": 120, "memory": 1024 },
-    "api/capes-login-test.js":{ "maxDuration": 120, "memory": 1024 },
-    "api/capes-browser.js":   { "maxDuration": 120, "memory": 1024 }
-  }
+  ]
 }
