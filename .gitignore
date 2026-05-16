@@ -10,3 +10,4 @@ dist/
 build/
 .next/
 *.bak
+.env*.local
