@@ -105,6 +105,25 @@ header{position:sticky;top:0;z-index:400;background:rgba(9,9,11,.93);backdrop-fi
 .spp{height:34px;padding:0 10px;background:var(--bg3);border:1.5px solid var(--line2);border-radius:var(--r);color:var(--body);font-family:'Fira Code',monospace;font-size:.78rem;outline:none;cursor:pointer;-webkit-appearance:none;transition:border-color .2s}
 .spp:focus{border-color:var(--gold)}
 
+/* Critérios de análise (aproximação / distanciamento) */
+.fr2{display:flex;gap:14px;margin-top:12px;padding-top:12px;border-top:1px dashed var(--line)}
+.fg2{flex:1;display:flex;flex-direction:column;gap:5px;min-width:0}
+.fl2{display:flex;align-items:center;gap:6px;font-family:'Fira Code',monospace;font-size:.55rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.fl2 .dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.fl2.aprox .dot{background:#34d399}
+.fl2.dist  .dot{background:#fb7185}
+.fl2 .hint{font-family:'Libre Baskerville',serif;text-transform:none;letter-spacing:0;color:var(--dim);font-style:italic;font-size:.66rem;font-weight:400}
+.crit{height:32px;background:var(--bg3);border:1.5px solid var(--line2);border-radius:var(--r);color:var(--body);font-family:'Fira Code',monospace;font-size:.72rem;padding:0 10px;outline:none;transition:border-color .2s;width:100%}
+.crit::placeholder{color:var(--muted);font-style:italic;font-family:'Libre Baskerville',serif;font-size:.78rem}
+.crit.aprox:focus{border-color:#34d399;box-shadow:0 0 0 3px rgba(52,211,153,.1)}
+.crit.dist:focus {border-color:#fb7185;box-shadow:0 0 0 3px rgba(251,113,133,.1)}
+
+/* Chips de análise no card */
+.chips-an{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px}
+.chip-an{font-family:'Fira Code',monospace;font-size:.54rem;font-weight:600;letter-spacing:.05em;padding:3px 8px;border-radius:20px;border:1px solid currentColor;display:inline-flex;align-items:center;gap:4px}
+.chip-an.aprox{color:#34d399;background:rgba(52,211,153,.08)}
+.chip-an.dist {color:#fb7185;background:rgba(251,113,133,.08)}
+
 /* ── LAYOUT ── */
 .main{display:grid;grid-template-columns:248px 1fr;min-height:calc(100vh - 56px - 108px)}
 
@@ -331,6 +350,16 @@ footer{border-top:1px solid var(--line);background:var(--bg2);padding:12px 20px;
       </select>
     </div>
   </div>
+  <div class="fr2">
+    <div class="fg2">
+      <span class="fl2 aprox"><span class="dot"></span>Aproximação <span class="hint">— termos que aproximam da sua pesquisa</span></span>
+      <input type="text" class="crit aprox" id="cr-aprox" placeholder="ex: Foucault, análise do discurso, formação discursiva" oninput="salvarCriterios()"/>
+    </div>
+    <div class="fg2">
+      <span class="fl2 dist"><span class="dot"></span>Distanciamento <span class="hint">— termos que distanciam</span></span>
+      <input type="text" class="crit dist" id="cr-dist" placeholder="ex: behaviorismo, abordagem quantitativa, positivismo" oninput="salvarCriterios()"/>
+    </div>
+  </div>
 </div>
 
 <!-- LAYOUT PRINCIPAL -->
@@ -482,7 +511,7 @@ footer{border-top:1px solid var(--line);background:var(--bg2);padding:12px 20px;
       <h3>Tecnologias</h3>
       <p>Aplicação serverless rodando na <strong>Vercel</strong>. Backend em Node.js (funções <code>/api/*</code>), frontend em HTML/CSS/JS puro sem frameworks. Exportação Excel via SheetJS.</p>
 
-      <div class="modal-foot">ACERVO · Pesquisa Acadêmica BR · v35</div>
+      <div class="modal-foot">ACERVO · Pesquisa Acadêmica BR · v36</div>
     </div>
   </div>
 </div>
@@ -490,7 +519,7 @@ footer{border-top:1px solid var(--line);background:var(--bg2);padding:12px 20px;
 <!-- RODAPÉ -->
 <footer>
   <div class="ftl">
-    <span class="ftbr">ACERVO — Pesquisa Acadêmica BR · v35</span>
+    <span class="ftbr">ACERVO — Pesquisa Acadêmica BR · v36</span>
     <div class="ftps">
       <span class="ftp">CAPES</span><span class="ftp">SciELO</span><span class="ftp">BDTD</span><span class="ftp">Crossref</span><span class="ftp">OpenAlex</span>
     </div>
@@ -764,6 +793,12 @@ function renderCards(lst){
   rg.innerHTML=lst.map((d,i)=>{
     const lc=d.link_capes?'<a href="'+esc(d.link_capes)+'" target="_blank" rel="noopener">CAPES ↗</a>':'';
     const ls=d.link_scielo?'<a href="'+esc(d.link_scielo)+'" target="_blank" rel="noopener">DOI ↗</a>':'';
+    const cr=detectarCriterios(d);
+    const chips=(cr.aproxHits.length||cr.distHits.length)?
+      '<div class="chips-an">'+
+        cr.aproxHits.map(t=>'<span class="chip-an aprox">✓ '+esc(t)+'</span>').join('')+
+        cr.distHits.map (t=>'<span class="chip-an dist">✗ '+esc(t)+'</span>').join('')+
+      '</div>':'';
     return '<div class="card '+cardCls(d.titulacao)+'">'+
       '<div class="ctop"><div class="ctit">'+(esc(d.titulo_do_periodico)||'<em style="opacity:.35">Sem título</em>')+'</div>'+
       '<div class="cbadges">'+srcTag(d.repositorio)+tipTag(d.titulacao)+'</div></div>'+
@@ -774,7 +809,7 @@ function renderCards(lst){
         '<div class="cm full"><span class="cmk">Instituição</span><span class="cmv">'+(esc(d.instituicao_programa)||'—')+'</span></div>'+
       '</div>'+
       (d.resumo?'<div class="cabs" onclick="this.classList.toggle(\'open\')">'+esc(d.resumo)+'</div>':'')+
-      kwH(d.palavras_chaves)+
+      kwH(d.palavras_chaves)+chips+
       '<div class="cft">'+regH(d.regiao)+'<div class="clinks">'+lc+ls+'</div></div>'+
     '</div>';
   }).join('');
@@ -842,9 +877,42 @@ function testarCAFe(){const force=confirm('Forçar novo login (ignorar cache de 
 const COLS_EXP=['repositorio','link_capes','link_scielo','revista','classificacao','ano_da_publicacao','volume','titulo_do_periodico','resumo','palavras_chaves','seletor_palavras_chaves','autor','titulacao','instituicao_programa','regiao'];
 const LBLS_EXP=['REPOSITÓRIO','LINK/CAPES','LINK/SCIELO','REVISTA','CLASSIFICAÇÃO','ANO','VOLUME','TÍTULO','RESUMO','PALAVRAS-CHAVES','SELETOR KW','AUTOR','TITULAÇÃO','INSTITUIÇÃO/PROGRAMA','REGIÃO'];
 
+// ── Critérios de análise (Aproximação / Distanciamento) ──
+function salvarCriterios(){
+  try{
+    localStorage.setItem('cr-aprox',document.getElementById('cr-aprox').value||'');
+    localStorage.setItem('cr-dist', document.getElementById('cr-dist').value ||'');
+  }catch(_){}
+}
+function carregarCriterios(){
+  try{
+    document.getElementById('cr-aprox').value=localStorage.getItem('cr-aprox')||'';
+    document.getElementById('cr-dist').value =localStorage.getItem('cr-dist') ||'';
+  }catch(_){}
+}
+const _normCrit=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+const _parseCrit=raw=>raw.split(/[,;|]/).map(t=>t.trim()).filter(t=>t.length>=2);
+function detectarCriterios(d){
+  const aproxTerms=_parseCrit(document.getElementById('cr-aprox')?.value||'');
+  const distTerms =_parseCrit(document.getElementById('cr-dist') ?.value||'');
+  if(!aproxTerms.length&&!distTerms.length)return{aproxHits:[],distHits:[]};
+  const blob=_normCrit((d.titulo_do_periodico||'')+' '+(d.resumo||'')+' '+(d.palavras_chaves||'')+' '+(d.autor||''));
+  return{
+    aproxHits:aproxTerms.filter(t=>blob.includes(_normCrit(t))),
+    distHits: distTerms.filter (t=>blob.includes(_normCrit(t))),
+  };
+}
+function sintAproxDist(d){
+  const cr=detectarCriterios(d);
+  const parts=[];
+  if(cr.aproxHits.length)parts.push('✓ Aproximação: '+cr.aproxHits.join(', '));
+  if(cr.distHits.length) parts.push('✗ Distanciamento: '+cr.distHits.join(', '));
+  return parts.join('\n');
+}
+
 // ── Síntese da pesquisa bibliográfica ──
 const SINT_HDR=['DESCRITORES','TÍTULO','AUTOR(ES)','INSTITUIÇÃO/ÇÕES','TIPO','ANO','OBJETIVO PRINCIPAL','APROXIMAÇÕES/DISTANCIAMENTOS'];
-function sintLinha(d,q){return[q,d.titulo_do_periodico||'',d.autor||'',d.instituicao_programa||'',d.titulacao||'',d.ano_da_publicacao||'',d.resumo||'',''];}
+function sintLinha(d,q){return[q,d.titulo_do_periodico||'',d.autor||'',d.instituicao_programa||'',d.titulacao||'',d.ano_da_publicacao||'',d.resumo||'',sintAproxDist(d)];}
 function agruparPorBanco(items){
   const g={};items.forEach(d=>{const k=d.repositorio||'Outros';(g[k]=g[k]||[]).push(d);});
   return Object.entries(g);
@@ -909,6 +977,16 @@ document.getElementById('query').addEventListener('keydown',e=>{if(e.key==='Ente
 function abrirSobre(){document.getElementById('modal-sobre').classList.add('on');document.body.style.overflow='hidden';}
 function fecharSobre(){document.getElementById('modal-sobre').classList.remove('on');document.body.style.overflow='';}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')fecharSobre();});
+
+// Carrega critérios salvos e re-renderiza chips quando o usuário edita
+carregarCriterios();
+let _critTimer=null;
+['cr-aprox','cr-dist'].forEach(id=>{
+  document.getElementById(id).addEventListener('input',()=>{
+    clearTimeout(_critTimer);
+    _critTimer=setTimeout(()=>{if(TODOS&&TODOS.length)aplicarFiltro();},300);
+  });
+});
 </script>
 </body>
 </html>
