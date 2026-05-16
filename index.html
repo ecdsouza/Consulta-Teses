@@ -530,7 +530,7 @@ footer{border-top:1px solid var(--line);background:var(--bg2);padding:12px 20px;
       <h3>Tecnologias</h3>
       <p>Aplicação serverless rodando na <strong>Vercel</strong>. Backend em Node.js (funções <code>/api/*</code>), frontend em HTML/CSS/JS puro sem frameworks. Exportação Excel via SheetJS. Critérios salvos em <code>localStorage</code> do navegador.</p>
 
-      <div class="modal-foot">ACERVO · Pesquisa Acadêmica BR · v45</div>
+      <div class="modal-foot">ACERVO · Pesquisa Acadêmica BR · v46</div>
     </div>
   </div>
 </div>
@@ -538,7 +538,7 @@ footer{border-top:1px solid var(--line);background:var(--bg2);padding:12px 20px;
 <!-- RODAPÉ -->
 <footer>
   <div class="ftl">
-    <span class="ftbr">ACERVO — Pesquisa Acadêmica BR · v45</span>
+    <span class="ftbr">ACERVO — Pesquisa Acadêmica BR · v46</span>
     <div class="ftps">
       <span class="ftp">CAPES</span><span class="ftp">SciELO</span><span class="ftp">BDTD</span><span class="ftp">Crossref</span><span class="ftp">OpenAlex</span>
     </div>
@@ -923,11 +923,22 @@ function detectarCriterios(d){
   };
 }
 function sintAproxDist(d){
+  const aproxRaw=(document.getElementById('cr-aprox')?.value||'').trim();
+  const distRaw =(document.getElementById('cr-dist') ?.value||'').trim();
+  if(!aproxRaw&&!distRaw)return '';
   const cr=detectarCriterios(d);
-  const parts=[];
-  if(cr.aproxHits.length)parts.push('✓ Aproximação: '+cr.aproxHits.join(', '));
-  if(cr.distHits.length) parts.push('✗ Distanciamento: '+cr.distHits.join(', '));
-  return parts.join('\n');
+  const blocos=[];
+  if(aproxRaw){
+    const linhas=['Aproximação: '+aproxRaw];
+    if(cr.aproxHits.length)linhas.push('✓ Encontrado: '+cr.aproxHits.join(', '));
+    blocos.push(linhas.join('\n'));
+  }
+  if(distRaw){
+    const linhas=['Distanciamento: '+distRaw];
+    if(cr.distHits.length)linhas.push('✗ Encontrado: '+cr.distHits.join(', '));
+    blocos.push(linhas.join('\n'));
+  }
+  return blocos.join('\n\n');
 }
 
 // ── Síntese da pesquisa bibliográfica ──
