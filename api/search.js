@@ -182,6 +182,27 @@ async function searchCAPES(q, anoMin, anoMax, errors) {
     return out;
   }
 
+  // Detecção robusta do tipo (tese/dissertação): tenta nomes conhecidos e,
+  // se nada bater, varre tudo que é string no objeto procurando palavras-chave.
+  const detectarTipo = (it) => {
+    const conhecidos = [
+      it.grau, it.nivel, it.nmGrau, it.tipoProgramaAcademico,
+      it.nivelAcademico, it.tipoTrabalho, it.modalidade,
+      it.tipoTitulacao, it.tituloObtido, it.dsNivel,
+    ].map(v => S(v)).filter(Boolean).join(' ');
+    if (conhecidos) return conhecidos;
+    // Fallback: varre todas as strings do registro
+    const blob = Object.values(it)
+      .filter(v => typeof v === 'string')
+      .join(' ')
+      .toLowerCase();
+    if (/\bdoutorad/.test(blob) || /\btese\b/.test(blob)) return 'Tese de Doutorado';
+    if (/mestrad|dissertac/.test(blob))                   return 'Dissertação de Mestrado';
+    // Último fallback: o endpoint é "tesesDissertacoes", então é uma das duas.
+    // Sem evidência, marca como Dissertação (estatisticamente mais comum).
+    return 'Dissertação de Mestrado';
+  };
+
   const processItem = (it) => {
     const ano = anoFrom(S(it.anoDaDefesa || it.ano || it.anoProgramaDefesa));
     if (!okAno(ano, anoMin, anoMax)) return;
@@ -195,7 +216,7 @@ async function searchCAPES(q, anoMin, anoMax, errors) {
       repositorio:'CAPES', link_capes:link,
       titulo_do_periodico:S(it.titulo||it.title||it.nmTitulo),
       autor, ano_da_publicacao:ano,
-      titulacao:S(it.grau||it.nivel||it.nmGrau||it.tipoProgramaAcademico),
+      titulacao: detectarTipo(it),
       instituicao_programa:[instBase,prog].filter(Boolean).join(' — '),
       municipio_programa:S(it.municipioPrograma||it.municipio||''),
       regiao:S(it.regiao||it.nmRegiao||''),
@@ -206,6 +227,8 @@ async function searchCAPES(q, anoMin, anoMax, errors) {
     if (rec) out.push(rec);
   };
 
+  const primeiroItem = workingData.tesesDissertacoes?.[0] || workingData.teses?.[0] || workingData.items?.[0];
+  if (primeiroItem) console.log('[CAPES/REST] campos do 1º item:', Object.keys(primeiroItem).join(','));
   (workingData.tesesDissertacoes||workingData.teses||workingData.items||[]).forEach(processItem);
   const totalDeclared = Math.min(parseInt(workingData.total||0), MAX_PAGES * PER_REQ);
   let page = 2;
