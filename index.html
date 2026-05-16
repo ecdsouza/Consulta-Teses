@@ -744,33 +744,62 @@ async function diagnosticar(){const q=document.getElementById('query').value||'e
 const COLS_EXP=['repositorio','link_capes','link_scielo','revista','classificacao','ano_da_publicacao','volume','titulo_do_periodico','resumo','palavras_chaves','seletor_palavras_chaves','autor','titulacao','instituicao_programa','regiao'];
 const LBLS_EXP=['REPOSITÓRIO','LINK/CAPES','LINK/SCIELO','REVISTA','CLASSIFICAÇÃO','ANO','VOLUME','TÍTULO','RESUMO','PALAVRAS-CHAVES','SELETOR KW','AUTOR','TITULAÇÃO','INSTITUIÇÃO/PROGRAMA','REGIÃO'];
 
+// ── Síntese da pesquisa bibliográfica ──
+const SINT_HDR=['DESCRITORES','TÍTULO','AUTOR(ES)','INSTITUIÇÃO/ÇÕES','TIPO','ANO','OBJETIVO PRINCIPAL','APROXIMAÇÕES/DISTANCIAMENTOS'];
+function sintLinha(d,q){return[q,d.titulo_do_periodico||'',d.autor||'',d.instituicao_programa||'',d.titulacao||'',d.ano_da_publicacao||'',d.resumo||'',''];}
+function agruparPorBanco(items){
+  const g={};items.forEach(d=>{const k=d.repositorio||'Outros';(g[k]=g[k]||[]).push(d);});
+  return Object.entries(g);
+}
+
 function xCSV(){
   if(!FILTRADOS.length){alert('Faça uma busca primeiro.');return;}
-  const h=LBLS_EXP.join(';');
-  const r=FILTRADOS.map(d=>COLS_EXP.map(c=>'"'+String(d[c]||'').replace(/"/g,'""')+'"').join(';'));
-  dl('\uFEFF'+[h,...r].join('\r\n'),'acervo_'+new Date().toISOString().slice(0,10)+'.csv','text/csv;charset=utf-8');
+  const q=document.getElementById('query').value||'';
+  const linhas=['Síntese da pesquisa bibliográfica'];
+  agruparPorBanco(FILTRADOS).forEach(([banco,items],i)=>{
+    linhas.push('');
+    linhas.push('Banco '+(i+1)+': '+banco);
+    linhas.push(SINT_HDR.join(';'));
+    items.forEach(d=>linhas.push(sintLinha(d,q).map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(';')));
+  });
+  dl('\uFEFF'+linhas.join('\r\n'),'sintese_'+new Date().toISOString().slice(0,10)+'.csv','text/csv;charset=utf-8');
 }
+
 function xExcel(){
   if(!FILTRADOS.length){alert('Faça uma busca primeiro.');return;}
   if(typeof XLSX==='undefined'){alert('Biblioteca XLSX não carregada.');return;}
-  const wsData=FILTRADOS.map(d=>{const row={};COLS_EXP.forEach((c,i)=>{row[LBLS_EXP[i]]=d[c]||'';});return row;});
+  const q=document.getElementById('query').value||'';
+  const aoa=[['Síntese da pesquisa bibliográfica','','','','','','','']];
+  const merges=[{s:{r:0,c:0},e:{r:0,c:7}}];
+  agruparPorBanco(FILTRADOS).forEach(([banco,items],i)=>{
+    aoa.push(['','','','','','','','']);
+    const bancoRow=aoa.length;
+    aoa.push(['Banco '+(i+1)+': '+banco,'','','','','','','']);
+    merges.push({s:{r:bancoRow,c:0},e:{r:bancoRow,c:7}});
+    aoa.push(SINT_HDR);
+    items.forEach(d=>aoa.push(sintLinha(d,q)));
+  });
+  const ws=XLSX.utils.aoa_to_sheet(aoa);
+  ws['!merges']=merges;
+  ws['!cols']=[{wch:22},{wch:48},{wch:30},{wch:32},{wch:18},{wch:7},{wch:70},{wch:40}];
   const wb=XLSX.utils.book_new();
-  const ws=XLSX.utils.json_to_sheet(wsData,{header:LBLS_EXP});
-  ws['!cols']=[12,30,30,25,22,8,6,55,80,60,40,35,22,40,16].map(w=>({wch:w}));
-  ws['!freeze']={xSplit:0,ySplit:1};
-  XLSX.utils.book_append_sheet(wb,ws,'Publicações');
-  const meta=[['Campo','Descrição'],['REPOSITÓRIO','Fonte: CAPES, SciELO, BDTD, Crossref, OpenAlex'],['LINK/CAPES','URL no Catálogo CAPES'],['LINK/SCIELO','URL ou DOI'],['REGIÃO','Confirmada ou "AI - X" (inferida)']];
-  const wm=XLSX.utils.aoa_to_sheet(meta);wm['!cols']=[{wch:28},{wch:60}];
-  XLSX.utils.book_append_sheet(wb,wm,'Metadados');
-  const q=(document.getElementById('query').value||'busca').slice(0,30).replace(/[^a-zA-Z0-9\s]/g,'').trim().replace(/\s+/g,'_');
-  XLSX.writeFile(wb,'acervo_'+q+'_'+new Date().toISOString().slice(0,10)+'.xlsx');
+  XLSX.utils.book_append_sheet(wb,ws,'Síntese');
+  const slug=(q||'busca').slice(0,30).replace(/[^a-zA-Z0-9\s]/g,'').trim().replace(/\s+/g,'_');
+  XLSX.writeFile(wb,'sintese_'+slug+'_'+new Date().toISOString().slice(0,10)+'.xlsx');
 }
+
 function xPDF(){
   if(!FILTRADOS.length){alert('Faça uma busca primeiro.');return;}
-  const q=document.getElementById('query').value||'busca';
-  const rows=FILTRADOS.map(d=>'<tr><td>'+esc(d.repositorio)+'</td><td><em>'+esc(d.titulo_do_periodico)+'</em></td><td>'+esc(d.autor)+'</td><td>'+esc(d.ano_da_publicacao)+'</td><td>'+esc(d.titulacao)+'</td><td>'+esc(d.instituicao_programa)+'</td><td>'+esc(d.regiao)+'</td><td>'+esc(String(d.palavras_chaves||'').slice(0,80))+'</td><td>'+esc(String(d.resumo||'').slice(0,180))+'</td><td>'+(d.link_capes||d.link_scielo?'<a href="'+esc(d.link_capes||d.link_scielo)+'">Link</a>':'—')+'</td></tr>').join('');
+  const q=document.getElementById('query').value||'';
+  const blocos=agruparPorBanco(FILTRADOS).map(([banco,items],i)=>{
+    const rows=items.map(d=>{
+      const c=sintLinha(d,q);
+      return '<tr><td>'+esc(c[0])+'</td><td><em>'+esc(c[1])+'</em></td><td>'+esc(c[2])+'</td><td>'+esc(c[3])+'</td><td>'+esc(c[4])+'</td><td>'+esc(c[5])+'</td><td>'+esc(c[6])+'</td><td></td></tr>';
+    }).join('');
+    return '<tr class="bn"><td colspan="8">Banco '+(i+1)+': '+esc(banco)+'</td></tr><tr class="hr"><th>'+SINT_HDR.map(esc).join('</th><th>')+'</th></tr>'+rows;
+  }).join('');
   const w=window.open('','_blank');
-  w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Acervo - '+esc(q)+'</title><style>@page{size:A3 landscape;margin:11mm}body{font-family:Georgia,serif;font-size:8.5px;color:#111}.cover{margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid #111}.cover h1{font-size:13px;font-weight:700;margin-bottom:2px}.cover p{font-size:8px;color:#555}table{width:100%;border-collapse:collapse}thead tr{background:#111;color:#fff}th{padding:5px 6px;text-align:left;font-size:7px;font-family:monospace;letter-spacing:.07em;text-transform:uppercase;border-right:1px solid rgba(255,255,255,.15)}th:last-child{border-right:none}td{padding:4px 6px;border-bottom:1px solid #e5e5e5;font-size:8px;border-right:1px solid #eee}td:last-child{border-right:none}tr:nth-child(even){background:#fafafa}a{color:#b45309;text-decoration:none}em{font-style:italic}</style></head><body><div class="cover"><h1>Acervo — Pesquisa Acadêmica</h1><p>Busca: <strong>'+esc(q)+'</strong> · '+FILTRADOS.length+' publicação(ões) · '+new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'})+'</p></div><table><thead><tr><th>Fonte</th><th>Título</th><th>Autor</th><th>Ano</th><th>Titulação</th><th>Instituição</th><th>Região</th><th>Palavras-chave</th><th>Resumo</th><th>Link</th></tr></thead><tbody>'+rows+'</tbody></table></body></html>');
+  w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Síntese - '+esc(q)+'</title><style>@page{size:A3 landscape;margin:11mm}body{font-family:Georgia,serif;font-size:9px;color:#111}.cap{text-align:center;font-weight:700;font-size:13px;margin-bottom:10px}.cover{margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid #999;font-size:8.5px;color:#444}table{width:100%;border-collapse:collapse}td,th{padding:5px 7px;border:1px solid #333;font-size:8.5px;vertical-align:top;word-break:break-word}tr.bn td{background:#d9d9d9;font-weight:700;text-align:center;font-size:10px;padding:7px}tr.hr th{background:#f2f2f2;font-weight:700;text-align:center;font-size:8.5px;text-transform:none}em{font-style:italic}</style></head><body><div class="cap">Síntese da pesquisa bibliográfica</div><div class="cover">Busca: <strong>'+esc(q)+'</strong> · '+FILTRADOS.length+' publicação(ões) · '+new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'})+'</div><table>'+blocos+'</table></body></html>');
   w.document.close();setTimeout(()=>w.print(),800);
 }
 function dl(c,n,m){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([c],{type:m}));a.download=n;a.click();URL.revokeObjectURL(a.href);}
