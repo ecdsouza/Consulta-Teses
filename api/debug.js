@@ -41,7 +41,7 @@ module.exports = async (req, res) => {
       `https://bdtd.ibict.br/vufind/api/v1/search?lookfor=${qe}&type=AllFields&limit=5&page=1`),
     probe('CAPES/POST', 'POST',
       'https://catalogodeteses.capes.gov.br/catalogo-teses/rest/busca',
-      { query: q, filtros: [], pagina: 1, tamanho: 5 },
+      { termo: q, filtros: [], pagina: 1, registrosPorPagina: 5 },
       { 'Content-Type':'application/json', Origin:'https://catalogodeteses.capes.gov.br', Referer:'https://catalogodeteses.capes.gov.br/catalogo-teses/' }),
     probe('SciELO/search', 'GET',
       `https://search.scielo.org/?q=${qe}&lang=pt&count=5&from=0&output=json`),
