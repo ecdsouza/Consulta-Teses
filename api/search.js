@@ -425,24 +425,31 @@ async function searchBDTD(q,anoMin,anoMax,errors){
 // ════════════════════════════════════════════════════════
 //  SciELO
 // ════════════════════════════════════════════════════════
+// SciELO via OASIS-BR (IBICT/VuFind) — bypassa o Bunny Shield do search.scielo.org.
+// OASIS-BR harvesta o SciELO via OAI-PMH; filtramos os registros com URL .scielo.
 async function searchSciELO(q,anoMin,anoMax,errors){
-  const out=[];let from=0,total=Infinity,page=1;
+  const out=[];let page=1,total=Infinity;
   while(out.length<total&&page<=MAX_PAGES){
     try{
-      const{data,status}=await GET(`https://search.scielo.org/?q=${encodeURIComponent(q)}&lang=pt&count=${PER_REQ}&from=${from}&output=json`);
+      const{data,status}=await GET(`https://oasisbr.ibict.br/vufind/api/v1/search?lookfor=${encodeURIComponent(q)}&type=AllFields&sort=relevance&page=${page}&limit=${PER_REQ}`);
       if(status!==200)throw new Error(`HTTP ${status}`);
-      const hits=data?.hits?.hits||[];
-      if(page===1){total=Math.min(parseInt(data?.hits?.total||0),MAX_PAGES*PER_REQ);console.log(`[SciELO] total:${data?.hits?.total}`);}
-      if(!hits.length)break;
-      for(const h of hits){
-        const src=h._source||{};const titulo=src.ti_pt||src.ti_en||src.ti_es||S(src.ti);if(!titulo)continue;
-        const ano=anoFrom(S(src.da||src.year||src.dp));if(!okAno(ano,anoMin,anoMax))continue;
-        const kw=[...(Array.isArray(src.wok_subject_categories)?src.wok_subject_categories:[]),...(Array.isArray(src.mh)?src.mh:[]),...(Array.isArray(src.keyword)?src.keyword:[])].filter(Boolean).join('; ');
-        const rec=norm15({repositorio:'SciELO',link_scielo:src.doi?`https://doi.org/${src.doi}`:(Array.isArray(src.ur)?src.ur[0]:S(src.ur)),titulo_do_periodico:titulo,revista:S(src.ta||src.so||src.source),autor:Array.isArray(src.au)?src.au.join('; '):S(src.au),ano_da_publicacao:ano,volume:S(src.vi||src.volume),resumo:S(src.ab_pt||src.ab_en||src.ab_es||src.ab),palavras_chaves:kw,titulacao:'Artigo Científico',instituicao_programa:Array.isArray(src.aff)?src.aff.filter(Boolean).join('; '):S(src.aff||''),link_capes:'',regiao:'',});
+      const records=data?.records||[];
+      if(page===1){total=Math.min(parseInt(data?.resultCount||0),MAX_PAGES*PER_REQ);console.log(`[SciELO/OASIS] total:${data?.resultCount}`);}
+      if(!records.length)break;
+      for(const r of records){
+        const urls=Array.isArray(r.urls)?r.urls.map(u=>typeof u==='string'?u:(u&&u.url)||'').filter(Boolean):[];
+        const sciUrl=urls.find(u=>/scielo/i.test(u));
+        if(!sciUrl)continue;
+        const titulo=S(r.title||r.cleanTitle||r.shortTitle);if(!titulo)continue;
+        const ano=anoFrom(S((Array.isArray(r.publicationDates)?r.publicationDates[0]:r.publicationDate)||r.year||''));
+        if(!okAno(ano,anoMin,anoMax))continue;
+        const kw=Array.isArray(r.subjects)?r.subjects.flat().map(S).filter(Boolean).join('; '):'';
+        const inst=S((Array.isArray(r.institutions)?r.institutions[0]:'')||(Array.isArray(r.publishers)?r.publishers[0]:'')||'');
+        const rec=norm15({repositorio:'SciELO',link_scielo:sciUrl,titulo_do_periodico:titulo,revista:'',autor:parseAutores(r.authors),ano_da_publicacao:ano,resumo:S(Array.isArray(r.summary)?r.summary[0]:r.summary),palavras_chaves:kw,titulacao:'Artigo Científico',instituicao_programa:inst,link_capes:'',volume:'',regiao:'',});
         if(rec)out.push(rec);
       }
-      console.log(`[SciELO] p${page}:${hits.length}→${out.length}/${total}`);
-      if(hits.length<PER_REQ)break;from+=PER_REQ;page++;
+      console.log(`[SciELO/OASIS] p${page}:${records.length}→${out.length}/${total}`);
+      if(records.length<PER_REQ)break;page++;
     }catch(e){errors.push({fonte:'SciELO',erro:e.message});break;}
   }
   return out;
