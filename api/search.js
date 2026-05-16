@@ -403,7 +403,7 @@ async function searchBDTD(q,anoMin,anoMax,errors){
   const out=[];let page=1,total=Infinity;
   while(out.length<total&&page<=MAX_PAGES){
     try{
-      const{data,status}=await GET(`https://bdtd.ibict.br/vufind/api/v1/search?lookfor=${encodeURIComponent(q)}&type=AllFields&sort=relevance&page=${page}&limit=${PER_REQ}`);
+      const{data,status}=await GET(`https://bdtd.ibict.br/vufind/api/v1/search?lookfor=${encodeURIComponent(q)}&type=AllFields&sort=relevance&page=${page}&limit=${PER_REQ}&field%5B%5D=title&field%5B%5D=authors&field%5B%5D=formats&field%5B%5D=languages&field%5B%5D=subjects&field%5B%5D=urls&field%5B%5D=publicationDates&field%5B%5D=summary&field%5B%5D=institutions&field%5B%5D=publishers&field%5B%5D=year`);
       if(status!==200)throw new Error(`HTTP ${status}`);
       const records=data?.records||[];
       if(page===1){total=Math.min(parseInt(data?.resultCount||0),MAX_PAGES*PER_REQ);console.log(`[BDTD] total:${data?.resultCount}`);}
@@ -433,7 +433,7 @@ async function searchSciELO(q,anoMin,anoMax,errors){
   const out=[];let page=1,total=Infinity;
   while(out.length<total&&page<=MAX_PAGES){
     try{
-      const{data,status}=await GET(`https://oasisbr.ibict.br/vufind/api/v1/search?lookfor=${encodeURIComponent(q)}&type=AllFields&sort=relevance&page=${page}&limit=${PER_REQ}`);
+      const{data,status}=await GET(`https://oasisbr.ibict.br/vufind/api/v1/search?lookfor=${encodeURIComponent(q)}&type=AllFields&sort=relevance&page=${page}&limit=${PER_REQ}&field%5B%5D=title&field%5B%5D=authors&field%5B%5D=formats&field%5B%5D=languages&field%5B%5D=subjects&field%5B%5D=urls&field%5B%5D=publicationDates&field%5B%5D=summary&field%5B%5D=institutions&field%5B%5D=publishers&field%5B%5D=year`);
       if(status!==200)throw new Error(`HTTP ${status}`);
       const records=data?.records||[];
       if(page===1){total=Math.min(parseInt(data?.resultCount||0),MAX_PAGES*PER_REQ);console.log(`[SciELO/OASIS] total:${data?.resultCount}`);}
