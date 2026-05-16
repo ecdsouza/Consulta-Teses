@@ -490,10 +490,29 @@ footer{border-top:1px solid var(--line);background:var(--bg2);padding:12px 20px;
         <strong style="color:var(--head)">Nota sobre CAPES:</strong> aqui é o <strong>Catálogo de Teses e Dissertações</strong>, que é <strong>público</strong> e não pede login. Não confunda com o <strong>Portal de Periódicos CAPES</strong> (artigos pagos de revistas) — esse é um produto separado e só funciona com login institucional via CAFe.
       </p>
 
+      <h3>Como pesquisar</h3>
+      <ol style="list-style:decimal;margin:6px 0 0 18px;padding:0">
+        <li style="padding-left:6px;line-height:1.8"><strong>Digite o termo</strong> na barra principal (autor, palavra-chave, instituição, tema)</li>
+        <li style="padding-left:6px;line-height:1.8"><strong>Preencha Aproximação e Distanciamento</strong> (opcional, mas recomendado — ver abaixo)</li>
+        <li style="padding-left:6px;line-height:1.8">Ajuste <strong>período</strong> e <strong>tipo</strong> (tese / dissertação / artigo) se quiser refinar</li>
+        <li style="padding-left:6px;line-height:1.8">Clique <strong>Pesquisar</strong> — as 5 fontes são consultadas em paralelo</li>
+        <li style="padding-left:6px;line-height:1.8">Exporte em <strong>Excel</strong>, <strong>CSV</strong> ou <strong>PDF</strong> no formato síntese</li>
+      </ol>
+
+      <h3>Critérios de Aproximação / Distanciamento</h3>
+      <p>Logo abaixo da busca há duas caixas onde você define os termos que marcam um trabalho como <strong style="color:#34d399">próximo</strong> ou <strong style="color:#fb7185">distante</strong> da sua pesquisa atual. Separe por vírgula.</p>
+      <p style="margin-top:8px"><strong>Exemplo:</strong></p>
+      <ul>
+        <li><strong style="color:#34d399">Aproximação:</strong> <em>Foucault, análise do discurso, formação discursiva, linha francesa</em></li>
+        <li><strong style="color:#fb7185">Distanciamento:</strong> <em>behaviorismo, abordagem quantitativa, positivismo</em></li>
+      </ul>
+      <p style="margin-top:10px">Cada publicação retornada é varrida no <strong>título, resumo, palavras-chave e autores</strong> em busca desses termos. Quando algum bate, aparece um chip colorido no card (✓ verde / ✗ rosa) — e a coluna <strong>APROXIMAÇÕES/DISTANCIAMENTOS</strong> da exportação já vem pré-preenchida com os termos detectados, deixando você só refinar a redação. Os valores ficam <strong>salvos no navegador</strong>, então não precisa redigitar a cada sessão.</p>
+
       <h3>Funcionalidades</h3>
       <ul>
         <li>Busca simultânea em 5 bases, com deduplicação automática por título</li>
         <li>Filtros por <strong>período</strong> (ano inicial e final) e <strong>tipo</strong> (tese, dissertação, artigo) — múltipla seleção</li>
+        <li>Detecção automática de critérios de Aproximação / Distanciamento (ver acima)</li>
         <li>Sidebar analítica com totais, distribuição por fonte, ano e região</li>
         <li>Visualização em <strong>cards</strong> ou <strong>tabela completa</strong></li>
         <li>Identificação automática de região por sigla da instituição</li>
@@ -501,17 +520,17 @@ footer{border-top:1px solid var(--line);background:var(--bg2);padding:12px 20px;
       </ul>
 
       <h3>Exportações</h3>
-      <p>Os botões <code>Excel</code>, <code>CSV</code> e <code>PDF</code> geram arquivos no formato <strong>Síntese da pesquisa bibliográfica</strong>, agrupados por banco/fonte, com as colunas:</p>
+      <p>Os botões <code>Excel</code>, <code>CSV</code> e <code>PDF</code> geram arquivos no formato <strong>Síntese da pesquisa bibliográfica</strong>, agrupados por banco/fonte, com 8 colunas:</p>
       <ul>
         <li>DESCRITORES · TÍTULO · AUTOR(ES) · INSTITUIÇÃO/ÇÕES</li>
         <li>TIPO · ANO · OBJETIVO PRINCIPAL · APROXIMAÇÕES/DISTANCIAMENTOS</li>
       </ul>
-      <p style="margin-top:8px"><strong>APROXIMAÇÕES/DISTANCIAMENTOS</strong> fica em branco propositalmente — é onde o pesquisador anota qualitativamente como cada trabalho dialoga com sua própria pesquisa.</p>
+      <p style="margin-top:8px"><strong>DESCRITORES</strong> é preenchida com a query que você usou. <strong>OBJETIVO PRINCIPAL</strong> traz o resumo/abstract completo da publicação. <strong>APROXIMAÇÕES/DISTANCIAMENTOS</strong> chega pré-preenchida com os termos detectados pelos seus critérios — você revisa e refina a redação qualitativa final.</p>
 
       <h3>Tecnologias</h3>
-      <p>Aplicação serverless rodando na <strong>Vercel</strong>. Backend em Node.js (funções <code>/api/*</code>), frontend em HTML/CSS/JS puro sem frameworks. Exportação Excel via SheetJS.</p>
+      <p>Aplicação serverless rodando na <strong>Vercel</strong>. Backend em Node.js (funções <code>/api/*</code>), frontend em HTML/CSS/JS puro sem frameworks. Exportação Excel via SheetJS. Critérios salvos em <code>localStorage</code> do navegador.</p>
 
-      <div class="modal-foot">ACERVO · Pesquisa Acadêmica BR · v44</div>
+      <div class="modal-foot">ACERVO · Pesquisa Acadêmica BR · v45</div>
     </div>
   </div>
 </div>
@@ -519,7 +538,7 @@ footer{border-top:1px solid var(--line);background:var(--bg2);padding:12px 20px;
 <!-- RODAPÉ -->
 <footer>
   <div class="ftl">
-    <span class="ftbr">ACERVO — Pesquisa Acadêmica BR · v44</span>
+    <span class="ftbr">ACERVO — Pesquisa Acadêmica BR · v45</span>
     <div class="ftps">
       <span class="ftp">CAPES</span><span class="ftp">SciELO</span><span class="ftp">BDTD</span><span class="ftp">Crossref</span><span class="ftp">OpenAlex</span>
     </div>
