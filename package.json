@@ -1,9 +1,12 @@
 {
   "name": "acervo-pesquisa-academica",
-  "version": "23.0.0",
+  "version": "23.1.0",
   "dependencies": {
-    "axios": "^1.6.0",
-    "@sparticuz/chromium": "^123.0.1",
-    "puppeteer-core": "^22.6.0"
+    "axios": "^1.7.2",
+    "@sparticuz/chromium": "^125.0.0",
+    "puppeteer-core": "^22.12.0"
+  },
+  "engines": {
+    "node": "18.x || 20.x"
   }
 }

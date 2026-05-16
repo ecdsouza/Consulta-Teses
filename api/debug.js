@@ -30,7 +30,9 @@ async function probe(name, method, url, body, extraH = {}) {
 }
 
 module.exports = async (req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  const origin = process.env.CORS_ORIGIN || 'http://localhost:3000';
+  res.setHeader('Access-Control-Allow-Origin', origin);
+  res.setHeader('Access-Control-Max-Age', '3600');
   const q = req.query.q || 'educação';
   const qe = encodeURIComponent(q);
 

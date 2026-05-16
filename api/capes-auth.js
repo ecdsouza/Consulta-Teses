@@ -49,8 +49,10 @@ async function tryGet(url, extraH = {}, timeout = 10000) {
 }
 
 module.exports = async (req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  const origin = process.env.CORS_ORIGIN || 'http://localhost:3000';
+  res.setHeader('Access-Control-Allow-Origin', origin);
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  res.setHeader('Access-Control-Max-Age', '3600');
 
   const q     = req.query.q || 'reincidência criminal';
   const login = process.env.CAPES_LOGIN || '';

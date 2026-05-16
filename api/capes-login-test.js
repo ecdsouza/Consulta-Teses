@@ -3,8 +3,10 @@
  * Testa login Puppeteer passo a passo.
  */
 module.exports = async (req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  const origin = process.env.CORS_ORIGIN || 'http://localhost:3000';
+  res.setHeader('Access-Control-Allow-Origin', origin);
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  res.setHeader('Access-Control-Max-Age', '3600');
 
   const q = req.query.q || 'reincidência criminal';
   const resultado = { timestamp: new Date().toISOString(), query: q, etapas: [], sucesso: false };
