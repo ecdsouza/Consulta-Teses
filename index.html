@@ -7,6 +7,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,300;1,9..144,400&family=Fira+Code:wght@400;500;600&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+</script>
+<script defer src="https://cdn.vercel-insights.com/v1/script.js"></script>
 <style>
 :root {
   --bg:#09090b;--bg2:#111114;--bg3:#18181c;--bg4:#1f1f24;
@@ -906,7 +910,7 @@ function loading(q){
 }
 function erroState(msg){
   document.getElementById('rg').style.display='grid';
-  document.getElementById('rg').innerHTML='<div class="state"><div class="si">⚠️</div><div class="stit">Erro na busca</div><div class="ssub" style="font-family:\'Fira Code\',monospace;font-size:.75rem;word-break:break-all">'+esc(msg)+'</div></div>';
+  document.getElementById('rg').innerHTML='<div class="state"><div class="si">���️</div><div class="stit">Erro na busca</div><div class="ssub" style="font-family:\'Fira Code\',monospace;font-size:.75rem;word-break:break-all">'+esc(msg)+'</div></div>';
 }
 function mostrarAlertas(erros,porFonte){
   const area=document.getElementById('alertaArea');
