@@ -511,7 +511,7 @@ footer{border-top:1px solid var(--line);background:var(--bg2);padding:12px 20px;
       <h3>Tecnologias</h3>
       <p>Aplicação serverless rodando na <strong>Vercel</strong>. Backend em Node.js (funções <code>/api/*</code>), frontend em HTML/CSS/JS puro sem frameworks. Exportação Excel via SheetJS.</p>
 
-      <div class="modal-foot">ACERVO · Pesquisa Acadêmica BR · v40</div>
+      <div class="modal-foot">ACERVO · Pesquisa Acadêmica BR · v41</div>
     </div>
   </div>
 </div>
@@ -519,15 +519,15 @@ footer{border-top:1px solid var(--line);background:var(--bg2);padding:12px 20px;
 <!-- RODAPÉ -->
 <footer>
   <div class="ftl">
-    <span class="ftbr">ACERVO — Pesquisa Acadêmica BR · v40</span>
+    <span class="ftbr">ACERVO — Pesquisa Acadêmica BR · v41</span>
     <div class="ftps">
       <span class="ftp">CAPES</span><span class="ftp">SciELO</span><span class="ftp">BDTD</span><span class="ftp">Crossref</span><span class="ftp">OpenAlex</span>
     </div>
   </div>
   <div style="display:flex;gap:7px">
+    <button class="bft" onclick="window.open('/api/ping','_blank')" title="Endpoint mínimo — só pra confirmar que o deploy responde">📡 Ping</button>
     <button class="bft" onclick="window.open('/api/chromium-test','_blank')" title="Testa se o Chromium consegue subir na Vercel (sem login)">🧪 Testar Chromium</button>
     <button class="bft" onclick="testarCAFe()" title="Testa login CAFe → CEFET-MG → Periódicos">🔑 Testar CAFe</button>
-    <button class="bft" onclick="capesAuth()">🔑 CAPES Auth</button>
     <button class="bft" onclick="diagnosticar()">
       <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
       Diagnosticar
